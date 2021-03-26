@@ -1,37 +1,50 @@
-/** Responsible for attesting the physical nodes identity.  The plugin
-will be responsible to retrieve an identity document or data associated
-with the physical node.  This data will be used when attesting to the server.
-*/
-
 syntax = "proto3";
-package spire.agent.nodeattestor;
-option go_package = "github.com/spiffe/spire/proto/spire/agent/nodeattestor";
+package spire.plugin.agent.nodeattestor.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1;nodeattestorv1";
 
-import "spire/common/common.proto";
-import "spire/common/plugin/plugin.proto";
+service NodeAttestor {
+    // FetchAttestationData retrieves the attestation payload and optionally
+    // participates in challenge/response attestation mechanics.
+    //
+    // The attestation flow is as follows:
+    // 1. SPIRE agent opens up a stream to the plugin via FetchAttestationData.
+    // 2. The plugin returns a response with the payload.
+    // 3. SPIRE agent sends the payload to SPIRE server.
+    // 4. Optionally, SPIRE server responds with a challenge:
+    //   4a. SPIRE agent sends the challenge to the plugin.
+    //   4b. The plugin responds with the challenge response.
+    //   4c. SPIRE agent sends the challenge response to SPIRE server.
+    //   4d. Step 4 is repeated until SPIRE server is satisfied and does not
+    //       respond with an additional challenge.
+    // 5. SPIRE agent closes the stream.
+    //
+    // Note that SPIRE agent does NOT send a request down the stream unless it
+    // needs to issue the challenge returned by SPIRE server (step 4a).
+    //
+    // Plugins that do not need challenge/response as part of the attestation
+    // process may close the stream as soon as they send the attestation
+    // payload (step 2).
+    rpc FetchAttestationData(stream FetchAttestationDataRequest) returns (stream FetchAttestationDataResponse);
+}
 
-/** Represents an empty request */
 message FetchAttestationDataRequest {
+    // Required. The challenge issued by the server. See the
+    // FetchAttestationData RPC for details.
     bytes challenge = 1;
 }
 
-/** Represents the attested data and base SPIFFE ID */
 message FetchAttestationDataResponse {
-    reserved 2;
+    oneof result {
+        // Required in the first response. This is the attestation payload that
+        // is to be sent to the server. See the FetchAttestationData RPC for
+        // details.
+        bytes payload = 1;
 
-    /** A type which contains attestation data for specific platform */
-    spire.common.AttestationData attestation_data = 1;
-
-    /** response to the challenge (if challenge was present) **/
-    bytes response = 3;
+        // Required in subsequent responses. The challenge response to a
+        // challenge issued by the server. See the FetchAttestationData RPC
+        // for details.
+        bytes challenge_response = 2;
+    }
 }
 
-service NodeAttestor {
-    /** Returns the node attestation data for specific platform and the generated Base SPIFFE ID for CSR formation */
-    rpc FetchAttestationData(stream FetchAttestationDataRequest) returns (stream FetchAttestationDataResponse);
 
-    /** Applies the plugin configuration and returns configuration errors */
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    /** Returns the version and related metadata of the plugin */
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
-}
