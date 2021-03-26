@@ -1,0 +1,12 @@
+// This file defines simple interfaces used for testing. These interfaces are
+// only intended to be used internally and by SPIRE. See /private/README.md.
+syntax = "proto3";
+
+package test;
+option go_package = "github.com/spiffe/spire-plugin-sdk/private/proto/test";
+
+import "test/echo.proto";
+
+service SomeService {
+    rpc ServiceEcho(test.EchoRequest) returns (test.EchoResponse);
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package spire.service.common.config.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1;configv1";
+
+message CoreConfiguration {
+    string trust_domain = 1;
+}
+
+message ConfigureRequest {
+    // Required. HCL encoded configuration.
+    string hcl_configuration = 1;
+
+    // Required. Core SPIRE configuration.
+    CoreConfiguration core_configuration = 2;
+}
+
+message ConfigureResponse {
+}
+
+service Config {
+    rpc Configure(ConfigureRequest) returns (ConfigureResponse);
+}

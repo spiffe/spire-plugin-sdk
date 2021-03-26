@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package spire.service.private.init.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/internal/proto/spire/service/private/init/v1;initv1";
+
+// Init is an internal service that the plugin framework uses to initialize
+// a plugin after it has been loaded. Initialization takes place when the
+// plugin client connects, since the client is responsible for hosting the
+// broker that is used to provide host services. If we initialize before that,
+// there would be no broker available to connect to host services with.
+service Init {
+    rpc Init(InitRequest) returns (InitResponse);
+}
+
+// Init request parameters
+message InitRequest {
+    // List of all the names of gRPC services implemented by the host (i.e.
+    // SPIRE). These names are the fully qualified gRPC service name (e.g.
+    // spire.hostservice.v1.Foo).
+    repeated string host_service_names = 1;
+}
+
+// Init response parameters
+message InitResponse {
+    // List of all the names of gRPC services implemented by the service. These
+    // names are the fully qualified gRPC service name (e.g.
+    // spire.plugin.server.keymanager.v1.Keymanager).
+    repeated string plugin_service_names = 1;
+}
