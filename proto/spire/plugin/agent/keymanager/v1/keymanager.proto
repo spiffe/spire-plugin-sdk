@@ -1,53 +1,118 @@
-/** A plugin which is responsible for generating and storing a key pair,
-optionally with a hardware-backed secret store.  It is used for generating
-the key pair for the Base SPIFFE Id of the Node Agent, and persisting
-that identity across restarts/reboots */
-
 syntax = "proto3";
-package spire.agent.keymanager;
-option go_package = "github.com/spiffe/spire/proto/spire/agent/keymanager";
-
-import "spire/common/plugin/plugin.proto";
-
-/** Represents an empty request */
-message GenerateKeyPairRequest {}
-
-/** Represents a public and private key pair */
-message GenerateKeyPairResponse {
-    /** Public key */
-    bytes publicKey = 1;
-    /** Private key */
-    bytes privateKey = 2;
-}
-
-/** Represents a private key */
-message StorePrivateKeyRequest {
-    /** Private key */
-    bytes privateKey = 1;
-}
-
-/** Represents an empty response */
-message StorePrivateKeyResponse {}
-
-/** Represents an empty request */
-message FetchPrivateKeyRequest {}
-
-/** Represents a private key */
-message FetchPrivateKeyResponse {
-    /** Private key */
-    bytes privateKey = 1;
-}
-
+package spire.plugin.agent.keymanager.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/keymanager/v1;keymanagerv1";
 
 service KeyManager {
-    /** Creates a new key pair. */
-    rpc GenerateKeyPair(GenerateKeyPairRequest) returns (GenerateKeyPairResponse);
-    /** Persists a private key to the key manager's storage system. */
-    rpc StorePrivateKey(StorePrivateKeyRequest) returns (StorePrivateKeyResponse);
-    /** Returns the most recently stored private key. For use after node restarts. */
-    rpc FetchPrivateKey(FetchPrivateKeyRequest) returns (FetchPrivateKeyResponse);
-    /** Applies the plugin configuration and returns configuration errors. */
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    /** Returns the version and related metadata of the plugin. */
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
+    // Generates a new private key with the given ID. If a key already exists
+    // under that ID, it is be overwritten. The fingerprint of the overwritten
+    // key is different than the original.
+    rpc GenerateKey(GenerateKeyRequest) returns (GenerateKeyResponse);
+
+    // Gets the public key information for private key managed by the plugin
+    // with the given ID.  If a key with the given ID does not exist, NOT_FOUND
+    // is returned.
+    rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse);
+
+    // Gets all public key information for private keys managed by the plugin.
+    rpc GetPublicKeys(GetPublicKeysRequest) returns (GetPublicKeysResponse);
+
+    // Signs data with the private key with the given ID and fingerprint.  If a
+    // key with the given ID does not exist or has a different fingerprint,
+    // NOT_FOUND is returned.
+    rpc SignData(SignDataRequest) returns (SignDataResponse);
+}
+
+message PublicKey {
+    // Required. The ID of the key, as provided when the key was created.
+    string id = 1;
+
+    // Required. The type of the key.
+    KeyType type = 2;
+
+    // Required. The public key data (PKIX encoded).
+    bytes pkix_data = 3;
+
+    // Required. Fingerprint of the public key. The (id,fingerprint) tuple
+    // represents a unique identifier for the key. The fingerprint is used to
+    // ensure that a signing operation is taking place with the intended key
+    // (see SignData). Plugins are welcome to choose their fingerprinting
+    // algorithm. A naive implementation is a hash over the PKIX data.
+    string fingerprint = 4;
+}
+
+message GenerateKeyRequest {
+    // Required. The ID to give the generated key (or to identify the existing
+    // key to overwrite (see GenerateKey).
+    string key_id = 1;
+
+    // Required. The type of the key to generate.
+    KeyType key_type = 2;
+}
+
+message GenerateKeyResponse {
+    // Required. The generated key.
+    PublicKey public_key = 1;
+}
+
+message GetPublicKeyRequest {
+    string key_id = 1;
+}
+
+message GetPublicKeyResponse {
+    PublicKey public_key = 1;
+}
+
+
+message GetPublicKeysRequest {
+}
+
+message GetPublicKeysResponse {
+    repeated PublicKey public_keys = 1;
+}
+
+message SignDataRequest {
+    message PSSOptions {
+        int32 salt_length = 1;
+        HashAlgorithm hash_algorithm = 2;
+    }
+
+    string key_id = 1;
+
+    string key_fingerprint = 2;
+
+    bytes data = 3;
+
+    oneof signer_opts {
+        HashAlgorithm hash_algorithm = 4;
+        PSSOptions pss_options = 5;
+    }
+}
+
+message SignDataResponse {
+    bytes signature = 1;
+}
+
+enum KeyType {
+    UNSPECIFIED_KEY_TYPE = 0;
+    EC_P256 = 1;
+    EC_P384 = 2;
+    RSA_1024 = 3;
+    RSA_2048 = 4;
+    RSA_4096 = 5;
+}
+
+enum HashAlgorithm {
+    UNSPECIFIED_HASH_ALGORITHM = 0;
+    // These entries (and their values) line up with a subset of the go
+    // crypto.Hash constants
+    SHA224 = 4;
+    SHA256 = 5;
+    SHA384 = 6;
+    SHA512 = 7;
+    SHA3_224 = 10;
+    SHA3_256 = 11;
+    SHA3_384 = 12;
+    SHA3_512 = 13;
+    SHA512_224 = 14;
+    SHA512_256 = 15;
 }
