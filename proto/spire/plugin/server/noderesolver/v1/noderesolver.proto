@@ -1,32 +1,19 @@
-/** Resolves the derived selectors for a given Node Agent. This mapping
-will be stored, and used to further derive which workloads the Node
-Agent is authorized to run. */
-
 syntax = "proto3";
-package spire.server.noderesolver;
-option go_package = "github.com/spiffe/spire/proto/spire/server/noderesolver";
-
-import "spire/common/plugin/plugin.proto";
-import "spire/common/common.proto";
-
-/** Represents a request with a list of BaseSPIFFEIDs. */
-message ResolveRequest {
-    /** A list of BaseSPIFFE Ids. */
-    repeated string baseSpiffeIdList = 1;
-}
-
-/** Represents a response with a map of SPIFFE ID to a list of Selectors. */
-message ResolveResponse {
-    /** Map[SPIFFE_ID] => Selectors. */
-    map<string, spire.common.Selectors> map = 1;
-}
+package spire.plugin.server.noderesolver.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/noderesolver/v1;noderesolverv1";
 
 service NodeResolver {
-    /** Retrieves a list of properties reflecting the current state of a particular node(s). */
+    // Resolve resolves additional selectors for a given agent.
     rpc Resolve(ResolveRequest) returns (ResolveResponse);
+}
 
-    /** Responsible for configuration of the plugin. */
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    /** Returns the  version and related metadata of the installed plugin. */
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
+message ResolveRequest {
+    // The agent ID to resolve selectors for.
+    string agent_id = 1;
+}
+
+message ResolveResponse {
+    // Optional. The selector values to ascribe to the agent. The type of
+    // the selector is inferred from the plugin name.
+    repeated string selector_values = 2;
 }
