@@ -1,0 +1,8 @@
+syntax = "proto3";
+package spire.plugin.types;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types";
+
+message X509Certificate {
+    // The ASN.1 DER encoded bytes of the X.509 certificate.
+    bytes asn1 = 1;
+}
