@@ -1,42 +1,54 @@
-/** Responsible for validating the Node Agent’s Attested Data. */
-
 syntax = "proto3";
-package spire.agent.nodeattestor;
-option go_package = "github.com/spiffe/spire/proto/spire/server/nodeattestor";
-
-import "spire/common/plugin/plugin.proto";
-import "spire/common/common.proto";
-
-/** Represents a request to attest a node. */
-message AttestRequest {
-    reserved 2;
-
-    /** A type which contains attestation data for specific platform. */
-    spire.common.AttestationData attestation_data = 1;
-    /** Challenge response */
-    bytes response = 3;
-}
-
-/** Represents a response when attesting a node.*/
-message AttestResponse {
-    reserved 1;
-
-    /** SPIFFE ID of the attested node */
-    string agent_id = 2;
-
-    /** Challenge required for attestation */
-    bytes challenge = 3;
-
-    /** Optional list of selectors */
-    repeated spire.common.Selector selectors = 4;
-}
+package spire.plugin.server.nodeattestor.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/nodeattestor/v1;nodeattestorv1";
 
 service NodeAttestor {
-    /** Attesta a node. */
+    // Attest attests attestation payload received from the agent and
+    // optionally participates in challenge/response attestation mechanics.
+    //
+    // The attestation flow is as follows:
+    // 1. SPIRE server opens up a stream to the plugin via Attest.
+    // 2. SPIRE server sends a request containing the attestation payload
+    //    received from the agent.
+    // 3. Optionally, the plugin responds with a challenge:
+    //    3a. SPIRE server sends the challenge to the agent.
+    //    3b. The agent responds with the challenge response.
+    //    3c. SPIRE server sends the challenge response to the plugin.
+    //    3d. Step 3 is repeated until the plugin is satisfied and does
+    //        not respond with an additional challenge.
+    // 4. The plugin returns the attestation results to SPIRE server and closes
+    //    the stream.
     rpc Attest(stream AttestRequest) returns (stream AttestResponse);
+}
 
-    /** Responsible for configuration of the plugin. */
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    /** Returns the  version and related metadata of the installed plugin. */
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
+message AttestRequest {
+    oneof request {
+        // Required in the first request. The attestation payload. See the
+        // Attest RPC for details.
+        bytes payload = 1;
+
+        // Required in subsequent requests. The response to a plugin issued
+        // challenge. See the Attest RPC for details.
+        bytes response = 2;
+    }
+}
+
+message AttestResponse {
+    oneof response {
+        // Required in all but the last response. The challenge to issue the
+        // agent. See the Attest RPC for details.
+        bytes challenge = 2;
+
+        // Required as the last response. The attestation result. See the Attest RPC for details.
+        Result result = 1;
+    }
+}
+
+message AgentAttributes {
+    // The ID to assign to the agent.
+    string agent_id = 1;
+
+    // Optional. Selectors values to ascribe to the agent. The type of the
+    // selectors will be inferred from the plugin name.
+    repeated string selector_values = 2;
 }
