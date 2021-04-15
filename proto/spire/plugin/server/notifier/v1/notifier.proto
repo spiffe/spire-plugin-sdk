@@ -12,7 +12,7 @@ service Notifier {
     rpc Notify(NotifyRequest) returns (NotifyResponse);
 
     // NotifyAndAdvise notifies the plugin that an event occurred and waits
-    // for a response. Errors returned by the plugin control SPIRE server
+    // for a response. Errors returned by the plugin control SPIRE Server
     // behavior. See NotifyAndAdviseRequest for per-event details.
     rpc NotifyAndAdvise(NotifyAndAdviseRequest) returns (NotifyAndAdviseResponse);
 }
@@ -20,7 +20,7 @@ service Notifier {
 message NotifyRequest {
     // Required. The event the plugin is being notified for.
     oneof event {
-        // BundleUpdated is emitted whenever SPIRE server changes the trust
+        // BundleUpdated is emitted whenever SPIRE Server changes the trust
         // bundle.
         BundleUpdated bundle_updated = 1;
     }
@@ -37,8 +37,8 @@ message BundleLoaded {
 message NotifyAndAdviseRequest {
     // Required. The event the plugin is being notified for.
     oneof event {
-        // BundleLoaded is emitted on startup after SPIRE server creates/loads
-        // the trust bundle. If an error is returned SPIRE server is shut down.
+        // BundleLoaded is emitted on startup after SPIRE Server creates/loads
+        // the trust bundle. If an error is returned SPIRE Server is shut down.
         BundleLoaded bundle_loaded = 1;
     }
 }
