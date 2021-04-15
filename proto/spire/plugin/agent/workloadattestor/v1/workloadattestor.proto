@@ -16,7 +16,7 @@ message AttestResponse {
 service WorkloadAttestor {
     // Attests the specified workload process. If the process is not attestable
     // (i.e. not a process the attestor knows anything about), INVALID_ARGUMENT
-    // should be returned. Otherwise the attestor should return zero or more
+    // is returned. Otherwise the attestor returns zero or more
     // selector values, or another status if there is an error attesting the
     // workload.
     rpc Attest(AttestRequest) returns (AttestResponse);
