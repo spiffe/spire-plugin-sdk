@@ -8,12 +8,12 @@ service NodeResolver {
 }
 
 message ResolveRequest {
-    // The agent ID to resolve selectors for.
+    // Required. The agent ID to resolve selectors for.
     string agent_id = 1;
 }
 
 message ResolveResponse {
     // Optional. The selector values to ascribe to the agent. The type of
     // the selector is inferred from the plugin name.
-    repeated string selector_values = 2;
+    repeated string selector_values = 1;
 }
