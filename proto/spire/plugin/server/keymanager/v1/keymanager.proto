@@ -4,19 +4,20 @@ option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/serve
 
 service KeyManager {
     // Generates a new private key with the given ID. If a key already exists
-    // under that ID, it is be overwritten. The fingerprint of the overwritten
+    // under that ID, it is overwritten. The fingerprint of the overwritten
     // key is different than the original.
     rpc GenerateKey(GenerateKeyRequest) returns (GenerateKeyResponse);
 
-    // Gets the public key information for private key managed by the plugin
-    // with the given ID.  If a key with the given ID does not exist, NOT_FOUND
-    // is returned.
+    // Gets the public key information for the private key managed by the
+    // plugin with the given ID. If a key with the given ID does not exist,
+    // NOT_FOUND is returned.
     rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse);
 
-    // Gets all public key information for private keys managed by the plugin.
+    // Gets all public key information for the private keys managed by the
+    // plugin.
     rpc GetPublicKeys(GetPublicKeysRequest) returns (GetPublicKeysResponse);
 
-    // Signs data with the private key with the given ID and fingerprint.  If a
+    // Signs data with the private key with the given ID and fingerprint. If a
     // key with the given ID does not exist or has a different fingerprint,
     // NOT_FOUND is returned.
     rpc SignData(SignDataRequest) returns (SignDataResponse);
@@ -87,7 +88,7 @@ message SignDataRequest {
     // Required. The fingerprint of the key to use to sign the data.
     string key_fingerprint = 2;
 
-    // Required. The data so sign.
+    // Required. The data to sign.
     bytes data = 3;
 
     // Required. The signature options. The PSS options is only valid
@@ -115,7 +116,7 @@ enum KeyType {
 enum HashAlgorithm {
     UNSPECIFIED_HASH_ALGORITHM = 0;
     // These entries (and their values) line up with a subset of the go
-    // crypto.Hash constants
+    // crypto.Hash constants.
     SHA224 = 4;
     SHA256 = 5;
     SHA384 = 6;
