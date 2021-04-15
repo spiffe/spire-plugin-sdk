@@ -14,7 +14,7 @@ service UpstreamAuthority {
     // Implementation note:
     // The stream should be kept open in the face of transient errors
     // encountered while tracking changes to the upstream X.509 roots as SPIRE
-    // core will not reopen a closed stream until the next X.509 CA rotation.
+    // server will not reopen a closed stream until the next X.509 CA rotation.
     rpc MintX509CA(MintX509CARequest) returns (stream MintX509CAResponse);
 
     // Publishes a JWT signing key upstream and responds with the upstream JWT
@@ -27,36 +27,36 @@ service UpstreamAuthority {
     // Implementation note:
     // The stream should be kept open in the face of transient errors
     // encountered while tracking changes to the upstream JWT keys as SPIRE
-    // core will not reopen a closed stream until the next JWT key rotation.
+    // server will not reopen a closed stream until the next JWT key rotation.
     rpc PublishJWTKey(PublishJWTKeyRequest) returns (stream PublishJWTKeyResponse);
 }
 
 message MintX509CARequest {
-    // Certificate signing request (PKCS#10)
+    // Required. Certificate signing request (PKCS#10)
     bytes csr = 1;
 
-    // Preferred TTL is the TTL preferred by SPIRE server for signed CA. If
+    // Optional. Preferred TTL is the TTL preferred by SPIRE Server for signed CA. If
     // zero, the plugin should determine its own TTL value. Plugins are free to
     // ignore this and use their own policies around TTLs.
     int32 preferred_ttl = 2;
 }
 
 message MintX509CAResponse {
-    // Contains ASN.1 encoded certificates representing the X.509 CA along with
-    // any intermediates necessary to chain back to a certificate present in
-    // the upstream_x509_roots.
+    // Required on the first response. Contains ASN.1 encoded certificates
+    // representing the X.509 CA along with any intermediates necessary to
+    // chain back to a certificate present in the upstream_x509_roots.
     repeated spire.plugin.types.X509Certificate x509_ca_chain = 1;
 
-    // The trusted X.509 root authorities for the upstream authority
+    // Required. The trusted X.509 root authorities for the upstream authority
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 2;
 }
 
 message PublishJWTKeyRequest {
-    // The JWT signing key to publish upstream.
+    // Required. The JWT signing key to publish upstream.
     spire.plugin.types.JWTKey jwt_key = 1;
 }
 
 message PublishJWTKeyResponse {
-    // The upstream JWT signing keys.
+    // Required. The upstream JWT signing keys.
     repeated spire.plugin.types.JWTKey upstream_jwt_keys = 1;
 }
