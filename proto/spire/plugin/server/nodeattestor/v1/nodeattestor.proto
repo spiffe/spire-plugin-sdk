@@ -29,7 +29,7 @@ message AttestRequest {
 
         // Required in subsequent requests. The response to a plugin issued
         // challenge. See the Attest RPC for details.
-        bytes response = 2;
+        bytes challenge_response = 2;
     }
 }
 
@@ -39,15 +39,15 @@ message AttestResponse {
         // agent. See the Attest RPC for details.
         bytes challenge = 1;
 
-        // Required as the last response. The attestation result. See the
-        // Attest RPC for details.
-        Result result = 2;
+        // Required as the last response. The agent attributes resulting from
+        // the attestation. See the Attest RPC for details.
+        AgentAttributes agent_attributes = 2;
     }
 }
 
 message AgentAttributes {
     // The ID to assign to the agent.
-    string agent_id = 1;
+    string spiffe_id = 1;
 
     // Optional. Selectors values to ascribe to the agent. The type of the
     // selectors will be inferred from the plugin name.
