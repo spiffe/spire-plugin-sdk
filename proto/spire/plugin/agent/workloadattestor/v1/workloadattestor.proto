@@ -1,30 +1,24 @@
-/** Environment specific plugin to attest a workloads “selector”
-data. a*/
-
 syntax = "proto3";
-package spire.agent.workloadattestor;
-option go_package = "github.com/spiffe/spire/proto/spire/agent/workloadattestor";
+package spire.plugin.agent.workloadattestor.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1";
 
-import "spire/common/common.proto";
-import "spire/common/plugin/plugin.proto";
+service WorkloadAttestor {
+    // Attests the specified workload process. If the process is not one the
+    // attestor is in a position to attest (e.g. k8s attestor attesting a
+    // non-k8s workload), the call will succeed but return no selectors. If the
+    // process is one the attestor is in a position to attest, but the attestor
+    // fails to gather all selectors related to that workload, the call will
+    // fail. Otherwise the attestor will return one or more workload selectors.
+    rpc Attest(AttestRequest) returns (AttestResponse);
+}
 
-/** Represents the workload PID.*/
 message AttestRequest {
-    /** Workload PID */
+    // Required. The process ID of the workload to attest.
     int32 pid = 1;
 }
 
-/** Represents a list of selectors resolved for a given PID. */
 message AttestResponse {
-    /** List of selectors */
-    repeated spire.common.Selector selectors = 1;
-}
-
-service WorkloadAttestor {
-    /** Returns a list of selectors resolved for a given PID */
-    rpc Attest(AttestRequest) returns (AttestResponse);
-    /** Applies the plugin configuration and returns configuration errors */
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    /** Returns the version and related metadata of the plugin */
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
+    // Optional. Selector values related to the attested workload. The type
+    // of the selector is inferred from the plugin name.
+    repeated string selector_values = 1;
 }
