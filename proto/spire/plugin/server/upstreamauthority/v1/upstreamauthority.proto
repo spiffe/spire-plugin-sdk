@@ -9,26 +9,26 @@ service UpstreamAuthority {
     // Mints an X.509 CA and responds with the signed X.509 CA certificate
     // chain and upstream X.509 roots. If supported by the implementation,
     // subsequent responses on the stream contain upstream X.509 root updates,
-    // otherwise the RPC is completed after sending the initial response.
+    // otherwise the stream is closed after the initial response.
     //
     // Implementation note:
     // The stream should be kept open in the face of transient errors
     // encountered while tracking changes to the upstream X.509 roots as SPIRE
-    // server will not reopen a closed stream until the next X.509 CA rotation.
-    rpc MintX509CA(MintX509CARequest) returns (stream MintX509CAResponse);
+    // Server will not reopen a closed stream until the next X.509 CA rotation.
+    rpc MintX509CAAndSubscribe(MintX509CARequest) returns (stream MintX509CAResponse);
 
     // Publishes a JWT signing key upstream and responds with the upstream JWT
     // keys. If supported by the implementation, subsequent responses on the
-    // stream contain upstream JWT key updates, otherwise the RPC is completed
-    // after sending the initial response.
+    // stream contain upstream JWT key updates, otherwise the stream is closed
+    // after the initial response.
     //
     // This RPC is optional and will return NotImplemented if unsupported.
     //
     // Implementation note:
     // The stream should be kept open in the face of transient errors
     // encountered while tracking changes to the upstream JWT keys as SPIRE
-    // server will not reopen a closed stream until the next JWT key rotation.
-    rpc PublishJWTKey(PublishJWTKeyRequest) returns (stream PublishJWTKeyResponse);
+    // Server will not reopen a closed stream until the next JWT key rotation.
+    rpc PublishJWTKeyAndSubscribe(PublishJWTKeyRequest) returns (stream PublishJWTKeyResponse);
 }
 
 message MintX509CARequest {
@@ -44,10 +44,11 @@ message MintX509CARequest {
 message MintX509CAResponse {
     // Required on the first response. Contains ASN.1 encoded certificates
     // representing the X.509 CA along with any intermediates necessary to
-    // chain back to a certificate present in the upstream_x509_roots.
+    // chain back to a certificate present in the upstream_x509_roots. The
+    // first certificate in the chain is the newly minted X509 CA certificate.
     repeated spire.plugin.types.X509Certificate x509_ca_chain = 1;
 
-    // Required. The trusted X.509 root authorities for the upstream authority
+    // Required. The trusted X.509 root authorities for the upstream authority.
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 2;
 }
 
