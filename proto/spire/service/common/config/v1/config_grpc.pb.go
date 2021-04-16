@@ -18,6 +18,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ConfigClient interface {
+	// Configure is called by SPIRE to configure the plugin with the plugin
+	// specific configuration data and a set of SPIRE core configuration. It is
+	// currently called when the plugin is first loaded after it has been
+	// initialized. At a future point, it may be called to reconfigure the
+	// plugin during runtime. Implementations should therefore expect that
+	// calls to Configure can happen concurrently with other RPCs againt the
+	// plugin.
 	Configure(ctx context.Context, in *ConfigureRequest, opts ...grpc.CallOption) (*ConfigureResponse, error)
 }
 
@@ -42,6 +49,13 @@ func (c *configClient) Configure(ctx context.Context, in *ConfigureRequest, opts
 // All implementations must embed UnimplementedConfigServer
 // for forward compatibility
 type ConfigServer interface {
+	// Configure is called by SPIRE to configure the plugin with the plugin
+	// specific configuration data and a set of SPIRE core configuration. It is
+	// currently called when the plugin is first loaded after it has been
+	// initialized. At a future point, it may be called to reconfigure the
+	// plugin during runtime. Implementations should therefore expect that
+	// calls to Configure can happen concurrently with other RPCs againt the
+	// plugin.
 	Configure(context.Context, *ConfigureRequest) (*ConfigureResponse, error)
 	mustEmbedUnimplementedConfigServer()
 }
