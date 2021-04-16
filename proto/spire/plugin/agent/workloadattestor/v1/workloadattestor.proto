@@ -2,6 +2,16 @@ syntax = "proto3";
 package spire.plugin.agent.workloadattestor.v1;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1";
 
+service WorkloadAttestor {
+    // Attests the specified workload process. If the process is not one the
+    // attestor is in a position to attest (e.g. k8s attestor attesting a
+    // non-k8s workload), the call will succeed but return no selectors. If the
+    // process is one the attestor is in a position to attest, but the attestor
+    // fails to gather all selectors related to that workload, the call will
+    // fail. Otherwise the attestor will return one or more workload selectors.
+    rpc Attest(AttestRequest) returns (AttestResponse);
+}
+
 message AttestRequest {
     // Required. The process ID of the workload to attest.
     int32 pid = 1;
@@ -11,13 +21,4 @@ message AttestResponse {
     // Optional. Selector values related to the attested workload. The type
     // of the selector is inferred from the plugin name.
     repeated string selector_values = 1;
-}
-
-service WorkloadAttestor {
-    // Attests the specified workload process. If the process is not attestable
-    // (i.e. not a process the attestor knows anything about), INVALID_ARGUMENT
-    // is returned. Otherwise the attestor returns zero or more
-    // selector values, or another status if there is an error attesting the
-    // workload.
-    rpc Attest(AttestRequest) returns (AttestResponse);
 }
