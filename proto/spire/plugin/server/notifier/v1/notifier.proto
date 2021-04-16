@@ -1,23 +1,26 @@
 // A Notifier plugin reacts to various server related events
 
 syntax = "proto3";
-package spire.server.notifier;
-option go_package = "github.com/spiffe/spire/proto/spire/server/notifier";
+package spire.plugin.server.notifier.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/notifier/v1;notifierv1";
 
-import "spire/common/common.proto";
-import "spire/common/plugin/plugin.proto";
+import "spire/plugin/types/bundle.proto";
 
-message BundleLoaded {
-    spire.common.Bundle bundle = 1;
-}
+service Notifier {
+    // Notify notifies the plugin that an event occurred. Errors returned by
+    // the plugin are logged but otherwise ignored.
+    rpc Notify(NotifyRequest) returns (NotifyResponse);
 
-message BundleUpdated {
-    spire.common.Bundle bundle = 1;
+    // NotifyAndAdvise notifies the plugin that an event occurred and waits
+    // for a response. Errors returned by the plugin control SPIRE Server
+    // behavior. See NotifyAndAdviseRequest for per-event details.
+    rpc NotifyAndAdvise(NotifyAndAdviseRequest) returns (NotifyAndAdviseResponse);
 }
 
 message NotifyRequest {
+    // Required. The event the plugin is being notified for.
     oneof event {
-        // BundleUpdated is emitted whenever SPIRE server changes the trust
+        // BundleUpdated is emitted whenever SPIRE Server changes the trust
         // bundle.
         BundleUpdated bundle_updated = 1;
     }
@@ -26,10 +29,16 @@ message NotifyRequest {
 message NotifyResponse {
 }
 
+message BundleLoaded {
+    // Required. The bundle that was loaded.
+    spire.plugin.types.Bundle bundle = 1;
+}
+
 message NotifyAndAdviseRequest {
+    // Required. The event the plugin is being notified for.
     oneof event {
-        // BundleLoaded is emitted on startup after SPIRE server creates/loads
-        // the trust bundle. If an error is returned SPIRE server is shut down.
+        // BundleLoaded is emitted on startup after SPIRE Server creates/loads
+        // the trust bundle. If an error is returned SPIRE Server is shut down.
         BundleLoaded bundle_loaded = 1;
     }
 }
@@ -37,16 +46,7 @@ message NotifyAndAdviseRequest {
 message NotifyAndAdviseResponse {
 }
 
-service Notifier {
-    // Notify notifies the plugin that an event occurred. Errors returned by
-    // the plugin are logged but otherwise ignored.
-    rpc Notify(NotifyRequest) returns (NotifyResponse);
-
-    // NotifyAndAdvise notifies the plugin that an event occurred and waits
-    // for a response. Errors returned by the plugin control SPIRE server
-    // behavior. See NotifyAndAdviseRequest for per-event details.
-    rpc NotifyAndAdvise(NotifyAndAdviseRequest) returns (NotifyAndAdviseResponse);
-
-    rpc Configure(spire.common.plugin.ConfigureRequest) returns (spire.common.plugin.ConfigureResponse);
-    rpc GetPluginInfo(spire.common.plugin.GetPluginInfoRequest) returns (spire.common.plugin.GetPluginInfoResponse);
+message BundleUpdated {
+    // Required. The bundle that was updated.
+    spire.plugin.types.Bundle bundle = 1;
 }
