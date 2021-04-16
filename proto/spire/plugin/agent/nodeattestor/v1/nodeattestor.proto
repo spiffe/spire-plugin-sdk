@@ -3,8 +3,8 @@ package spire.plugin.agent.nodeattestor.v1;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1;nodeattestorv1";
 
 service NodeAttestor {
-    // FetchAttestationData retrieves the attestation payload and optionally
-    // participates in challenge/response attestation mechanics.
+    // AidAttestation facilitates attestation by returning the attestation
+    // payload and participating in attestation challenge/response.
     //
     // The attestation flow is as follows:
     // 1. SPIRE Agent opens up a stream to the plugin via FetchAttestationData.
@@ -24,27 +24,25 @@ service NodeAttestor {
     // Plugins that do not need challenge/response as part of the attestation
     // process may close the stream as soon as they send the attestation
     // payload (step 2).
-    rpc FetchAttestationData(stream FetchAttestationDataRequest) returns (stream FetchAttestationDataResponse);
+    rpc AidAttestation(stream Challenge) returns (stream PayloadOrChallengeResponse);
 }
 
-message FetchAttestationDataRequest {
-    // Required. The challenge issued by the server. See the
-    // FetchAttestationData RPC for details.
+message Challenge {
+    // Required. The challenge issued by SPIRE Server. See the AidAttestation
+    // RPC for details.
     bytes challenge = 1;
 }
 
-message FetchAttestationDataResponse {
-    oneof result {
+message PayloadOrChallengeResponse {
+    oneof data {
         // Required in the first response. This is the attestation payload that
-        // is to be sent to the server. See the FetchAttestationData RPC for
+        // is to be sent to SPIRE Server. See the AidAttestation RPC for
         // details.
         bytes payload = 1;
 
         // Required in subsequent responses. The challenge response to a
-        // challenge issued by the server. See the FetchAttestationData RPC
-        // for details.
+        // challenge issued by SPIRE Server. See the AidAttestation RPC for
+        // details.
         bytes challenge_response = 2;
     }
 }
-
-
