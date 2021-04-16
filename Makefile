@@ -15,15 +15,11 @@ default: generate
 
 help:
 	@echo "$(bold)Usage:$(reset) make $(cyan)<target>$(reset)"
-	@echo "  $(cyan)generate$(reset)                              - generate protocol buffers and plugin interface code"
+	@echo "  $(cyan)generate$(reset)                              - generate gRPC and plugin interface code"
 	@echo "  $(cyan)generate-check$(reset)                        - ensure generated code is up to date"
-	@echo "  $(cyan)protogen$(reset)                              - compile protocol buffers"
-	@echo "  $(cyan)protogen-check$(reset)                        - ensure generated protocol buffers are up to date"
-	@echo "  $(cyan)plugingen$(reset)                             - generate plugin interface code"
-	@echo "  $(cyan)plugingen-check$(reset)                       - ensure generated plugin interface code is up to date"
 	@echo
 	@echo "For verbose output set V=1"
-	@echo "  for example: $(cyan)make V=1 build$(reset)"
+	@echo "  for example: $(cyan)make V=1$(reset)"
 
 # Used to force some rules to run every time
 FORCE: ;
@@ -91,6 +87,7 @@ protoc_version = 3.14.0
 ifeq ($(arch1),aarch64)
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-aarch_64.zip
 else
+protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-$(arch1).zip
 endif
 protoc_dir = $(build_dir)/protoc/$(protoc_version)
 protoc_bin = $(protoc_dir)/bin/protoc
