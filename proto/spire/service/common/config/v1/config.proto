@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package spire.service.common.config.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1;configv1";
+
+service Config {
+    // Configure is called by SPIRE to configure the plugin with the plugin
+    // specific configuration data and a set of SPIRE core configuration. It is
+    // currently called when the plugin is first loaded after it has been
+    // initialized. At a future point, it may be called to reconfigure the
+    // plugin during runtime. Implementations should therefore expect that
+    // calls to Configure can happen concurrently with other RPCs against the
+    // plugin.
+    rpc Configure(ConfigureRequest) returns (ConfigureResponse);
+}
+
+message ConfigureRequest {
+    // Required. Core SPIRE configuration.
+    CoreConfiguration core_configuration = 1;
+
+    // Required. HCL encoded plugin configuration.
+    string hcl_configuration = 2;
+}
+
+message ConfigureResponse {
+}
+
+message CoreConfiguration {
+    // Required. The trust domain name SPIRE is configured with (e.g.
+    // "example.org").
+    string trust_domain = 1;
+}
