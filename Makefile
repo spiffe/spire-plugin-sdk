@@ -29,6 +29,15 @@ FORCE: ;
 ############################################################################
 plugin-protos := \
 	private/proto/test/someplugin.proto \
+	proto/spire/plugin/agent/keymanager/v1/keymanager.proto \
+	proto/spire/plugin/agent/nodeattestor/v1/nodeattestor.proto \
+	proto/spire/plugin/agent/workloadattestor/v1/workloadattestor.proto \
+	proto/spire/plugin/server/keymanager/v1/keymanager.proto \
+	proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto \
+	proto/spire/plugin/server/noderesolver/v1/noderesolver.proto \
+	proto/spire/plugin/server/notifier/v1/notifier.proto \
+	proto/spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto \
+
 
 service-protos := \
 	private/proto/test/someservice.proto \
@@ -40,7 +49,9 @@ grpc-protos := \
 
 protos := \
 	private/proto/test/echo.proto \
-
+	proto/spire/plugin/types/bundle.proto \
+	proto/spire/plugin/types/jwtkey.proto \
+	proto/spire/plugin/types/x509certificate.proto \
 
 ############################################################################
 # OS/ARCH detection

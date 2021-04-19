@@ -23,7 +23,7 @@ type ConfigClient interface {
 	// currently called when the plugin is first loaded after it has been
 	// initialized. At a future point, it may be called to reconfigure the
 	// plugin during runtime. Implementations should therefore expect that
-	// calls to Configure can happen concurrently with other RPCs againt the
+	// calls to Configure can happen concurrently with other RPCs against the
 	// plugin.
 	Configure(ctx context.Context, in *ConfigureRequest, opts ...grpc.CallOption) (*ConfigureResponse, error)
 }
@@ -54,7 +54,7 @@ type ConfigServer interface {
 	// currently called when the plugin is first loaded after it has been
 	// initialized. At a future point, it may be called to reconfigure the
 	// plugin during runtime. Implementations should therefore expect that
-	// calls to Configure can happen concurrently with other RPCs againt the
+	// calls to Configure can happen concurrently with other RPCs against the
 	// plugin.
 	Configure(context.Context, *ConfigureRequest) (*ConfigureResponse, error)
 	mustEmbedUnimplementedConfigServer()

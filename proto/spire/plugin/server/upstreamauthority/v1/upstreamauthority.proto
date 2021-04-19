@@ -2,8 +2,8 @@ syntax = "proto3";
 package spire.plugin.server.upstreamauthority.v1;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/upstreamauthority/v1;upstreamauthorityv1";
 
-import "spire/plugin/types/jwtkey.proto"
-import "spire/plugin/types/x509certificate.proto"
+import "spire/plugin/types/jwtkey.proto";
+import "spire/plugin/types/x509certificate.proto";
 
 service UpstreamAuthority {
     // Mints an X.509 CA and responds with the signed X.509 CA certificate
