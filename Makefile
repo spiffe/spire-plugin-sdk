@@ -40,8 +40,11 @@ plugin-protos := \
 
 
 service-protos := \
-	private/proto/test/someservice.proto \
 	private/proto/test/somehostservice.proto \
+	private/proto/test/someservice.proto \
+	proto/spire/hostservice/common/metrics/v1/metrics.proto \
+	proto/spire/hostservice/server/agentstore/v1/agentstore.proto \
+	proto/spire/hostservice/server/identityprovider/v1/identityprovider.proto \
 	proto/spire/service/common/config/v1/config.proto \
 
 grpc-protos := \

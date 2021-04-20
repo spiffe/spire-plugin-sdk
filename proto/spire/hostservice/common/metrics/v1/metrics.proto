@@ -1,0 +1,85 @@
+syntax = "proto3";
+package spire.hostservice.common.metrics.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/hostservice/common/metrics/v1;metricsv1";
+
+import "google/protobuf/empty.proto";
+
+service Metrics {
+    // Sets a gauge to the specified value with zero or more labels.
+    rpc SetGauge(SetGaugeRequest) returns (google.protobuf.Empty);
+
+    // Emits a key/value pair.
+    rpc EmitKey(EmitKeyRequest) returns (google.protobuf.Empty);
+
+    // Increments a counter by the given value with zero or more labels. The
+    // value should be an accumulation of previous values and should only grow.
+    rpc IncrCounter(IncrCounterRequest) returns (google.protobuf.Empty);
+
+    // Adds a sample of the given value with zero or more labels.
+    rpc AddSample(AddSampleRequest) returns (google.protobuf.Empty);
+
+    // Adds a sample for the elapsed time since the given
+    // timestamp with zero or more labels.
+    rpc MeasureSince(MeasureSinceRequest) returns (google.protobuf.Empty);
+}
+
+message SetGaugeRequest {
+    // Required. The gauge key.
+    repeated string key = 1;
+
+    // Required. The gauge value.
+    float val = 2;
+
+    // Optional. One or more labels for the gauge.
+    repeated Label labels = 3;
+}
+
+message EmitKeyRequest {
+    // Required. The key key.
+    repeated string key = 1;
+
+    // Required. The key value.
+    float val = 2;
+}
+
+message IncrCounterRequest {
+    // Required. The counter key.
+    repeated string key = 1;
+    
+    // Required. The counter value.
+    float val = 2;
+
+    // Optional. One or more labels for the counter.
+    repeated Label labels = 3;
+}
+
+message AddSampleRequest {
+    // Required. The sample key.
+    repeated string key = 1;
+
+    // Required. The sample value.
+    float val = 2;
+
+    // Optional. One or more labels for the sample.
+    repeated Label labels = 3;
+}
+
+message MeasureSinceRequest {
+    // Required. The sample key for the time measurement.
+    repeated string key = 1;
+
+    // Required. Unix time in nanoseconds.
+    int64 time = 2;
+
+    // Optional. One or more labels for the sample.
+    repeated Label labels = 3;
+}
+
+message Label {
+    // Required. The name of the label.
+    string name = 1;
+
+    // Required. The value of the label.
+    string value = 2;
+}
+

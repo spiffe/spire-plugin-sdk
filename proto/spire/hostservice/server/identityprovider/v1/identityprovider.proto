@@ -1,0 +1,32 @@
+syntax = "proto3";
+package spire.hostservice.server.identityprovider.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/hostservice/server/identityprovider/v1;identityproviderv1";
+
+import "spire/plugin/types/bundle.proto";
+
+service IdentityProvider {
+    // Fetches an X.509 identity (i.e. X509-SVID) that the caller can use to
+    // authenticate with other members of the trust domain. Also returns the
+    // bundle required to authenticate other identities from the trust domain.
+    rpc FetchX509Identity(FetchX509IdentityRequest) returns (FetchX509IdentityResponse);
+}
+
+message FetchX509IdentityRequest {
+}
+
+message FetchX509IdentityResponse {
+    // Required. The X.509 identity.
+    X509Identity identity = 1;
+
+    // Required. The bundle of the trust domain.
+    spire.plugin.types.Bundle bundle = 2;
+}
+
+message X509Identity {
+    // Required. The certificate chain (ASN.1 encoded). The first certificate
+    // in the chain is the leaf (e.g. the X509-SVID).
+    repeated bytes cert_chain = 1;
+
+    // Required. The private key for the identity (PKCS #8 encoded).
+    bytes private_key = 2;
+}
