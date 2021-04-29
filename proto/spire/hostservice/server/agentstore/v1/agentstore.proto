@@ -1,0 +1,26 @@
+syntax = "proto3";
+package spire.hostservice.server.agentstore.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/hostservice/server/agentstore/v1;agentstorev1";
+
+service AgentStore {
+    // Gets the information associated with the given agent ID. If the given
+    // agent is not attested, NOT_FOUND is returned. This RPC is currently
+    // only used by server-side NodeAttestor plugins look up existing
+    // agents to enforce TOFU.
+    rpc GetAgentInfo(GetAgentInfoRequest) returns (GetAgentInfoResponse);
+}
+
+message GetAgentInfoRequest {
+    // Required. The ID of the agent to get information for.
+    string agent_id = 1;
+}
+
+message GetAgentInfoResponse {
+    // Required. The agent information.
+    AgentInfo info = 1; 
+}
+
+message AgentInfo {
+    // Required. The ID of the agent.
+    string agent_id = 1;
+}
