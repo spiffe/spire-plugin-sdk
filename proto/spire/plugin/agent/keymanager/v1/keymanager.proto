@@ -124,9 +124,8 @@ enum KeyType {
     UNSPECIFIED_KEY_TYPE = 0;
     EC_P256 = 1;
     EC_P384 = 2;
-    RSA_1024 = 3;
-    RSA_2048 = 4;
-    RSA_4096 = 5;
+    RSA_2048 = 3;
+    RSA_4096 = 4;
 }
 
 enum HashAlgorithm {
