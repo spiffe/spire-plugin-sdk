@@ -44,13 +44,17 @@ type Plugin struct {
 	// TODO: Remove if this plugin does not require configuration
 	configMtx sync.RWMutex
 	config    *Config
+
+	// The logger received from the framework via the SetLogger method
+	// TODO: Remove if this plugin does not need the logger.
+	logger hclog.Logger
 }
 
 // SetLogger is called by the framework when the plugin is loaded and provides
 // the plugin with a logger wired up to SPIRE's logging facilities.
 // TODO: Remove if the plugin does not need the logger.
 func (p *Plugin) SetLogger(logger hclog.Logger) {
-	// TODO: Store the logger for later use
+	p.logger = logger
 }
 
 // BrokerHostServices is called by the framework when the plugin is loaded to
@@ -122,7 +126,7 @@ func (p *Plugin) SignData(ctx context.Context, req *keymanagerv1.SignDataRequest
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, itt may be invoked to reconfigure the plugin.
+// first loaded. In the future, tt may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
