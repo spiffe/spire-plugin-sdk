@@ -51,6 +51,13 @@ func ServeInBackground(t *testing.T, config Config) {
 	wg := new(sync.WaitGroup)
 	t.Cleanup(wg.Wait)
 
+	switch {
+	case config.PluginServer == nil:
+		t.Fatal("PluginServer is required")
+	case config.PluginClient == nil:
+		t.Fatal("PluginClient is required")
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	closeCh := make(chan struct{})
 
