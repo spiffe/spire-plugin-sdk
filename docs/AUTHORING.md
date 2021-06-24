@@ -23,7 +23,7 @@ plugins {
 ```
 
 In order to receive this configuration data, as well as other core
-configurables, a plugin implements the [Config](proto/spire/service/common/config) service:
+configurables, a plugin implements the [Config](/proto/spire/service/common/config) service:
 
 Implementing this service is **optional**; plugins which do not require
 additional configuration are free to not implement it. However, if SPIRE
@@ -32,7 +32,7 @@ a configuration service, SPIRE will fail to load the plugin.
 
 To implement this service
 
-- Embed the UnimplementedConfigServer struct:
+- Embed the `UnimplementedConfigServer` struct:
 
 ```
 import configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
@@ -44,7 +44,7 @@ type Plugin struct {
 }
 ```
 
-- Implement the Configure RPC:
+- Implement the `Configure` RPC:
 
 ```
 type Config struct {
@@ -112,9 +112,9 @@ The passed in logger can be stored by the plugin for later use.
 
 ## Consuming Host Services
 
-Plugins obtain Host Services clients by implementing the BrokerHostServices
-function on the NeedsHostServices interface. The function is passed a broker
-that can be used to obtain the host service client.
+Plugins obtain Host Services clients by implementing the `BrokerHostServices`
+function on the `pluginsdk.NeedsHostServices` interface. The function is passed
+a broker that can be used to obtain the host service client.
 
 For example:
 

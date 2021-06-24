@@ -7,7 +7,7 @@ SDK interfaces.
 
 ### Configuration
 
-Pre-SDK plugin interfaces each contained their own Configure RPC. This RPC has
+Pre-SDK plugin interfaces each contained their own `Configure` RPC. This RPC has
 been replaced with a specific, versioned
 [Config](/proto/spire/service/common/config) service.
 
@@ -15,7 +15,7 @@ See the relevant section in [AUTHORING](AUTHORING.md) for implementation guidanc
 
 ### GetPluginInfo
 
-Pre-SDK plugin interfaces each included an unused GetPluginInfo RPC. This
+Pre-SDK plugin interfaces each included an unused `GetPluginInfo` RPC. This
 RPC does not exist in the SDK plugin interfaces and can be removed.
 
 ### Errors
@@ -34,10 +34,10 @@ return status.Error(codes.InvalidArgument, "blah")
 
 ### Consuming Host Services
 
-Plugin obtain Host Services clients by implementing the BrokerHostServices
-function on the NeedsHostServices interface. The function is passed a broker
-that can be used to obtain the host service client. The broker interface
-has changed slightly:
+Plugins obtain Host Services clients by implementing the `BrokerHostServices`
+function on the `pluginsdk.NeedsHostServices` interface. The function is passed
+a broker that can be used to obtain the host service client. The broker
+interface has changed slightly:
 
 A pre-SDK implementation might look like this:
 
@@ -77,7 +77,7 @@ func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 
 As before, plugin authors can decide if the lack of support for a specific host
 service is an error or not. If the plugin returns an error from
-BrokerHostServices, the plugin will fail to load.
+`BrokerHostServices`, the plugin will fail to load.
 
 ### Common Types
 
@@ -114,12 +114,12 @@ is inferred by SPIRE from the name of the plugin.
 RSA 1024 bit key support has been dropped.
 
 Keys managed by the KeyManager now have a required `fingerprint` component. The
-fingerprint is returned when keys are created or retrieved and by the
-`SignData` RPC. It is used by SPIRE to detect if the key used in a signing
-operation has changed from underneath SPIRE.
+fingerprint is returned when keys are created or retrieved by the `SignData`
+RPC. It is used by SPIRE to detect if the key used in a signing operation has
+changed from underneath SPIRE.
 
-The PSSOptions have been moved inside of the SignDataRequest to couple them
-to that operation.
+The `PSSOptions` message has been moved inside of the `SignDataRequest` message
+to couple it to that operation.
 
 ### Server NodeAttestor
 

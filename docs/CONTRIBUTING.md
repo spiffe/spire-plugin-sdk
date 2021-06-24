@@ -45,7 +45,7 @@ repository. This will update `go.mod` in SPIRE to use the latest pseudo version
 with that commit.
 
 When cutting a SPIRE release, this repository is tagged with the SPIRE
-release version. The release branch in SPIRE is be updated to depend explicitly
+release version. The release branch in SPIRE is updated to depend explicitly
 on that version (i.e. `go get github.com/spiffe/spire-plugin-sdk@<version>`).
 
 Relying on a pseudo versions means that this repository only needs tags
