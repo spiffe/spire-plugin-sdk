@@ -52,4 +52,11 @@ message AgentAttributes {
     // Optional. Selectors values to ascribe to the agent. The type of the
     // selectors will be inferred from the plugin name.
     repeated string selector_values = 2;
+
+    // Optional. If can_reattest is true, then this attestation method
+    // allows an agent to attest multiple times with the same
+    // attestation payload without operator intervention.
+    // This also allows the server to clear out old entries automatically
+    // since they can be easily recreated.
+    bool can_reattest = 3;
 }
