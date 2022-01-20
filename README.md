@@ -27,6 +27,7 @@ There are three types of interfaces:
 | ------ | -------- | ----------- | ----------- |
 | KeyManager       | [v1](proto/spire/plugin/agent/keymanager/v1/keymanager.proto)                | Manages private keys and performs signing operations.  | [link](templates/agent/keymanager)         |
 | NodeAttestor     | [v1](proto/spire/plugin/agent/nodeattestor/v1/nodeattestor.proto)            | Performs the agent side of the node attestation flow.  | [link](templates/agent/nodeattestor)       |
+| SVIDStore        | [v1](proto/spire/plugin/agent/svidstore/v1/svidstore.proto)                  | Stores workload X509-SVIDs to arbitrary destinations.  | [link](templates/agent/svidstore)          |
 | WorkloadAttestor | [v1](proto/spire/plugin/agent/workloadattestor/v1/workloadattestor.proto)    | Attests workloads and provides selectors.              | [link](templates/agent/workloadattestor)   |
 
 ### Server
