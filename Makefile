@@ -1,5 +1,11 @@
 DIR := ${CURDIR}
 
+# There is no reason GOROOT should be set anymore. Unset it so it doesn't mess
+# with our go toolchain detection/usage.
+ifneq ($(GOROOT),)
+    export GOROOT=
+endif
+
 E:=@
 ifeq ($(V),1)
 	E=
