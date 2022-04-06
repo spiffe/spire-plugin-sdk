@@ -127,6 +127,8 @@ protoc_gen_go_spire_base_dir := $(build_dir)/protoc-gen-go-spire
 protoc_gen_go_spire_dir := $(protoc_gen_go_spire_base_dir)/$(protoc_gen_go_spire_version)-go$(go_version)
 protoc_gen_go_spire_bin := $(protoc_gen_go_spire_dir)/protoc-gen-go-spire
 
+git_dirty := $(shell git --no-pager status -s)
+
 #############################################################################
 # Utility functions and targets
 #############################################################################
@@ -135,7 +137,7 @@ protoc_gen_go_spire_bin := $(protoc_gen_go_spire_dir)/protoc-gen-go-spire
 
 git-clean-check:
 ifneq ($(git_dirty),)
-	git diff
+	git --no-pager diff
 	@echo "Git repository is dirty!"
 	@false
 else
