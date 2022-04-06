@@ -193,7 +193,19 @@ type AgentAttributes struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The ID to assign to the agent.
+	// The ID to assign to the agent. Each agent in SPIRE must have a unique ID.
+	// The convention for agent IDs is as follows:
+	//
+	// spiffe://<trust-domain>/spire/agent/<plugin-name>/<unique-suffix>
+	//
+	// with:
+	// <trust-domain>  = the trust domain that the server belongs to
+	// <plugin-name>   = the name of the plugin which attested the agent
+	// <unique-suffix> = a unique suffix for this agent
+	//
+	// As of SPIRE 1.2.1, a warning is emitted when plugins return agent IDs
+	// that do not follow the convention. Future SPIRE releases will enforce
+	// the convention (see SPIRE issue #2712).
 	SpiffeId string `protobuf:"bytes,1,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
 	// Optional. Selectors values to ascribe to the agent. The type of the
 	// selectors will be inferred from the plugin name.
