@@ -83,6 +83,8 @@ ifeq ($(arch1),x86_64)
 arch2=amd64
 else ifeq ($(arch1),aarch64)
 arch2=arm64
+else ifeq ($(arch1),arm64)
+arch2=arm64
 else
 $(error unsupported ARCH: $(arch1))
 endif
@@ -104,8 +106,8 @@ golangci_lint_version = v1.27.0
 golangci_lint_dir = $(build_dir)/golangci_lint/$(golangci_lint_version)
 golangci_lint_bin = $(golangci_lint_dir)/golangci-lint
 
-protoc_version = 3.14.0
-ifeq ($(arch1),aarch64)
+protoc_version = 3.20.1
+ifeq ($(arch2),arm64)
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-aarch_64.zip
 else
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-$(arch1).zip
