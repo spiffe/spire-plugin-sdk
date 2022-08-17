@@ -18,15 +18,44 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CredentialComposerClient interface {
-	// Composes the SPIRE Server X509 CA.
+	// Composes the SPIRE Server X509 CA. The server will supply the default
+	// attributes it will apply to the CA. If the plugin returns an empty
+	// response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If a CA is
+	// produced that does not conform to the SPIFFE X509-SVID specification for
+	// signing certificates, it will be rejected.
 	ComposeServerX509CA(ctx context.Context, in *ComposeServerX509CARequest, opts ...grpc.CallOption) (*ComposeServerX509CAResponse, error)
-	// Composes the SPIRE Server X509-SVID.
+	// Composes the SPIRE Server X509-SVID. The server will supply the default
+	// attributes it will apply to the server X509-SVID. If the plugin returns
+	// an empty response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If an X509-SVID
+	// is produced that does not conform to the SPIFFE X509-SVID specification
+	// for leaf certificates, it will be rejected. This function cannot be used
+	// to modify the SPIFFE ID of the X509-SVID.
 	ComposeServerX509SVID(ctx context.Context, in *ComposeServerX509SVIDRequest, opts ...grpc.CallOption) (*ComposeServerX509SVIDResponse, error)
-	// Composes the SPIRE Agent X509-SVID.
+	// Composes the SPIRE Agent X509-SVID. The server will supply the default
+	// attributes it will apply to the agent X509-SVID. If the plugin returns
+	// an empty response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If an X509-SVID
+	// is produced that does not conform to the SPIFFE X509-SVID specification
+	// for leaf certificates, it will be rejected. This function cannot be used
+	// to modify the SPIFFE ID of the X509-SVID.
 	ComposeAgentX509SVID(ctx context.Context, in *ComposeAgentX509SVIDRequest, opts ...grpc.CallOption) (*ComposeAgentX509SVIDResponse, error)
-	// Composes workload X509-SVIDs.
+	// Composes workload X509-SVIDs. The server will supply the default
+	// attributes it will apply to the workload X509-SVID. If the plugin
+	// returns an empty response or NOT_IMPLEMENTED, the server will apply the
+	// default attributes. Otherwise the returned attributes are used. If an
+	// X509-SVID is produced that does not conform to the SPIFFE X509-SVID
+	// specification for leaf certificates, it will be rejected. This function
+	// cannot be used to modify the SPIFFE ID of the X509-SVID.
 	ComposeWorkloadX509SVID(ctx context.Context, in *ComposeWorkloadX509SVIDRequest, opts ...grpc.CallOption) (*ComposeWorkloadX509SVIDResponse, error)
-	// Composes workload JWT-SVIDs.
+	// Composes workload JWT-SVIDs. The server will supply the default
+	// attributes it will apply to the workload JWT-SVID. If the plugin
+	// returns an empty response or NOT_IMPLEMENTED, the server will apply the
+	// default attributes. Otherwise the returned attributes are used. If a
+	// JWT-SVID is produced that does not conform to the SPIFFE JWT-SVID
+	// specification, it will be rejected. This function cannot be used to
+	// modify the SPIFFE ID of the JWT-SVID.
 	ComposeWorkloadJWTSVID(ctx context.Context, in *ComposeWorkloadJWTSVIDRequest, opts ...grpc.CallOption) (*ComposeWorkloadJWTSVIDResponse, error)
 }
 
@@ -87,15 +116,44 @@ func (c *credentialComposerClient) ComposeWorkloadJWTSVID(ctx context.Context, i
 // All implementations must embed UnimplementedCredentialComposerServer
 // for forward compatibility
 type CredentialComposerServer interface {
-	// Composes the SPIRE Server X509 CA.
+	// Composes the SPIRE Server X509 CA. The server will supply the default
+	// attributes it will apply to the CA. If the plugin returns an empty
+	// response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If a CA is
+	// produced that does not conform to the SPIFFE X509-SVID specification for
+	// signing certificates, it will be rejected.
 	ComposeServerX509CA(context.Context, *ComposeServerX509CARequest) (*ComposeServerX509CAResponse, error)
-	// Composes the SPIRE Server X509-SVID.
+	// Composes the SPIRE Server X509-SVID. The server will supply the default
+	// attributes it will apply to the server X509-SVID. If the plugin returns
+	// an empty response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If an X509-SVID
+	// is produced that does not conform to the SPIFFE X509-SVID specification
+	// for leaf certificates, it will be rejected. This function cannot be used
+	// to modify the SPIFFE ID of the X509-SVID.
 	ComposeServerX509SVID(context.Context, *ComposeServerX509SVIDRequest) (*ComposeServerX509SVIDResponse, error)
-	// Composes the SPIRE Agent X509-SVID.
+	// Composes the SPIRE Agent X509-SVID. The server will supply the default
+	// attributes it will apply to the agent X509-SVID. If the plugin returns
+	// an empty response or NOT_IMPLEMENTED, the server will apply the default
+	// attributes. Otherwise the returned attributes are used. If an X509-SVID
+	// is produced that does not conform to the SPIFFE X509-SVID specification
+	// for leaf certificates, it will be rejected. This function cannot be used
+	// to modify the SPIFFE ID of the X509-SVID.
 	ComposeAgentX509SVID(context.Context, *ComposeAgentX509SVIDRequest) (*ComposeAgentX509SVIDResponse, error)
-	// Composes workload X509-SVIDs.
+	// Composes workload X509-SVIDs. The server will supply the default
+	// attributes it will apply to the workload X509-SVID. If the plugin
+	// returns an empty response or NOT_IMPLEMENTED, the server will apply the
+	// default attributes. Otherwise the returned attributes are used. If an
+	// X509-SVID is produced that does not conform to the SPIFFE X509-SVID
+	// specification for leaf certificates, it will be rejected. This function
+	// cannot be used to modify the SPIFFE ID of the X509-SVID.
 	ComposeWorkloadX509SVID(context.Context, *ComposeWorkloadX509SVIDRequest) (*ComposeWorkloadX509SVIDResponse, error)
-	// Composes workload JWT-SVIDs.
+	// Composes workload JWT-SVIDs. The server will supply the default
+	// attributes it will apply to the workload JWT-SVID. If the plugin
+	// returns an empty response or NOT_IMPLEMENTED, the server will apply the
+	// default attributes. Otherwise the returned attributes are used. If a
+	// JWT-SVID is produced that does not conform to the SPIFFE JWT-SVID
+	// specification, it will be rejected. This function cannot be used to
+	// modify the SPIFFE ID of the JWT-SVID.
 	ComposeWorkloadJWTSVID(context.Context, *ComposeWorkloadJWTSVIDRequest) (*ComposeWorkloadJWTSVIDResponse, error)
 	mustEmbedUnimplementedCredentialComposerServer()
 }

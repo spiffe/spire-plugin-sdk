@@ -610,7 +610,8 @@ type X509SVIDAttributes struct {
 	// Zero or more DNS SANs to apply to the X509-SVID.
 	DnsSans []string `protobuf:"bytes,2,rep,name=dns_sans,json=dnsSans,proto3" json:"dns_sans,omitempty"`
 	// Zero or more extensions to apply to the X509-SVID . These will override
-	// any extensions otherwise added by the other fields.
+	// any extensions otherwise added by the other fields. This field cannot
+	// be used to change the URI SAN of the X509-SVID (i.e. the SPIFFE ID).
 	ExtraExtensions []*X509Extension `protobuf:"bytes,3,rep,name=extra_extensions,json=extraExtensions,proto3" json:"extra_extensions,omitempty"`
 }
 
