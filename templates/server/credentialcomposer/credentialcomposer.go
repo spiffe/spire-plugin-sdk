@@ -31,7 +31,7 @@ var (
 type Config struct {
 }
 
-// Plugin implements the KeyManager plugin
+// Plugin implements the CredentialComposer plugin
 type Plugin struct {
 	// UnimplementedCredentialComposerServer is embedded to satisfy gRPC
 	credentialcomposerv1.UnimplementedCredentialComposerServer
@@ -64,21 +64,6 @@ func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 	// TODO: Use the broker to obtain host service clients
 	return nil
 }
-
-// GenerateKey implements the KeyManager GenerateKey RPC
-//func (p *Plugin) GenerateKey(ctx context.Context, req *keymanagerv1.GenerateKeyRequest) (*keymanagerv1.GenerateKeyResponse, error) {
-//	config, err := p.getConfig()
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// TODO: Implement the RPC behavior. The following line silences compiler
-//	// warnings and can be removed once the configuration is referenced by the
-//	// implementation.
-//	config = config
-//
-//	return nil, status.Error(codes.Unimplemented, "not implemented")
-//}
 
 func (p *Plugin) ComposeServerX509CA(ctx context.Context, req *credentialcomposerv1.ComposeServerX509CARequest) (*credentialcomposerv1.ComposeServerX509CAResponse, error) {
 	config, err := p.getConfig()
