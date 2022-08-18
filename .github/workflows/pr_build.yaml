@@ -46,6 +46,7 @@ jobs:
         run: make tidy-check
       - name: Generate check
         run: make generate-check
+
   unit-test:
     runs-on: ubuntu-18.04
     needs: cache-deps
@@ -63,4 +64,14 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Run unit tests
         run: make test
+
+  # This job is just here to make sure that the other jobs have completed
+  # and is used as a single job to block PR merge from. GH doesn't have a
+  # way to say "all jobs from this action", which would be ideal.
+  success:
+    needs: [unit-test lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Shout it out
+        run: echo SUCCESS
 
