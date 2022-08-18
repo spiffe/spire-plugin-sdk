@@ -23,6 +23,7 @@ help:
 	@echo "$(bold)Usage:$(reset) make $(cyan)<target>$(reset)"
 	@echo "  $(cyan)generate$(reset)                              - generate gRPC and plugin interface code"
 	@echo "  $(cyan)generate-check$(reset)                        - ensure generated code is up to date"
+	@echo "  $(cyan)test$(reset)                                  - run unit tests"
 	@echo
 	@echo "For verbose output set V=1"
 	@echo "  for example: $(cyan)make V=1$(reset)"
@@ -103,10 +104,6 @@ go_bin_dir := $(go_dir)/bin
 go_url = https://storage.googleapis.com/golang/go$(go_version).$(os1)-$(arch2).tar.gz
 go_path := PATH="$(go_bin_dir):$(PATH)"
 
-golangci_lint_version = v1.27.0
-golangci_lint_dir = $(build_dir)/golangci_lint/$(golangci_lint_version)
-golangci_lint_bin = $(golangci_lint_dir)/golangci-lint
-
 protoc_version = 3.20.1
 ifeq ($(arch2),arm64)
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-aarch_64.zip
@@ -146,6 +143,24 @@ ifneq ($(git_dirty),)
 else
 	@echo "Git repository is clean."
 endif
+
+#############################################################################
+# Code cleanliness
+#############################################################################
+
+.PHONY: tidy tidy-check lint lint-code
+tidy: | go-check
+	$(E)$(go_path) go mod tidy
+	$(E)cd proto/spire; $(go_path) go mod tidy
+
+tidy-check:
+ifneq ($(git_dirty),)
+	$(error tidy-check must be invoked on a clean repository)
+endif
+	@echo "Running go tidy..."
+	$(E)$(MAKE) tidy
+	@echo "Ensuring git repository is clean..."
+	$(E)$(MAKE) git-clean-check
 
 #############################################################################
 # Test Targets
