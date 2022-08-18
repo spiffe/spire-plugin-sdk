@@ -69,8 +69,8 @@ jobs:
   # and is used as a single job to block PR merge from. GH doesn't have a
   # way to say "all jobs from this action", which would be ideal.
   success:
-    needs: [unit-test lint]
-    runs-on: ubuntu-latest
+    needs: [unit-test, lint]
+    runs-on: ubuntu-18.04
     steps:
       - name: Shout it out
         run: echo SUCCESS
