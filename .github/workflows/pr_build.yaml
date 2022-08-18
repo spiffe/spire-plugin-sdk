@@ -8,28 +8,9 @@ permissions:
   contents: read
 
 jobs:
-  cache-deps:
-    name: cache-deps (linux)
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
-      - name: Setup dep cache
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-      - name: Pull go deps
-        run: go mod download
-
   lint:
     name: lint
     runs-on: ubuntu-18.04
-    needs: cache-deps
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,11 +18,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Load cached deps
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Tidy check
         run: make tidy-check
       - name: Generate check
@@ -49,7 +25,6 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-18.04
-    needs: cache-deps
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -57,11 +32,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
-      - name: Load cached deps
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
       - name: Run unit tests
         run: make test
 
