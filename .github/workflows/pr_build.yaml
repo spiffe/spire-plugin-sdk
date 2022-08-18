@@ -1,0 +1,47 @@
+name: PR Build
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+env:
+  GO_VERSION: 1.14
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Tidy check
+        run: make tidy-check
+      - name: Generate check
+        run: make generate-check
+
+  unit-test:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Run unit tests
+        run: make test
+
+  # This job is just here to make sure that the other jobs have completed
+  # and is used as a single job to block PR merge from. GH doesn't have a
+  # way to say "all jobs from this action", which would be ideal.
+  success:
+    needs: [unit-test, lint]
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Shout it out
+        run: echo SUCCESS
+
