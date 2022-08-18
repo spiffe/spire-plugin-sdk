@@ -144,6 +144,24 @@ else
 endif
 
 #############################################################################
+# Code cleanliness
+#############################################################################
+
+.PHONY: tidy tidy-check lint lint-code
+tidy: | go-check
+	$(E)$(go_path) go mod tidy
+	$(E)cd proto/spire; $(go_path) go mod tidy
+
+tidy-check:
+ifneq ($(git_dirty),)
+	$(error tidy-check must be invoked on a clean repository)
+endif
+	@echo "Running go tidy..."
+	$(E)$(MAKE) tidy
+	@echo "Ensuring git repository is clean..."
+	$(E)$(MAKE) git-clean-check
+
+#############################################################################
 # Test Targets
 #############################################################################
 
