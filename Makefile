@@ -23,6 +23,7 @@ help:
 	@echo "$(bold)Usage:$(reset) make $(cyan)<target>$(reset)"
 	@echo "  $(cyan)generate$(reset)                              - generate gRPC and plugin interface code"
 	@echo "  $(cyan)generate-check$(reset)                        - ensure generated code is up to date"
+	@echo "  $(cyan)test$(reset)                                  - run unit tests"
 	@echo
 	@echo "For verbose output set V=1"
 	@echo "  for example: $(cyan)make V=1$(reset)"
@@ -101,10 +102,6 @@ go_dir := $(build_dir)/go/$(go_version)
 go_bin_dir := $(go_dir)/bin
 go_url = https://storage.googleapis.com/golang/go$(go_version).$(os1)-$(arch2).tar.gz
 go_path := PATH="$(go_bin_dir):$(PATH)"
-
-golangci_lint_version = v1.27.0
-golangci_lint_dir = $(build_dir)/golangci_lint/$(golangci_lint_version)
-golangci_lint_bin = $(golangci_lint_dir)/golangci-lint
 
 protoc_version = 3.20.1
 ifeq ($(arch2),arm64)
