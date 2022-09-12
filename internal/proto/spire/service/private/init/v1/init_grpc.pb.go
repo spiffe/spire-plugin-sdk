@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InitClient interface {
 	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitResponse, error)
+	Deinit(ctx context.Context, in *DeinitRequest, opts ...grpc.CallOption) (*DeinitResponse, error)
 }
 
 type initClient struct {
@@ -38,11 +39,21 @@ func (c *initClient) Init(ctx context.Context, in *InitRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *initClient) Deinit(ctx context.Context, in *DeinitRequest, opts ...grpc.CallOption) (*DeinitResponse, error) {
+	out := new(DeinitResponse)
+	err := c.cc.Invoke(ctx, "/spire.service.private.init.v1.Init/Deinit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InitServer is the server API for Init service.
 // All implementations must embed UnimplementedInitServer
 // for forward compatibility
 type InitServer interface {
 	Init(context.Context, *InitRequest) (*InitResponse, error)
+	Deinit(context.Context, *DeinitRequest) (*DeinitResponse, error)
 	mustEmbedUnimplementedInitServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedInitServer struct {
 
 func (UnimplementedInitServer) Init(context.Context, *InitRequest) (*InitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Init not implemented")
+}
+func (UnimplementedInitServer) Deinit(context.Context, *DeinitRequest) (*DeinitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Deinit not implemented")
 }
 func (UnimplementedInitServer) mustEmbedUnimplementedInitServer() {}
 
@@ -84,6 +98,24 @@ func _Init_Init_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Init_Deinit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeinitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InitServer).Deinit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/spire.service.private.init.v1.Init/Deinit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InitServer).Deinit(ctx, req.(*DeinitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Init_ServiceDesc is the grpc.ServiceDesc for Init service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var Init_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Init",
 			Handler:    _Init_Init_Handler,
+		},
+		{
+			MethodName: "Deinit",
+			Handler:    _Init_Deinit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

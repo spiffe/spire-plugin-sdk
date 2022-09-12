@@ -131,6 +131,12 @@ func ServeInBackground(t *testing.T, config Config) {
 		t.Fatalf("failed to initialize plugin: %v", err)
 	}
 
+	t.Cleanup(func() {
+		if err := private.Deinit(ctx, conn); err != nil {
+			t.Fatalf("failed to deinitialize plugin: %v", err)
+		}
+	})
+
 	assertInitClient(t, conn, config.PluginClient, grpcServiceNames)
 	for _, serviceClient := range config.ServiceClients {
 		assertInitClient(t, conn, serviceClient, grpcServiceNames)

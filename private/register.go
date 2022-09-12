@@ -2,6 +2,7 @@ package private
 
 import (
 	"context"
+	"io"
 
 	"github.com/hashicorp/go-hclog"
 	initv1 "github.com/spiffe/spire-plugin-sdk/internal/proto/spire/service/private/init/v1"
@@ -75,6 +76,26 @@ func (s *initService) Init(ctx context.Context, req *initv1.InitRequest) (*initv
 	return &initv1.InitResponse{
 		PluginServiceNames: s.names,
 	}, nil
+}
+
+func (s *initService) Deinit(ctx context.Context, req *initv1.DeinitRequest) (*initv1.DeinitResponse, error) {
+	deinitted := map[interface{}]struct{}{}
+	for _, impl := range s.impls {
+		// Deinitialize the implementation. Since the same
+		// implementation might back more than one server, only deinitialize
+		// once.
+		if _, ok := deinitted[impl]; ok {
+			continue
+		}
+		deinitted[impl] = struct{}{}
+
+		if impl, ok := impl.(io.Closer); ok {
+			if err := impl.Close(); err != nil {
+				s.logger.Error("Plugin implementation failed to deinitialize", "error", err)
+			}
+		}
+	}
+	return &initv1.DeinitResponse{}, nil
 }
 
 type serviceBroker struct {

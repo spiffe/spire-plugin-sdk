@@ -63,7 +63,7 @@ func TestServe(t *testing.T) {
 		assertStringEqual(t, "hostService-in,hostService-out", hostServiceResp.Out)
 	})
 
-	assertStringEqual(t, "[INFO]  PLUGIN: in=plugin-in\n[INFO]  SERVICE: in=service-in\n", log.String())
+	assertStringEqual(t, "[INFO]  PLUGIN: in=plugin-in\n[INFO]  SERVICE: in=service-in\n[INFO]  CLOSED\n", log.String())
 }
 
 func assertStringEqual(t *testing.T, expected, actual string) {
@@ -103,6 +103,11 @@ func (p *TestPlugin) PluginEcho(_ context.Context, req *test.EchoRequest) (*test
 func (p *TestPlugin) ServiceEcho(_ context.Context, req *test.EchoRequest) (*test.EchoResponse, error) {
 	p.log.Info("SERVICE", "in", req.In)
 	return &test.EchoResponse{Out: req.In + ",service-out"}, nil
+}
+
+func (p *TestPlugin) Close() error {
+	p.log.Info("CLOSED")
+	return nil
 }
 
 type someHostService struct {
