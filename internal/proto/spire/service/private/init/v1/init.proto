@@ -8,8 +8,10 @@ option go_package = "github.com/spiffe/spire-plugin-sdk/internal/proto/spire/ser
 // plugin client connects, since the client is responsible for hosting the
 // broker that is used to provide host services. If we initialize before that,
 // there would be no broker available to connect to host services with.
+// The service is also used for graceful cleanup when the plugin is unloaded.
 service Init {
     rpc Init(InitRequest) returns (InitResponse);
+    rpc Deinit(DeinitRequest) returns (DeinitResponse);
 }
 
 // Init request parameters
@@ -27,3 +29,9 @@ message InitResponse {
     // spire.plugin.server.keymanager.v1.Keymanager).
     repeated string plugin_service_names = 1;
 }
+
+// Deinit request parameters
+message DeinitRequest {}
+
+// Deinit response parameters
+message DeinitResponse {}

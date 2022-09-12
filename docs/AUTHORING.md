@@ -148,6 +148,22 @@ Plugin authors can decide if the lack of support for a specific host service is
 an error or not. If the plugin returns an error from BrokerHostServices, the
 plugin will fail to load.
 
+## Cleanup
+
+Plugins are seperate processes and are terminated when the plugin is unloaded.
+However, it may be desirable to perform some graceful cleanup operations.
+
+To facilitate this, if plugin/service implementations implement the io.Closer
+interface, then the `Close` method will be invoked before the plugin is
+unloaded. No other RPCs will be invoked at any time during or after the `Close`
+method is called. Errors returned from `Close` are simply logged and will not
+impact any runtime behavior of SPIRE Server.
+
+Implementations of `Close` should avoid long running or blocking behavior.
+SPIRE may employ deadlines on the operation and could terminate the plugin
+before the cleanup is fully completed if plugin implementations ignore this
+advice.
+
 ## Unit Testing
 
 The [plugintest](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/plugintest) 
