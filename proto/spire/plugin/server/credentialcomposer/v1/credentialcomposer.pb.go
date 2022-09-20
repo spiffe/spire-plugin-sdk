@@ -26,7 +26,10 @@ type ComposeServerX509CARequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The default attributes for the server X509 CA.
+	// The attributes for the server X509 CA. To maintain forward compatability
+	// with future attribute field additions, these attributes SHOULD be
+	// mutated and used to populate the attributes field in the
+	// ComposeServerX509CAResponse.
 	Attributes *X509CAAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -74,8 +77,11 @@ type ComposeServerX509CAResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The attributes for the X509 CA. If not included in the response, the
-	// default attributes sent in the request will be used.
+	// The attributes for the server X509 CA. To maintain forward compatability
+	// with future attribute field additions, these attributes SHOULD be
+	// populated with the mutated attributes field in the
+	// ComposeServerX509CARequest. If this field is not included in the
+	// response, the original attributes sent in the request will be used.
 	Attributes *X509CAAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -123,7 +129,10 @@ type ComposeServerX509SVIDRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The default attributes for the server X509-SVID.
+	// The attributes for the server X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be mutated and used to populate the attributes field in the
+	// ComposeServerX509SVIDResponse.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -171,8 +180,11 @@ type ComposeServerX509SVIDResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The attributes for the X509-SVID. If not included in the response, the
-	// default attributes sent in the request will be used.
+	// The attributes for the server X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be populated with the mutated attributes field in the
+	// ComposeServerX509SVIDRequest. If this field is not included in the
+	// response, the original attributes sent in the request will be used.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -220,7 +232,10 @@ type ComposeAgentX509SVIDRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The default attributes for the server X509-SVID.
+	// The attributes for the agent X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be mutated and used to populate the attributes field in the
+	// ComposeAgentX509SVIDResponse.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -268,8 +283,11 @@ type ComposeAgentX509SVIDResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The attributes for the X509-SVID. If not included in the response, the
-	// default attributes sent in the request will be used.
+	// The attributes for the agent X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be populated with the mutated attributes field in the
+	// ComposeAgentX509SVIDRequest. If this field is not included in the
+	// response, the original attributes sent in the request will be used.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -317,7 +335,10 @@ type ComposeWorkloadX509SVIDRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The default attributes for the X509-SVID.
+	// The attributes for the workload X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be mutated and used to populate the attributes field in the
+	// ComposeWorkloadX509SVIDResponse.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	// The SPIFFE ID of the workload.
 	SpiffeId string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
@@ -383,8 +404,11 @@ type ComposeWorkloadX509SVIDResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The attributes for the X509-SVID. If not included in the response, the
-	// default attributes sent in the request will be used.
+	// The attributes for the workload X509-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be populated with the mutated attributes field in the
+	// ComposeWorkloadX509SVIDRequest. If this message is not included in the
+	// response, the original attributes sent in the request will be used.
 	Attributes *X509SVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -432,7 +456,10 @@ type ComposeWorkloadJWTSVIDRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The default attributes for the JWT-SVID.
+	// The attributes for the workload JWT-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be mutated and used to populate the attributes field in the
+	// ComposeWorkloadJWTSVIDResponse.
 	Attributes *JWTSVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	// The SPIFFE ID of the workload.
 	SpiffeId string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
@@ -489,8 +516,11 @@ type ComposeWorkloadJWTSVIDResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The attributes for the JWT-SVID. If not included in the response, the
-	// default attributes sent in the request will be used.
+	// The attributes for the workload JWT-SVID. To maintain forward
+	// compatability with future attribute field additions, these attributes
+	// SHOULD be populated with the mutated attributes field in the
+	// ComposeWorkloadJWTSVIDRequest. If this field is not included in the
+	// response, the original attributes sent in the request will be used.
 	Attributes *JWTSVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
