@@ -12,4 +12,7 @@ message JWTKey {
     // When the key expires (seconds since Unix epoch). If zero, the key does
     // not expire.
     int64 expires_at = 3;
+
+    // TODO: Verify if we really need it
+    bool tainted = 4;
 }
