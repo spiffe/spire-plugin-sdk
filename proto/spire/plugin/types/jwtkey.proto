@@ -3,6 +3,15 @@ package spire.plugin.types;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types";
 
 message JWTKey {
+    enum Status {
+        // RESTRICT prevents the bundle from being deleted in the presence of associated entries
+        ACTIVE = 0;
+        // DELETE deletes the bundle and associated entries
+        TAINTED = 1;
+        // DISSOCIATE deletes the bundle and dissociates associated entries
+        REVOKED = 2;
+    }
+
     // The PKIX encoded public key.
     bytes public_key = 1;
 
@@ -13,6 +22,6 @@ message JWTKey {
     // not expire.
     int64 expires_at = 3;
 
-    // TODO: Verify if we really need it
-    bool tainted = 4;
+    // The key status
+    Status status = 4;
 }
