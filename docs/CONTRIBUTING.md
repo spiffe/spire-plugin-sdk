@@ -29,24 +29,27 @@ $ make
 If you are adding a new .proto file, you first need to update the `Makefile`
 and add the .proto file to the relevant variables.
 
+## Opening PRs
+
+All PRs should target the `next` branch. The `next` branch is a staging area
+for all features under development but not ready for release in an official
+version of SPIRE.
+
+Changes are cherry-picked into `main` from the `next` branch ahead of an
+official SPIRE release. The commits in `main` are tagged with the supporting
+SPIRE version.
+
 ## Consuming Changes in SPIRE
 
-SPIRE's main branch depends on a pseudo-version of this repository (see
-https://golang.org/ref/mod#pseudo-versions).
+While a new change in this repository is under development, you can use [Go
+Workspaces](https://go.dev/ref/mod#workspaces) to allow SPIRE to consume the
+changes before they are merged into this repository.
 
-While a new change in this repository is under development, you can add a
-temporary `replace` directive to the SPIRE `go.mod` to allow you to consume the
-changes.  Care must be taken to not push the `replace` directive change up to
-SPIRE.
-
-Once those changes have been merged and you are ready to consume them from
-SPIRE, run `go get github.com/spiffe/spire-plugin-sdk@<commit hash>` in the SPIRE
-repository. This will update `go.mod` in SPIRE to use the latest pseudo version
-with that commit.
-
-When cutting a SPIRE release, this repository is tagged with the SPIRE
-release version. The release branch in SPIRE is updated to depend explicitly
-on that version (i.e. `go get github.com/spiffe/spire-plugin-sdk@<version>`).
+SPIRE's main branch depends on a pseudo-version of this repository based on the
+`next` branch (see https://golang.org/ref/mod#pseudo-versions). Once changes
+have been merged into the `next` branch, the pseudo-version dependency in the
+SPIRE repository can be updated by running `go get
+github.com/spiffe/spire-plugin-sdk@next` from the SPIRE repository.
 
 Relying on a pseudo versions means that this repository only needs tags
 for the offically released versions, while still allowing SPIRE to work with
