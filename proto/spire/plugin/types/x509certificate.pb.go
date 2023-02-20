@@ -26,8 +26,9 @@ type X509Certificate struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The ASN.1 DER encoded bytes of the X.509 certificate.
-	Asn1    []byte `protobuf:"bytes,1,opt,name=asn1,proto3" json:"asn1,omitempty"`
-	Tainted bool   `protobuf:"varint,2,opt,name=tainted,proto3" json:"tainted,omitempty"`
+	Asn1 []byte `protobuf:"bytes,1,opt,name=asn1,proto3" json:"asn1,omitempty"`
+	// This authority is no longer secure and must not be used
+	Tainted bool `protobuf:"varint,2,opt,name=tainted,proto3" json:"tainted,omitempty"`
 }
 
 func (x *X509Certificate) Reset() {
