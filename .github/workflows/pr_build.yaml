@@ -10,7 +10,7 @@ permissions:
 jobs:
   lint:
     name: lint
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
         run: make generate-check
 
   unit-test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
   # way to say "all jobs from this action", which would be ideal.
   success:
     needs: [unit-test, lint]
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Shout it out
         run: echo SUCCESS
