@@ -34,6 +34,7 @@ There are three types of interfaces:
 
 | Plugin | Versions  | Description | Template    |
 | ------ | --------  | ----------- | ----------- |
+| BundlePublisher | [v1](proto/spire/plugin/server/bundlepublisher/v1/bundlepublisher.proto) | Publishes a trust bundle to a store.               | [link](templates/server/bundlepublisher) |
 | CredentialComposer | [v1](proto/spire/plugin/server/credentialcomposer/v1/credentialcomposer.proto) | Allows customization of SVID and CA attributes.        | [link](templates/server/credentialcomposer) |
 | KeyManager         | [v1](proto/spire/plugin/server/keymanager/v1/keymanager.proto)                 | Manages private keys and performs signing operations.  | [link](templates/server/keymanager)         |
 | NodeAttestor       | [v1](proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto)             | Performs the server side of the node attestation flow. | [link](templates/server/nodeattestor)       |
