@@ -37,7 +37,6 @@ There are three types of interfaces:
 | CredentialComposer | [v1](proto/spire/plugin/server/credentialcomposer/v1/credentialcomposer.proto) | Allows customization of SVID and CA attributes.        | [link](templates/server/credentialcomposer) |
 | KeyManager         | [v1](proto/spire/plugin/server/keymanager/v1/keymanager.proto)                 | Manages private keys and performs signing operations.  | [link](templates/server/keymanager)         |
 | NodeAttestor       | [v1](proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto)             | Performs the server side of the node attestation flow. | [link](templates/server/nodeattestor)       |
-| NodeResolver       | [v1](proto/spire/plugin/server/noderesolver/v1/noderesolver.proto)             | Provides additional selectors for attested nodes.      | [link](templates/server/noderesolver)       |
 | Notifier           | [v1](proto/spire/plugin/server/notifier/v1/notifier.proto)                     | Notifies external systems of certain SPIRE events.     | [link](templates/server/notifier)           |
 | UpstreamAuthority  | [v1](proto/spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto)   | Plugs SPIRE into an upstream PKI.                      | [link](templates/server/upstreamauthority)  |
 
