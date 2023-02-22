@@ -130,12 +130,6 @@ to include a type, since that is now inferred by SPIRE from the name of the
 plugin. The selectors returned in the final response are selector values only.
 The selector type is inferred by SPIRE from the name of the plugin.
 
-### Server NodeResolver
-
-The `Resolve` RPC now handles resolution for a single agent SPIFFE ID instead
-of a list of IDs. The response returns selector values only. The selector type
-is inferred by SPIRE from the name of the plugin.
-
 ### Server Notifier
 
 No substantial changes outside of the migration to plugin SDK types.

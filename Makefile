@@ -43,7 +43,6 @@ plugin-protos := \
 	proto/spire/plugin/server/credentialcomposer/v1/credentialcomposer.proto \
 	proto/spire/plugin/server/keymanager/v1/keymanager.proto \
 	proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto \
-	proto/spire/plugin/server/noderesolver/v1/noderesolver.proto \
 	proto/spire/plugin/server/notifier/v1/notifier.proto \
 	proto/spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto \
 
