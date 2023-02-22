@@ -27,7 +27,7 @@ type X509Certificate struct {
 
 	// The ASN.1 DER encoded bytes of the X.509 certificate.
 	Asn1 []byte `protobuf:"bytes,1,opt,name=asn1,proto3" json:"asn1,omitempty"`
-	// This authority is no longer secure and must not be used
+	// Indicates if the authority has been tainted. A tainted authority is not safe to be used anymore.
 	Tainted bool `protobuf:"varint,2,opt,name=tainted,proto3" json:"tainted,omitempty"`
 }
 

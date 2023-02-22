@@ -13,6 +13,6 @@ message JWTKey {
     // not expire.
     int64 expires_at = 3;
 
-    // This key is no longer secure and must not be used
+    // Indicates if the key has been tainted. A tainted key is not safe to be used anymore.
     bool tainted = 4;
 }

@@ -32,7 +32,7 @@ type JWTKey struct {
 	// When the key expires (seconds since Unix epoch). If zero, the key does
 	// not expire.
 	ExpiresAt int64 `protobuf:"varint,3,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	// This key is no longer secure and must not be used
+	// Indicates if the key has been tainted. A tainted key is not safe to be used anymore.
 	Tainted bool `protobuf:"varint,4,opt,name=tainted,proto3" json:"tainted,omitempty"`
 }
 
