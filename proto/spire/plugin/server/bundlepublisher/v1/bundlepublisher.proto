@@ -1,0 +1,20 @@
+syntax = "proto3";
+package spire.plugin.server.bundlepublisher.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/bundlepublisher/v1;bundlepublisherv1";
+
+import "spire/plugin/types/bundle.proto";
+
+// The BundlePublisher plugin publishes a trust bundle to a store.
+service BundlePublisher {
+    // PublishBundle publishes the trust bundle that is in the request
+    // to a store.
+    rpc PublishBundle(PublishBundleRequest) returns (PublishBundleResponse);
+}
+
+message PublishBundleRequest {
+    // Required. The trust bundle to publish.
+    spire.plugin.types.Bundle bundle = 1;
+}
+
+message PublishBundleResponse {
+}
