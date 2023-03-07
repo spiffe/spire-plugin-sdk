@@ -40,10 +40,10 @@ plugin-protos := \
 	proto/spire/plugin/agent/nodeattestor/v1/nodeattestor.proto \
 	proto/spire/plugin/agent/svidstore/v1/svidstore.proto \
 	proto/spire/plugin/agent/workloadattestor/v1/workloadattestor.proto \
+	proto/spire/plugin/server/bundlepublisher/v1/bundlepublisher.proto \
 	proto/spire/plugin/server/credentialcomposer/v1/credentialcomposer.proto \
 	proto/spire/plugin/server/keymanager/v1/keymanager.proto \
 	proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto \
-	proto/spire/plugin/server/noderesolver/v1/noderesolver.proto \
 	proto/spire/plugin/server/notifier/v1/notifier.proto \
 	proto/spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto \
 

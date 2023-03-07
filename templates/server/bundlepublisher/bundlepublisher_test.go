@@ -1,18 +1,18 @@
-package noderesolver_test
+package bundlepublisher_test
 
 import (
 	"testing"
 
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
 	"github.com/spiffe/spire-plugin-sdk/plugintest"
-	noderesolverv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/noderesolver/v1"
+	bundlepublisherv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/bundlepublisher/v1"
 	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
-	"github.com/spiffe/spire-plugin-sdk/templates/server/noderesolver"
+	"github.com/spiffe/spire-plugin-sdk/templates/server/bundlepublisher"
 )
 
 func Test(t *testing.T) {
-	plugin := new(noderesolver.Plugin)
-	nrClient := new(noderesolverv1.NodeResolverPluginClient)
+	plugin := new(bundlepublisher.Plugin)
+	pluginClient := new(bundlepublisherv1.BundlePublisherPluginClient)
 	configClient := new(configv1.ConfigServiceClient)
 
 	// Serve the plugin in the background with the configured plugin and
@@ -22,8 +22,8 @@ func Test(t *testing.T) {
 	// TODO: Provide host service server implementations if required by the
 	// plugin.
 	plugintest.ServeInBackground(t, plugintest.Config{
-		PluginServer: noderesolverv1.NodeResolverPluginServer(plugin),
-		PluginClient: nrClient,
+		PluginServer: bundlepublisherv1.BundlePublisherPluginServer(plugin),
+		PluginClient: pluginClient,
 		ServiceServers: []pluginsdk.ServiceServer{
 			configv1.ConfigServiceServer(plugin),
 		},

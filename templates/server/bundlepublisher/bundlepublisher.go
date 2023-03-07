@@ -1,4 +1,4 @@
-package noderesolver
+package bundlepublisher
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/hcl"
 	"github.com/spiffe/spire-plugin-sdk/pluginmain"
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
-	noderesolverv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/noderesolver/v1"
+	bundlepublisherv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/bundlepublisher/v1"
 	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,10 +31,10 @@ var (
 type Config struct {
 }
 
-// Plugin implements the NodeResolver plugin
+// Plugin implements the BundlePublisher plugin
 type Plugin struct {
-	// UnimplementedNodeResolverServer is embedded to satisfy gRPC
-	noderesolverv1.UnimplementedNodeResolverServer
+	// UnimplementedBundlePublisherServer is embedded to satisfy gRPC
+	bundlepublisherv1.UnimplementedBundlePublisherServer
 
 	// UnimplementedConfigServer is embedded to satisfy gRPC
 	// TODO: Remove if this plugin does not require configuration
@@ -65,8 +65,7 @@ func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 	return nil
 }
 
-// Attest implements the NodeResolver Attest RPC
-func (p *Plugin) Resolve(ctx context.Context, req *noderesolverv1.ResolveRequest) (*noderesolverv1.ResolveResponse, error) {
+func (p *Plugin) PublishBundle(ctx context.Context, req *bundlepublisherv1.PublishBundleRequest) (*bundlepublisherv1.PublishBundleResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
 		return nil, err
@@ -121,7 +120,7 @@ func main() {
 	// Serve the plugin. This function call will not return. If there is a
 	// failure to serve, the process will exit with a non-zero exit code.
 	pluginmain.Serve(
-		noderesolverv1.NodeResolverPluginServer(plugin),
+		bundlepublisherv1.BundlePublisherPluginServer(plugin),
 		// TODO: Remove if no configuration is required
 		configv1.ConfigServiceServer(plugin),
 	)
