@@ -50,22 +50,7 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
-// DeleteX509SVID implements the SVIDStore DeleteX509SVID RPC
+// DeleteX509SVID implements the SVIDStore DeleteX509SVID RPC. Puts an X509-SVID in a configured secrets store.
 func (p *Plugin) DeleteX509SVID(ctx context.Context, req *svidstorev1.DeleteX509SVIDRequest) (*svidstorev1.DeleteX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -80,7 +65,7 @@ func (p *Plugin) DeleteX509SVID(ctx context.Context, req *svidstorev1.DeleteX509
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// PutX509SVID implements the SVIDStore PutX509SVID RPC
+// PutX509SVID implements the SVIDStore PutX509SVID RPC. Deletes an SVID from the store
 func (p *Plugin) PutX509SVID(ctx context.Context, req *svidstorev1.PutX509SVIDRequest) (*svidstorev1.PutX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -93,6 +78,21 @@ func (p *Plugin) PutX509SVID(ctx context.Context, req *svidstorev1.PutX509SVIDRe
 	config = config
 
 	return nil, status.Error(codes.Unimplemented, "not implemented")
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
