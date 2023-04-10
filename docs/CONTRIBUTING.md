@@ -52,5 +52,5 @@ SPIRE repository can be updated by running `go get
 github.com/spiffe/spire-plugin-sdk@next` from the SPIRE repository.
 
 Relying on a pseudo versions means that this repository only needs tags
-for the offically released versions, while still allowing SPIRE to work with
+for the officially released versions, while still allowing SPIRE to work with
 unreleased changes during development.
