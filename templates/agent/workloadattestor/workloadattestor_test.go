@@ -1,6 +1,7 @@
 package workloadattestor_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
@@ -8,6 +9,8 @@ import (
 	workloadattestorv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1"
 	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
 	"github.com/spiffe/spire-plugin-sdk/templates/agent/workloadattestor"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test(t *testing.T) {
@@ -32,5 +35,18 @@ func Test(t *testing.T) {
 		},
 	})
 
-	// TODO: Invoke methods on the clients and assert the results
+	ctx := context.Background()
+
+	// TODO: Remove if no configuration is required.
+	_, err := configClient.Configure(ctx, &configv1.ConfigureRequest{
+		CoreConfiguration: &configv1.CoreConfiguration{TrustDomain: "example.org"},
+		HclConfiguration:  `{}`,
+	})
+	assert.NoError(t, err)
+
+	require.True(t, waClient.IsInitialized())
+
+	// TODO: Make assertions using the desired plugin behavior.
+	_, err = waClient.Attest(ctx, &workloadattestorv1.AttestRequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
 }

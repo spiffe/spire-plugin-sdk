@@ -50,6 +50,25 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
+// Attest implements the WorkloadAttestor Attest RPC. Attests the specified workload process. If the process is not one
+// the attestor is in a position to attest (e.g. k8s attestor attesting a non-k8s workload), the call will succeed but
+// return no selectors. If the process is one of the attestor is in a position to attest, but the attestor fails to
+// gather all selectors related to that workload, the call will fail. Otherwise, the attestor will return one or more
+// workload selectors.
+func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestRequest) (*workloadattestorv1.AttestResponse, error) {
+	config, err := p.getConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Implement the RPC behavior. The following line silences compiler
+	// warnings and can be removed once the configuration is referenced by the
+	// implementation.
+	config = config
+
+	return nil, status.Error(codes.Unimplemented, "not implemented")
+}
+
 // SetLogger is called by the framework when the plugin is loaded and provides
 // the plugin with a logger wired up to SPIRE's logging facilities.
 // TODO: Remove if the plugin does not need the logger.
@@ -63,21 +82,6 @@ func (p *Plugin) SetLogger(logger hclog.Logger) {
 func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 	// TODO: Use the broker to obtain host service clients
 	return nil
-}
-
-// Attest implements the WorkloadAttestor Attest RPC
-func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestRequest) (*workloadattestorv1.AttestResponse, error) {
-	config, err := p.getConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	// TODO: Implement the RPC behavior. The following line silences compiler
-	// warnings and can be removed once the configuration is referenced by the
-	// implementation.
-	config = config
-
-	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
