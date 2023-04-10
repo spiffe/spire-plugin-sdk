@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compiles time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
@@ -29,6 +29,7 @@ var (
 // Config defines the configuration for the plugin.
 // TODO: Add relevant configurables or remove if no configuration is required.
 type Config struct {
+	//	configurable fields go here...
 }
 
 // Plugin implements the NodeAttestor plugin
@@ -65,7 +66,9 @@ func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 	return nil
 }
 
-// AidAttestation implements the NodeAttestor AidAttestation RPC
+// AidAttestation implements the NodeAttestor AidAttestation RPC. AidAttestation facilitates attestation by returning
+// the attestation payload and participating in attestation challenge/response. This RPC uses a bidirectional stream for
+// communication.
 func (p *Plugin) AidAttestation(stream nodeattestorv1.NodeAttestor_AidAttestationServer) error {
 	config, err := p.getConfig()
 	if err != nil {
@@ -81,7 +84,7 @@ func (p *Plugin) AidAttestation(stream nodeattestorv1.NodeAttestor_AidAttestatio
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {

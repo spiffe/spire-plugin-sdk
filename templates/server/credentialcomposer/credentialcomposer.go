@@ -135,7 +135,7 @@ func (p *Plugin) ComposeWorkloadJWTSVID(ctx context.Context, req *credentialcomp
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {

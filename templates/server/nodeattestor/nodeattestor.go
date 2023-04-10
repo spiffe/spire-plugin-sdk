@@ -65,7 +65,9 @@ func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
 	return nil
 }
 
-// Attest implements the NodeAttestor Attest RPC
+// Attest implements the NodeAttestor Attest RPC. Attest attests attestation payload received from the agent and
+// optionally participates in challenge/response attestation mechanics. This RPC uses a bidirectional stream for
+// communication.
 func (p *Plugin) Attest(stream nodeattestorv1.NodeAttestor_AttestServer) error {
 	config, err := p.getConfig()
 	if err != nil {
@@ -81,7 +83,7 @@ func (p *Plugin) Attest(stream nodeattestorv1.NodeAttestor_AttestServer) error {
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
