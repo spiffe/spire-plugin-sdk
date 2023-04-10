@@ -29,7 +29,6 @@ var (
 // Config defines the configuration for the plugin.
 // TODO: Add relevant configurables or remove if no configuration is required.
 type Config struct {
-	//	configurable fields go here...
 }
 
 // Plugin implements the NodeAttestor plugin

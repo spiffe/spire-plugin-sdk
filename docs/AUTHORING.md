@@ -6,8 +6,10 @@ SPIRE plugins implement one and only one plugin _type_ (e.g. KeyManager). They
 also implement zero or more services. Below is a list of plugin types, alongside templates that can be used as a base
 for authoring plugins.
 
-
 ## Templates
+Each template contains a go file that can be used as a starting point for authoring plugins. A test file is also
+provided for each template; the test file contains a test suite that can be used to verify that the plugin has been 
+loaded and is working as expected using [plugintest](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/plugintest).
 
 ### Agent
 
