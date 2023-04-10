@@ -50,21 +50,8 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
+// Notify implements the Notifier Notify RPC. Notify notifies the plugin that an event occurred. Errors returned by
+// the plugin are logged but otherwise ignored.
 func (p *Plugin) Notify(ctx context.Context, req *notifierv1.NotifyRequest) (*notifierv1.NotifyResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -79,6 +66,9 @@ func (p *Plugin) Notify(ctx context.Context, req *notifierv1.NotifyRequest) (*no
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
+// NotifyAndAdvise implements the Notifier NotifyAndAdvise RPC. NotifyAndAdvise notifies the plugin that an event
+// occurred and waits for a response. Errors returned by the plugin control SPIRE Server behavior.
+// See NotifyAndAdviseRequest for per-event details.
 func (p *Plugin) NotifyAndAdvise(ctx context.Context, req *notifierv1.NotifyAndAdviseRequest) (*notifierv1.NotifyAndAdviseResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -91,6 +81,21 @@ func (p *Plugin) NotifyAndAdvise(ctx context.Context, req *notifierv1.NotifyAndA
 	config = config
 
 	return nil, status.Error(codes.Unimplemented, "not implemented")
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is

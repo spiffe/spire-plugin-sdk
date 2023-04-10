@@ -45,7 +45,6 @@ func Test(t *testing.T) {
 	assert.NoError(t, err)
 
 	require.True(t, ssClient.IsInitialized())
-
 	// TODO: Make assertions using the desired plugin behavior.
 	_, err = ssClient.PutX509SVID(ctx, &svidstorev1.PutX509SVIDRequest{})
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")

@@ -45,7 +45,6 @@ func Test(t *testing.T) {
 	assert.NoError(t, err)
 
 	require.True(t, naClient.IsInitialized())
-
 	// TODO: Make assertions using the desired plugin behavior.
 	resp, err := naClient.AidAttestation(ctx)
 	require.NoError(t, err)

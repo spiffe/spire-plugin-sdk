@@ -45,7 +45,6 @@ func Test(t *testing.T) {
 	assert.NoError(t, err)
 
 	require.True(t, waClient.IsInitialized())
-
 	// TODO: Make assertions using the desired plugin behavior.
 	_, err = waClient.Attest(ctx, &workloadattestorv1.AttestRequest{})
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
