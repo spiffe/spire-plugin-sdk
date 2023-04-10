@@ -51,21 +51,6 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
 // AidAttestation implements the NodeAttestor AidAttestation RPC. AidAttestation facilitates attestation by returning
 // the attestation payload and participating in attestation challenge/response. This RPC uses a bidirectional stream for
 // communication.
@@ -81,6 +66,21 @@ func (p *Plugin) AidAttestation(stream nodeattestorv1.NodeAttestor_AidAttestatio
 	config = config
 
 	return status.Error(codes.Unimplemented, "not implemented")
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is

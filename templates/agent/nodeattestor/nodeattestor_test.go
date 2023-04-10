@@ -47,7 +47,7 @@ func Test(t *testing.T) {
 	require.True(t, naClient.IsInitialized())
 
 	// TODO: Make assertions using the desired plugin behavior.
-	resp, err := naClient.AidAttestation(context.Background())
+	resp, err := naClient.AidAttestation(ctx)
 	require.NoError(t, err)
 	_, err = resp.Recv()
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
