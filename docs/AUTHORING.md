@@ -22,13 +22,14 @@ loaded and is working as expected using [plugintest](https://pkg.go.dev/github.c
 
 ### Server
 
-| Plugin            | Description                                            | Template                                      |
-|-------------------|--------------------------------------------------------|-----------------------------------------------|
-| KeyManager        | Manages private keys and performs signing operations.  | [link](../templates/server/keymanager)        |
-| NodeAttestor      | Performs the server side of the node attestation flow. | [link](../templates/server/nodeattestor)      |
-| NodeResolver      | Provides additional selectors for attested nodes.      | [link](../templates/server/noderesolver)      |
-| Notifier          | Notifies external systems of certain SPIRE events.     | [link](../templates/server/notifier)          |
-| UpstreamAuthority | Plugs SPIRE into an upstream PKI.                      | [link](../templates/server/upstreamauthority) |
+| Plugin             | Description                                            | Template                                       |
+|--------------------|--------------------------------------------------------|------------------------------------------------|
+| KeyManager         | Manages private keys and performs signing operations.  | [link](../templates/server/keymanager)         |
+| NodeAttestor       | Performs the server side of the node attestation flow. | [link](../templates/server/nodeattestor)       |
+| Notifier           | Notifies external systems of certain SPIRE events.     | [link](../templates/server/notifier)           |
+| UpstreamAuthority  | Plugs SPIRE into an upstream PKI.                      | [link](../templates/server/upstreamauthority)  |
+| CredentialComposer | Allows customization of SVID and CA attributes.        | [link](../templates/server/credentialcomposer) |
+
 
 
 ## Configuration
