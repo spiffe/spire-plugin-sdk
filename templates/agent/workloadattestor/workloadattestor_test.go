@@ -35,7 +35,8 @@ func Test(t *testing.T) {
 		},
 	})
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// TODO: Remove if no configuration is required.
 	_, err := configClient.Configure(ctx, &configv1.ConfigureRequest{

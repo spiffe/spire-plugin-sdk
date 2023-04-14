@@ -65,7 +65,7 @@ func (p *Plugin) DeleteX509SVID(ctx context.Context, req *svidstorev1.DeleteX509
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// PutX509SVID implements the SVIDStore PutX509SVID RPC. Deletes an SVID from the store
+// PutX509SVID implements the SVIDStore PutX509SVID RPC. Deletes an SVID from the store.
 func (p *Plugin) PutX509SVID(ctx context.Context, req *svidstorev1.PutX509SVIDRequest) (*svidstorev1.PutX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -78,13 +78,6 @@ func (p *Plugin) PutX509SVID(ctx context.Context, req *svidstorev1.PutX509SVIDRe
 	config = config
 
 	return nil, status.Error(codes.Unimplemented, "not implemented")
-}
-
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
 }
 
 // BrokerHostServices is called by the framework when the plugin is loaded to
@@ -110,6 +103,13 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.

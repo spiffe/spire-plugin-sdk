@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	// This compiles time assertion ensures the plugin conforms properly to the
+	// This compile time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
@@ -67,13 +67,6 @@ func (p *Plugin) AidAttestation(stream nodeattestorv1.NodeAttestor_AidAttestatio
 	return status.Error(codes.Unimplemented, "not implemented")
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
 // BrokerHostServices is called by the framework when the plugin is loaded to
 // give the plugin a chance to obtain clients to SPIRE host services.
 // TODO: Remove if the plugin does not need host services.
@@ -97,6 +90,13 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.

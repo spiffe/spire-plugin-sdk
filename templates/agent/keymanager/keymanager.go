@@ -115,13 +115,6 @@ func (p *Plugin) SignData(ctx context.Context, req *keymanagerv1.SignDataRequest
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
 // BrokerHostServices is called by the framework when the plugin is loaded to
 // give the plugin a chance to obtain clients to SPIRE host services.
 // TODO: Remove if the plugin does not need host services.
@@ -145,6 +138,13 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.

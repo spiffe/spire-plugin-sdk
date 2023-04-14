@@ -35,7 +35,8 @@ func Test(t *testing.T) {
 		},
 	})
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// TODO: Remove if no configuration is required.
 	_, err := configClient.Configure(ctx, &configv1.ConfigureRequest{
@@ -46,12 +47,12 @@ func Test(t *testing.T) {
 
 	require.True(t, uaClient.IsInitialized())
 	// TODO: Make assertions using the desired plugin behavior.
-	respMint, err := uaClient.MintX509CAAndSubscribe(ctx, &upstreamauthorityv1.MintX509CARequest{})
+	mintStream, err := uaClient.MintX509CAAndSubscribe(ctx, &upstreamauthorityv1.MintX509CARequest{})
 	require.NoError(t, err)
-	_, err = respMint.Recv()
+	_, err = mintStream.Recv()
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
-	respPublish, err := uaClient.PublishJWTKeyAndSubscribe(ctx, &upstreamauthorityv1.PublishJWTKeyRequest{})
+	publishStream, err := uaClient.PublishJWTKeyAndSubscribe(ctx, &upstreamauthorityv1.PublishJWTKeyRequest{})
 	require.NoError(t, err)
-	_, err = respPublish.Recv()
+	_, err = publishStream.Recv()
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
 }

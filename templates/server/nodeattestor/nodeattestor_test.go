@@ -35,7 +35,8 @@ func Test(t *testing.T) {
 		},
 	})
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// TODO: Remove if no configuration is required.
 	_, err := configClient.Configure(ctx, &configv1.ConfigureRequest{
@@ -46,8 +47,8 @@ func Test(t *testing.T) {
 
 	require.True(t, naClient.IsInitialized())
 	// TODO: Make assertions using the desired plugin behavior.
-	resp, err := naClient.Attest(ctx)
+	stream, err := naClient.Attest(ctx)
 	require.NoError(t, err)
-	_, err = resp.Recv()
+	_, err = stream.Recv()
 	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
 }
