@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
 
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsHostServices interface.
 	// TODO: Remove if the plugin does not need host services.
 	_ pluginsdk.NeedsHostServices = (*Plugin)(nil)
@@ -69,14 +69,6 @@ func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestReque
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
 // first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
@@ -92,6 +84,14 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
 }
 
 // SetLogger is called by the framework when the plugin is loaded and provides
