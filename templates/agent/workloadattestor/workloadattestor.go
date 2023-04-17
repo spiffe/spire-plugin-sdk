@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
 
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsHostServices interface.
 	// TODO: Remove if the plugin does not need host services.
 	_ pluginsdk.NeedsHostServices = (*Plugin)(nil)
@@ -50,22 +50,11 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
-// Attest implements the WorkloadAttestor Attest RPC
+// Attest implements the WorkloadAttestor Attest RPC. Attests the specified workload process. If the process is not one
+// the attestor is in a position to attest (e.g. k8s attestor attesting a non-k8s workload), the call will succeed but
+// return no selectors. If the process is one of the attestor is in a position to attest, but the attestor fails to
+// gather all selectors related to that workload, the call will fail. Otherwise, the attestor will return one or more
+// workload selectors.
 func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestRequest) (*workloadattestorv1.AttestResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -81,7 +70,7 @@ func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestReque
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
@@ -95,6 +84,21 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.
