@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
 
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsHostServices interface.
 	// TODO: Remove if the plugin does not need host services.
 	_ pluginsdk.NeedsHostServices = (*Plugin)(nil)
@@ -50,21 +50,14 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
+// MintX509CAAndSubscribe implements the UpstreamAuthority MintX509CAAndSubscribe RPC. Mints an X.509 CA and responds
+// with the signed X.509 CA certificate chain and upstream X.509 roots. If supported by the implementation, subsequent
+// responses on the stream contain upstream X.509 root updates, otherwise the stream is closed after the initial response.
+//
+// Implementation note:
+// The stream should be kept open in the face of transient errors
+// encountered while tracking changes to the upstream X.509 roots as SPIRE
+// Server will not reopen a closed stream until the next X.509 CA rotation.
 func (p *Plugin) MintX509CAAndSubscribe(req *upstreamauthorityv1.MintX509CARequest, stream upstreamauthorityv1.UpstreamAuthority_MintX509CAAndSubscribeServer) error {
 	config, err := p.getConfig()
 	if err != nil {
@@ -79,6 +72,16 @@ func (p *Plugin) MintX509CAAndSubscribe(req *upstreamauthorityv1.MintX509CAReque
 	return status.Error(codes.Unimplemented, "not implemented")
 }
 
+// PublishJWTKeyAndSubscribe implements the UpstreamAuthority PublishJWTKeyAndSubscribe RPC. Publishes a JWT signing key
+// upstream and responds with the upstream JWT keys. If supported by the implementation, subsequent responses on the
+// stream contain upstream JWT key updates, otherwise the stream is closed after the initial response.
+//
+// This RPC is optional and will return NotImplemented if unsupported.
+//
+// Implementation note:
+// The stream should be kept open in the face of transient errors
+// encountered while tracking changes to the upstream JWT keys as SPIRE
+// Server will not reopen a closed stream until the next JWT key rotation.
 func (p *Plugin) PublishJWTKeyAndSubscribe(req *upstreamauthorityv1.PublishJWTKeyRequest, stream upstreamauthorityv1.UpstreamAuthority_PublishJWTKeyAndSubscribeServer) error {
 	config, err := p.getConfig()
 	if err != nil {
@@ -94,7 +97,7 @@ func (p *Plugin) PublishJWTKeyAndSubscribe(req *upstreamauthorityv1.PublishJWTKe
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
@@ -108,6 +111,21 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.

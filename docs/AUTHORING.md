@@ -3,7 +3,34 @@
 This document gives guidance for authoring plugins.
 
 SPIRE plugins implement one and only one plugin _type_ (e.g. KeyManager). They
-also implement zero or more services.
+also implement zero or more services. Below is a list of plugin types, alongside templates that can be used as a base
+for authoring plugins.
+
+## Templates
+Each template contains a go file that can be used as a starting point for authoring plugins. A test file is also
+provided for each template; the test file contains a test suite that can be used to verify that the plugin has been 
+loaded and is working as expected using [plugintest](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/plugintest).
+
+### Agent
+
+| Plugin           | Description                                           | Template                                    |
+|------------------|-------------------------------------------------------|---------------------------------------------|
+| KeyManager       | Manages private keys and performs signing operations. | [link](../templates/agent/keymanager)       |
+| NodeAttestor     | Performs the agent side of the node attestation flow. | [link](../templates/agent/nodeattestor)     |
+| SVIDStore        | Stores workload X509-SVIDs to arbitrary destinations. | [link](../templates/agent/svidstore)        |
+| WorkloadAttestor | Attests workloads and provides selectors.             | [link](../templates/agent/workloadattestor) |
+
+### Server
+
+| Plugin             | Description                                            | Template                                       |
+|--------------------|--------------------------------------------------------|------------------------------------------------|
+| KeyManager         | Manages private keys and performs signing operations.  | [link](../templates/server/keymanager)         |
+| NodeAttestor       | Performs the server side of the node attestation flow. | [link](../templates/server/nodeattestor)       |
+| Notifier           | Notifies external systems of certain SPIRE events.     | [link](../templates/server/notifier)           |
+| UpstreamAuthority  | Plugs SPIRE into an upstream PKI.                      | [link](../templates/server/upstreamauthority)  |
+| CredentialComposer | Allows customization of SVID and CA attributes.        | [link](../templates/server/credentialcomposer) |
+
+
 
 ## Configuration
 
@@ -69,7 +96,7 @@ func main() {
     plugin := new(Plugin)
     pluginmain.Serve(
         keymanagerv1.KeyManagerPluginServer(plugin),
-        configv1.ConfigPluginServer(plugin), // <-- add the Config service server implementation
+        configv1.ConfigServiceServer(plugin), // <-- add the Config service server implementation
     )
 }
 ```
@@ -150,7 +177,7 @@ plugin will fail to load.
 
 ## Cleanup
 
-Plugins are seperate processes and are terminated when the plugin is unloaded.
+Plugins are separate processes and are terminated when the plugin is unloaded.
 However, it may be desirable to perform some graceful cleanup operations.
 
 To facilitate this, if plugin/service implementations implement the io.Closer
@@ -176,7 +203,7 @@ See the package docs for more information.
 ## Running
 
 The [pluginmain](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/pluginmain) package
-is used to run the plugin. It takes care of setting up all of the plugin facilities and
+is used to run the plugin. It takes care of setting up all the plugin facilities and
 wiring up the logger and hostservices.
 
 See the package docs for more information.
