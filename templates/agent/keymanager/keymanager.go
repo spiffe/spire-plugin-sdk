@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
 
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsHostServices interface.
 	// TODO: Remove if the plugin does not need host services.
 	_ pluginsdk.NeedsHostServices = (*Plugin)(nil)
@@ -50,22 +50,8 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
-// GenerateKey implements the KeyManager GenerateKey RPC
+// GenerateKey implements the KeyManager GenerateKey RPC. Generates a new private key with the given ID.
+// If a key already exists under that ID, it is overwritten and given a different fingerprint.
 func (p *Plugin) GenerateKey(ctx context.Context, req *keymanagerv1.GenerateKeyRequest) (*keymanagerv1.GenerateKeyResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -80,7 +66,8 @@ func (p *Plugin) GenerateKey(ctx context.Context, req *keymanagerv1.GenerateKeyR
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// GetPublicKey implements the KeyManager GetPublicKey RPC
+// GetPublicKey implements the KeyManager GetPublicKey RPC. Gets the public key information for the private key managed
+// by the plugin with the given ID. If a key with the given ID does not exist, NOT_FOUND is returned.
 func (p *Plugin) GetPublicKey(ctx context.Context, req *keymanagerv1.GetPublicKeyRequest) (*keymanagerv1.GetPublicKeyResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -95,7 +82,8 @@ func (p *Plugin) GetPublicKey(ctx context.Context, req *keymanagerv1.GetPublicKe
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// GetPublicKeys implements the KeyManager GetPublicKeys RPC
+// GetPublicKeys implements the KeyManager GetPublicKeys RPC. Gets all public key information for the private keys
+// managed by the plugin.
 func (p *Plugin) GetPublicKeys(ctx context.Context, req *keymanagerv1.GetPublicKeysRequest) (*keymanagerv1.GetPublicKeysResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -110,7 +98,9 @@ func (p *Plugin) GetPublicKeys(ctx context.Context, req *keymanagerv1.GetPublicK
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
-// SignData implements the KeyManager SignData RPC
+// SignData implements the KeyManager SignData RPC. Signs data with the private key identified by the given ID. If a key
+// with the given ID does not exist, NOT_FOUND is returned. The response contains the signed data and the fingerprint of
+// the key used to sign the data. See the PublicKey message for more details on the role of the fingerprint.
 func (p *Plugin) SignData(ctx context.Context, req *keymanagerv1.SignDataRequest) (*keymanagerv1.SignDataResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -126,7 +116,7 @@ func (p *Plugin) SignData(ctx context.Context, req *keymanagerv1.SignDataRequest
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
@@ -140,6 +130,21 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.

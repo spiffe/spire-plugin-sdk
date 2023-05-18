@@ -125,7 +125,7 @@ to couple it to that operation.
 
 The `Attest` RPC request and response fields are now contained within `oneof`'s
 to strongly convey the difference in field requirements in requests and
-responses during the atestation flow. The attestation payload no longer needs
+responses during the attestation flow. The attestation payload no longer needs
 to include a type, since that is now inferred by SPIRE from the name of the
 plugin. The selectors returned in the final response are selector values only.
 The selector type is inferred by SPIRE from the name of the plugin.

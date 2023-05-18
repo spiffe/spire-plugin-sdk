@@ -1,6 +1,7 @@
 package credentialcomposer_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
@@ -8,6 +9,8 @@ import (
 	credentialcomposerv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/credentialcomposer/v1"
 	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
 	"github.com/spiffe/spire-plugin-sdk/templates/server/credentialcomposer"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test(t *testing.T) {
@@ -32,5 +35,25 @@ func Test(t *testing.T) {
 		},
 	})
 
-	// TODO: Invoke methods on the clients and assert the results
+	ctx := context.Background()
+
+	// TODO: Remove if no configuration is required.
+	_, err := configClient.Configure(ctx, &configv1.ConfigureRequest{
+		CoreConfiguration: &configv1.CoreConfiguration{TrustDomain: "example.org"},
+		HclConfiguration:  `{}`,
+	})
+	assert.NoError(t, err)
+
+	require.True(t, pluginClient.IsInitialized())
+	// TODO: Make assertions using the desired plugin behavior.
+	_, err = pluginClient.ComposeServerX509CA(ctx, &credentialcomposerv1.ComposeServerX509CARequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
+	_, err = pluginClient.ComposeServerX509SVID(ctx, &credentialcomposerv1.ComposeServerX509SVIDRequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
+	_, err = pluginClient.ComposeAgentX509SVID(ctx, &credentialcomposerv1.ComposeAgentX509SVIDRequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
+	_, err = pluginClient.ComposeWorkloadX509SVID(ctx, &credentialcomposerv1.ComposeWorkloadX509SVIDRequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
+	_, err = pluginClient.ComposeWorkloadJWTSVID(ctx, &credentialcomposerv1.ComposeWorkloadJWTSVIDRequest{})
+	assert.EqualError(t, err, "rpc error: code = Unimplemented desc = not implemented")
 }

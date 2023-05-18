@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsLogger interface.
 	// TODO: Remove if the plugin does not need the logger.
 	_ pluginsdk.NeedsLogger = (*Plugin)(nil)
 
-	// This compile time assertion ensures the plugin conforms properly to the
+	// This compile-time assertion ensures the plugin conforms properly to the
 	// pluginsdk.NeedsHostServices interface.
 	// TODO: Remove if the plugin does not need host services.
 	_ pluginsdk.NeedsHostServices = (*Plugin)(nil)
@@ -50,21 +50,10 @@ type Plugin struct {
 	logger hclog.Logger
 }
 
-// SetLogger is called by the framework when the plugin is loaded and provides
-// the plugin with a logger wired up to SPIRE's logging facilities.
-// TODO: Remove if the plugin does not need the logger.
-func (p *Plugin) SetLogger(logger hclog.Logger) {
-	p.logger = logger
-}
-
-// BrokerHostServices is called by the framework when the plugin is loaded to
-// give the plugin a chance to obtain clients to SPIRE host services.
-// TODO: Remove if the plugin does not need host services.
-func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
-	// TODO: Use the broker to obtain host service clients
-	return nil
-}
-
+// ComposeServerX509CA implements the CredentialComposer ComposeServerX509CA RPC. Composes the SPIRE Server X509 CA.
+// The server will supply the default attributes it will apply to the CA. If the plugin returns an empty response or
+// NOT_IMPLEMENTED, the server will apply the default attributes. Otherwise, the returned attributes are used.
+// If a CA is produced that does not conform to the SPIFFE X509-SVID specification for signing certificates, it will be rejected.
 func (p *Plugin) ComposeServerX509CA(ctx context.Context, req *credentialcomposerv1.ComposeServerX509CARequest) (*credentialcomposerv1.ComposeServerX509CAResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -79,6 +68,11 @@ func (p *Plugin) ComposeServerX509CA(ctx context.Context, req *credentialcompose
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
+// ComposeServerX509SVID implements the CredentialComposer ComposeServerX509SVID RPC. Composes the SPIRE Server X509-SVID.
+// The server will supply the default attributes it will apply to the server X509-SVID. If the plugin returns an empty
+// response or NOT_IMPLEMENTED, the server will apply the default attributes. Otherwise, the returned attributes are
+// used. If an X509-SVID is produced that does not conform to the SPIFFE X509-SVID specification for leaf certificates,
+// it will be rejected. This function cannot be used to modify the SPIFFE ID of the X509-SVID.
 func (p *Plugin) ComposeServerX509SVID(ctx context.Context, req *credentialcomposerv1.ComposeServerX509SVIDRequest) (*credentialcomposerv1.ComposeServerX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -93,6 +87,11 @@ func (p *Plugin) ComposeServerX509SVID(ctx context.Context, req *credentialcompo
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
+// ComposeAgentX509SVID implements the CredentialComposer ComposeAgentX509SVID RPC. Composes the SPIRE Agent X509-SVID.
+// The server will supply the default attributes it will apply to the agent X509-SVID. If the plugin returns an empty
+// response or NOT_IMPLEMENTED, the server will apply the default attributes. Otherwise, the returned attributes are used.
+// If an X509-SVID is produced that does not conform to the SPIFFE X509-SVID specification for leaf certificates, it will
+// be rejected. This function cannot be used to modify the SPIFFE ID of the X509-SVID.
 func (p *Plugin) ComposeAgentX509SVID(ctx context.Context, req *credentialcomposerv1.ComposeAgentX509SVIDRequest) (*credentialcomposerv1.ComposeAgentX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -107,6 +106,11 @@ func (p *Plugin) ComposeAgentX509SVID(ctx context.Context, req *credentialcompos
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
+// ComposeWorkloadX509SVID implements the CredentialComposer ComposeWorkloadX509SVID RPC. Composes workload X509-SVIDs.
+// The server will supply the default attributes it will apply to the workload X509-SVID. If the plugin returns an empty
+// response or NOT_IMPLEMENTED, the server will apply the default attributes. Otherwise, the returned attributes are used.
+// If an X509-SVID is produced that does not conform to the SPIFFE X509-SVID specification for leaf certificates, it will
+// be rejected. This function cannot be used to modify the SPIFFE ID of the X509-SVID.
 func (p *Plugin) ComposeWorkloadX509SVID(ctx context.Context, req *credentialcomposerv1.ComposeWorkloadX509SVIDRequest) (*credentialcomposerv1.ComposeWorkloadX509SVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -120,6 +124,12 @@ func (p *Plugin) ComposeWorkloadX509SVID(ctx context.Context, req *credentialcom
 
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
+
+// ComposeWorkloadJWTSVID implements the CredentialComposer ComposeWorkloadJWTSVID RPC. Composes workload JWT-SVIDs.
+// The server will supply the default attributes it will apply to the workload JWT-SVID. If the plugin returns an empty
+// response or NOT_IMPLEMENTED, the server will apply the default attributes. Otherwise, the returned attributes are used.
+// If a JWT-SVID is produced that does not conform to the SPIFFE JWT-SVID specification, it will be rejected.
+// This function cannot be used to modify the SPIFFE ID of the JWT-SVID.
 func (p *Plugin) ComposeWorkloadJWTSVID(ctx context.Context, req *credentialcomposerv1.ComposeWorkloadJWTSVIDRequest) (*credentialcomposerv1.ComposeWorkloadJWTSVIDResponse, error) {
 	config, err := p.getConfig()
 	if err != nil {
@@ -135,7 +145,7 @@ func (p *Plugin) ComposeWorkloadJWTSVID(ctx context.Context, req *credentialcomp
 }
 
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
-// first loaded. In the future, tt may be invoked to reconfigure the plugin.
+// first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
@@ -149,6 +159,21 @@ func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) 
 
 	p.setConfig(config)
 	return &configv1.ConfigureResponse{}, nil
+}
+
+// BrokerHostServices is called by the framework when the plugin is loaded to
+// give the plugin a chance to obtain clients to SPIRE host services.
+// TODO: Remove if the plugin does not need host services.
+func (p *Plugin) BrokerHostServices(broker pluginsdk.ServiceBroker) error {
+	// TODO: Use the broker to obtain host service clients
+	return nil
+}
+
+// SetLogger is called by the framework when the plugin is loaded and provides
+// the plugin with a logger wired up to SPIRE's logging facilities.
+// TODO: Remove if the plugin does not need the logger.
+func (p *Plugin) SetLogger(logger hclog.Logger) {
+	p.logger = logger
 }
 
 // setConfig replaces the configuration atomically under a write lock.
