@@ -15,7 +15,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/spiffe/go-spiffe/v2/bundle/spiffebundle"
@@ -35,7 +34,6 @@ const (
 type Bundle struct {
 	bundle *types.Bundle
 
-	bytesMtx    sync.RWMutex
 	jwksBytes   []byte
 	pemBytes    []byte
 	spiffeBytes []byte
@@ -94,87 +92,39 @@ func (b *Bundle) Bytes(format BundleFormat) ([]byte, error) {
 	switch format {
 	case BundleFormatUnset:
 		return nil, errors.New("no format specified")
-
 	case JWKS:
-		if jwksBytes := b.getJWKSBytes(); jwksBytes != nil {
-			return jwksBytes, nil
+		if b.jwksBytes != nil {
+			return b.jwksBytes, nil
 		}
 		jwksBytes, err := b.toJWKS()
 		if err != nil {
 			return nil, fmt.Errorf("could not convert bundle to jwks format: %w", err)
 		}
-		b.setJWKSBytes(jwksBytes)
+		b.jwksBytes = jwksBytes
 		return jwksBytes, nil
-
 	case PEM:
-		if pemBytes := b.getPEMBytes(); pemBytes != nil {
-			return pemBytes, nil
+		if b.pemBytes != nil {
+			return b.pemBytes, nil
 		}
-
 		pemBytes, err := b.toPEM()
 		if err != nil {
 			return nil, fmt.Errorf("could not convert bundle to pem format: %w", err)
 		}
-		b.setPEMBytes(pemBytes)
+		b.pemBytes = pemBytes
 		return pemBytes, nil
-
 	case SPIFFE:
-		if spiffeBytes := b.getSPIFFEBytes(); spiffeBytes != nil {
-			return spiffeBytes, nil
+		if b.spiffeBytes != nil {
+			return b.spiffeBytes, nil
 		}
-
 		spiffeBytes, err := b.toSPIFFEBundle()
 		if err != nil {
 			return nil, fmt.Errorf("could not convert bundle to spiffe format: %w", err)
 		}
-		b.setSPIFFEBytes(spiffeBytes)
+		b.spiffeBytes = spiffeBytes
 		return spiffeBytes, nil
-
 	default:
 		return nil, fmt.Errorf("invalid format: %q", format)
 	}
-}
-
-func (b *Bundle) getJWKSBytes() []byte {
-	b.bytesMtx.RLock()
-	defer b.bytesMtx.RUnlock()
-
-	return b.jwksBytes
-}
-
-func (b *Bundle) getPEMBytes() []byte {
-	b.bytesMtx.RLock()
-	defer b.bytesMtx.RUnlock()
-
-	return b.pemBytes
-}
-
-func (b *Bundle) getSPIFFEBytes() []byte {
-	b.bytesMtx.RLock()
-	defer b.bytesMtx.RUnlock()
-
-	return b.spiffeBytes
-}
-
-func (b *Bundle) setJWKSBytes(jwksBytes []byte) {
-	b.bytesMtx.Lock()
-	defer b.bytesMtx.Unlock()
-
-	b.jwksBytes = jwksBytes
-}
-
-func (b *Bundle) setPEMBytes(pemBytes []byte) {
-	b.bytesMtx.Lock()
-	defer b.bytesMtx.Unlock()
-
-	b.pemBytes = pemBytes
-}
-
-func (b *Bundle) setSPIFFEBytes(spiffeBytes []byte) {
-	b.bytesMtx.Lock()
-	defer b.bytesMtx.Unlock()
-
-	b.spiffeBytes = spiffeBytes
 }
 
 // toJWKS converts to JWKS the current bundle.
