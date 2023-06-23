@@ -137,3 +137,45 @@ dZglS5kKnYigmwDh+/U=
 		})
 	}
 }
+
+func TestStringConversion(t *testing.T) {
+	for _, tt := range []struct {
+		name         string
+		formatString string
+		expectError  string
+		expectFormat BundleFormat
+	}{
+		{
+			name:         "invalid format",
+			formatString: "INVALID",
+			expectError:  `unknown bundle format: "INVALID"`,
+		},
+		{
+			name:         "jwks format",
+			formatString: "jwks",
+			expectFormat: JWKS,
+		},
+		{
+			name:         "pem format",
+			formatString: "pem",
+			expectFormat: PEM,
+		},
+		{
+			name:         "spiffe format",
+			formatString: "spiffe",
+			expectFormat: SPIFFE,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			format, err := BundleFormatFromString(tt.formatString)
+			if tt.expectError != "" {
+				require.EqualError(t, err, tt.expectError)
+				require.Zero(t, format)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.expectFormat, format)
+			require.Equal(t, tt.formatString, format.String())
+		})
+	}
+}
