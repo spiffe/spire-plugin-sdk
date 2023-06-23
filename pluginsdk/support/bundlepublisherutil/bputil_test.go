@@ -170,7 +170,7 @@ func TestStringConversion(t *testing.T) {
 			format, err := BundleFormatFromString(tt.formatString)
 			if tt.expectError != "" {
 				require.EqualError(t, err, tt.expectError)
-				require.Zero(t, format)
+				require.Equal(t, BundleFormatUnset, format)
 				return
 			}
 			require.NoError(t, err)
