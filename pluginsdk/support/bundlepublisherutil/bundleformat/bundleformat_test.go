@@ -1,4 +1,4 @@
-package bundlepublisherutil
+package bundleformat
 
 import (
 	"crypto/x509"
@@ -46,40 +46,13 @@ dZglS5kKnYigmwDh+/U=
 		RefreshHint:    1440,
 		SequenceNumber: 100,
 	}
-	standardJWKS := `{
-    "keys": [
-        {
-            %s"kty": "EC",
-            "crv": "P-256",
-            "x": "fK-wKTnKL7KFLM27lqq5DC-bxrVaH6rDV-IcCSEOeL4",
-            "y": "wq-g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KI",
-            "x5c": [
-                "MIIBKjCB0aADAgECAgEBMAoGCCqGSM49BAMCMAAwIhgPMDAwMTAxMDEwMDAwMDBaGA85OTk5MTIzMTIzNTk1OVowADBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHyvsCk5yi+yhSzNu5aquQwvm8a1Wh+qw1fiHAkhDni+wq+g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KKjODA2MA8GA1UdEwEB/wQFMAMBAf8wIwYDVR0RAQH/BBkwF4YVc3BpZmZlOi8vZG9tYWluMS50ZXN0MAoGCCqGSM49BAMCA0gAMEUCIA2dO09Xmakw2ekuHKWC4hBhCkpr5qY4bI8YUcXfxg/1AiEA67kMyH7bQnr7OVLUrL+b9ylAdZglS5kKnYigmwDh+/U="
-            ]
-        },
-        {
-            %s"kty": "EC",
-            "kid": "KID",
-            "crv": "P-256",
-            "x": "fK-wKTnKL7KFLM27lqq5DC-bxrVaH6rDV-IcCSEOeL4",
-            "y": "wq-g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KI"
-        }
-    ]%s
-}`
+	standardJWKS := `{"keys":[{%s"kty":"EC","crv":"P-256","x":"fK-wKTnKL7KFLM27lqq5DC-bxrVaH6rDV-IcCSEOeL4","y":"wq-g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KI","x5c":["MIIBKjCB0aADAgECAgEBMAoGCCqGSM49BAMCMAAwIhgPMDAwMTAxMDEwMDAwMDBaGA85OTk5MTIzMTIzNTk1OVowADBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABHyvsCk5yi+yhSzNu5aquQwvm8a1Wh+qw1fiHAkhDni+wq+g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KKjODA2MA8GA1UdEwEB/wQFMAMBAf8wIwYDVR0RAQH/BBkwF4YVc3BpZmZlOi8vZG9tYWluMS50ZXN0MAoGCCqGSM49BAMCA0gAMEUCIA2dO09Xmakw2ekuHKWC4hBhCkpr5qY4bI8YUcXfxg/1AiEA67kMyH7bQnr7OVLUrL+b9ylAdZglS5kKnYigmwDh+/U="]},{%s"kty":"EC","kid":"KID","crv":"P-256","x":"fK-wKTnKL7KFLM27lqq5DC-bxrVaH6rDV-IcCSEOeL4","y":"wq-g3TQWxYlV51TCPH030yXsRxvujD4hUUaIQrXk4KI"}]%s}`
 	expectedJWKS := fmt.Sprintf(standardJWKS, "", "", "")
-	expectedSPIFFEBundle := fmt.Sprintf(standardJWKS,
-		`"use": "x509-svid",
-            `,
-		`"use": "jwt-svid",
-            `,
-		`,
-    "spiffe_sequence": 100,
-    "spiffe_refresh_hint": 1440`,
-	)
+	expectedSPIFFEBundle := fmt.Sprintf(standardJWKS, `"use":"x509-svid",`, `"use":"jwt-svid",`, `,"spiffe_sequence":100,"spiffe_refresh_hint":1440`)
 
 	for _, tt := range []struct {
 		name        string
-		format      BundleFormat
+		format      Format
 		bundle      *types.Bundle
 		expectBytes []byte
 		expectError string
@@ -126,14 +99,24 @@ dZglS5kKnYigmwDh+/U=
 				require.Equal(t, tt.bundle, b.bundle)
 			}
 
-			bytes, err := b.Bytes(tt.format)
+			// Test the Format function that's provided by the formatter and
+			// also test the FormatBundle function that should have the same
+			// result.
+			formatResult, formatErr := b.Format(tt.format)
+			formatBundleResult, formatBundleErr := FormatBundle(tt.bundle, tt.format)
 			if tt.expectError != "" {
-				require.EqualError(t, err, tt.expectError)
-				require.Nil(t, bytes)
+				require.EqualError(t, formatErr, tt.expectError)
+				require.Nil(t, formatResult)
+
+				require.EqualError(t, formatBundleErr, tt.expectError)
+				require.Nil(t, formatBundleResult)
 				return
 			}
-			require.NoError(t, err)
-			require.Equal(t, string(tt.expectBytes), string(bytes))
+			require.NoError(t, formatErr)
+			require.NoError(t, formatBundleErr)
+
+			require.Equal(t, string(tt.expectBytes), string(formatResult))
+			require.Equal(t, string(tt.expectBytes), string(formatBundleResult))
 		})
 	}
 }
@@ -143,7 +126,7 @@ func TestStringConversion(t *testing.T) {
 		name         string
 		formatString string
 		expectError  string
-		expectFormat BundleFormat
+		expectFormat Format
 	}{
 		{
 			name:         "invalid format",
@@ -167,10 +150,10 @@ func TestStringConversion(t *testing.T) {
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			format, err := BundleFormatFromString(tt.formatString)
+			format, err := FromString(tt.formatString)
 			if tt.expectError != "" {
 				require.EqualError(t, err, tt.expectError)
-				require.Equal(t, BundleFormatUnset, format)
+				require.Equal(t, FormatUnset, format)
 				return
 			}
 			require.NoError(t, err)
