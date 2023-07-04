@@ -1,10 +1,10 @@
-// Package bundlepublisherutil provides helper functions for plugins
-// implementing the BundlePublisher interface.
+// Package bundleformat provides helper functions related with bundle formatting
+// for plugins implementing the BundlePublisher interface.
 // BundlePublisher plugins should use this package as a way to have a
 // standarized name for bundle formats in their configuration, and avoid the
 // re-implementation of bundle parsing logic of formats supported in this
 // package.
-package bundlepublisherutil
+package bundleformat
 
 import (
 	"bytes"
@@ -17,21 +17,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-jose/go-jose/v3"
 	"github.com/spiffe/go-spiffe/v2/bundle/spiffebundle"
 	"github.com/spiffe/go-spiffe/v2/spiffeid"
 	"github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types"
-	"gopkg.in/square/go-jose.v2"
 )
 
-const (
-	BundleFormatUnset BundleFormat = iota
-	SPIFFE
-	PEM
-	JWKS
-)
-
-// Bundle represents a bundle that can be formatted in different formats.
-type Bundle struct {
+// Formatter formats a bundle in different formats.
+type Formatter struct {
 	bundle *types.Bundle
 
 	jwksBytes   []byte
@@ -39,12 +32,18 @@ type Bundle struct {
 	spiffeBytes []byte
 }
 
-// KeyType represents the types of keys that are supported by the KeyManager.
-type BundleFormat int
+// Format represents the bundle formats that are supported by the Formatter.
+type Format int
 
-// BundleFormatFromString returns the BundleFormat corresponding to the provided
-// string.
-func BundleFormatFromString(s string) (BundleFormat, error) {
+const (
+	FormatUnset Format = iota
+	SPIFFE
+	PEM
+	JWKS
+)
+
+// FromString returns the Format corresponding to the provided string.
+func FromString(s string) (Format, error) {
 	switch strings.ToLower(s) {
 	case "spiffe":
 		return SPIFFE, nil
@@ -53,23 +52,23 @@ func BundleFormatFromString(s string) (BundleFormat, error) {
 	case "pem":
 		return PEM, nil
 	default:
-		return BundleFormatUnset, fmt.Errorf("unknown bundle format: %q", s)
+		return FormatUnset, fmt.Errorf("unknown bundle format: %q", s)
 	}
 }
 
 // NewBundle return a new *Bundle with the *types.Bundle provided.
 // Use the Bytes() function to get a slice of bytes with the bundle formatted in
 // the format specified.
-func NewBundle(pluginBundle *types.Bundle) *Bundle {
-	return &Bundle{
+func NewBundle(pluginBundle *types.Bundle) *Formatter {
+	return &Formatter{
 		bundle: pluginBundle,
 	}
 }
 
 // String returns the string name for the bundle format.
-func (bundleFormat BundleFormat) String() string {
+func (bundleFormat Format) String() string {
 	switch bundleFormat {
-	case BundleFormatUnset:
+	case FormatUnset:
 		return "UNSET"
 	case SPIFFE:
 		return "spiffe"
@@ -82,15 +81,15 @@ func (bundleFormat BundleFormat) String() string {
 	}
 }
 
-// Bytes returns the bundle in the form of a slice of bytes in
+// Format returns the bundle in the form of a slice of bytes in
 // the chosen format.
-func (b *Bundle) Bytes(format BundleFormat) ([]byte, error) {
+func (b *Formatter) Format(format Format) ([]byte, error) {
 	if b.bundle == nil {
 		return nil, errors.New("missing bundle")
 	}
 
 	switch format {
-	case BundleFormatUnset:
+	case FormatUnset:
 		return nil, errors.New("no format specified")
 	case JWKS:
 		if b.jwksBytes != nil {
@@ -128,7 +127,7 @@ func (b *Bundle) Bytes(format BundleFormat) ([]byte, error) {
 }
 
 // toJWKS converts to JWKS the current bundle.
-func (b *Bundle) toJWKS() ([]byte, error) {
+func (b *Formatter) toJWKS() ([]byte, error) {
 	var jwks jose.JSONWebKeySet
 
 	x509Authorities, jwtAuthorities, err := getAuthorities(b.bundle)
@@ -150,12 +149,11 @@ func (b *Bundle) toJWKS() ([]byte, error) {
 		})
 	}
 
-	var out interface{} = jwks
-	return json.MarshalIndent(out, "", "    ")
+	return json.Marshal(jwks)
 }
 
 // toPEM converts to PEM the current bundle.
-func (b *Bundle) toPEM() ([]byte, error) {
+func (b *Formatter) toPEM() ([]byte, error) {
 	bundleData := new(bytes.Buffer)
 	for _, x509Authority := range b.bundle.X509Authorities {
 		if err := pem.Encode(bundleData, &pem.Block{
@@ -170,7 +168,7 @@ func (b *Bundle) toPEM() ([]byte, error) {
 }
 
 // toSPIFFEBundle converts to a SPIFFE bundle the current bundle.
-func (b *Bundle) toSPIFFEBundle() ([]byte, error) {
+func (b *Formatter) toSPIFFEBundle() ([]byte, error) {
 	sb, err := spiffeBundleFromPluginProto(b.bundle)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert bundle: %w", err)
@@ -180,12 +178,13 @@ func (b *Bundle) toSPIFFEBundle() ([]byte, error) {
 		return nil, fmt.Errorf("failed to marshal bundle: %w", err)
 	}
 
-	var o bytes.Buffer
-	if err := json.Indent(&o, docBytes, "", "    "); err != nil {
-		return nil, err
-	}
+	return docBytes, nil
+}
 
-	return o.Bytes(), nil
+// FormatBundle returns the bundle in the form of a slice of bytes in
+// the chosen format.
+func FormatBundle(bundle *types.Bundle, format Format) ([]byte, error) {
+	return NewBundle(bundle).Format(format)
 }
 
 // getAuthorities gets the X.509 authorities and JWT authorities from the
