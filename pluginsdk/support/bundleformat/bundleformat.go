@@ -23,6 +23,13 @@ import (
 	"github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types"
 )
 
+const (
+	FormatUnset Format = iota
+	SPIFFE
+	PEM
+	JWKS
+)
+
 // Formatter formats a bundle in different formats.
 type Formatter struct {
 	bundle *types.Bundle
@@ -35,12 +42,21 @@ type Formatter struct {
 // Format represents the bundle formats that are supported by the Formatter.
 type Format int
 
-const (
-	FormatUnset Format = iota
-	SPIFFE
-	PEM
-	JWKS
-)
+// String returns the string name for the bundle format.
+func (bundleFormat Format) String() string {
+	switch bundleFormat {
+	case FormatUnset:
+		return "UNSET"
+	case SPIFFE:
+		return "spiffe"
+	case PEM:
+		return "pem"
+	case JWKS:
+		return "jwks"
+	default:
+		return fmt.Sprintf("UNKNOWN(%d)", int(bundleFormat))
+	}
+}
 
 // FromString returns the Format corresponding to the provided string.
 func FromString(s string) (Format, error) {
@@ -56,28 +72,12 @@ func FromString(s string) (Format, error) {
 	}
 }
 
-// NewBundle return a new *Bundle with the *types.Bundle provided.
+// NewFormatter return a new *Bundle with the *types.Bundle provided.
 // Use the Bytes() function to get a slice of bytes with the bundle formatted in
 // the format specified.
-func NewBundle(pluginBundle *types.Bundle) *Formatter {
+func NewFormatter(pluginBundle *types.Bundle) *Formatter {
 	return &Formatter{
 		bundle: pluginBundle,
-	}
-}
-
-// String returns the string name for the bundle format.
-func (bundleFormat Format) String() string {
-	switch bundleFormat {
-	case FormatUnset:
-		return "UNSET"
-	case SPIFFE:
-		return "spiffe"
-	case PEM:
-		return "pem"
-	case JWKS:
-		return "jwks"
-	default:
-		return fmt.Sprintf("UNKNOWN(%d)", int(bundleFormat))
 	}
 }
 
@@ -184,7 +184,7 @@ func (b *Formatter) toSPIFFEBundle() ([]byte, error) {
 // FormatBundle returns the bundle in the form of a slice of bytes in
 // the chosen format.
 func FormatBundle(bundle *types.Bundle, format Format) ([]byte, error) {
-	return NewBundle(bundle).Format(format)
+	return NewFormatter(bundle).Format(format)
 }
 
 // getAuthorities gets the X.509 authorities and JWT authorities from the
