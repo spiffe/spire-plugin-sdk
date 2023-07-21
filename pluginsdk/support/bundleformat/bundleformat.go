@@ -72,7 +72,7 @@ func FromString(s string) (Format, error) {
 	}
 }
 
-// NewFormatter return a new *Bundle with the *types.Bundle provided.
+// NewFormatter return a new *Formatter with the *types.Bundle provided.
 // Use the Bytes() function to get a slice of bytes with the bundle formatted in
 // the format specified.
 func NewFormatter(pluginBundle *types.Bundle) *Formatter {
