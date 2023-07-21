@@ -93,7 +93,7 @@ dZglS5kKnYigmwDh+/U=
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			b := NewBundle(tt.bundle)
+			b := NewFormatter(tt.bundle)
 
 			if !proto.Equal(tt.bundle, b.bundle) {
 				require.Equal(t, tt.bundle, b.bundle)
