@@ -64,6 +64,7 @@ protos := \
 	proto/spire/plugin/types/bundle.proto \
 	proto/spire/plugin/types/jwtkey.proto \
 	proto/spire/plugin/types/x509certificate.proto \
+	proto/spire/plugin/types/x509taintedkey.proto \
 
 ############################################################################
 # OS/ARCH detection

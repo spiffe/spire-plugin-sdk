@@ -4,6 +4,7 @@ option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types
 
 import "spire/plugin/types/jwtkey.proto";
 import "spire/plugin/types/x509certificate.proto";
+import "spire/plugin/types/x509taintedkey.proto";
 
 message Bundle {
     // The name of the trust domain the bundle belongs to (e.g., "example.org").
@@ -21,4 +22,6 @@ message Bundle {
 
     // The sequence number of the bundle.
     uint64 sequence_number = 5;
+
+    repeated X509TaintedKey x509_tainted_keys = 6;
 }

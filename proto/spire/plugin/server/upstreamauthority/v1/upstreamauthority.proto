@@ -4,6 +4,7 @@ option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/serve
 
 import "spire/plugin/types/jwtkey.proto";
 import "spire/plugin/types/x509certificate.proto";
+import "spire/plugin/types/x509taintedkey.proto";
 
 service UpstreamAuthority {
     // Mints an X.509 CA and responds with the signed X.509 CA certificate
@@ -50,6 +51,8 @@ message MintX509CAResponse {
 
     // Required. The trusted X.509 root authorities for the upstream authority.
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 2;
+
+    repeated spire.plugin.types.X509TaintedKey x509_tainted_keys = 3;
 }
 
 message PublishJWTKeyRequest {
