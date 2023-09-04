@@ -3,5 +3,6 @@ package spire.plugin.types;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types";
 
 message X509TaintedKey {
+    // Public key of a X.509 authority that is no longer secure to use.
     bytes key = 1;
 }

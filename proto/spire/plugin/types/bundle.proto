@@ -23,5 +23,6 @@ message Bundle {
     // The sequence number of the bundle.
     uint64 sequence_number = 5;
 
+    // X.509 authorities that are no longer secure.
     repeated X509TaintedKey x509_tainted_keys = 6;
 }

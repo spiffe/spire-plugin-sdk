@@ -35,7 +35,8 @@ type Bundle struct {
 	// provider, in seconds. Can be zero (meaning no hint available).
 	RefreshHint int64 `protobuf:"varint,4,opt,name=refresh_hint,json=refreshHint,proto3" json:"refresh_hint,omitempty"`
 	// The sequence number of the bundle.
-	SequenceNumber  uint64            `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	SequenceNumber uint64 `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	// X.509 authorities that are no longer secure.
 	X509TaintedKeys []*X509TaintedKey `protobuf:"bytes,6,rep,name=x509_tainted_keys,json=x509TaintedKeys,proto3" json:"x509_tainted_keys,omitempty"`
 }
 

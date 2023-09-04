@@ -52,6 +52,7 @@ message MintX509CAResponse {
     // Required. The trusted X.509 root authorities for the upstream authority.
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 2;
 
+    // X.509 authorities that are no longer secure.
     repeated spire.plugin.types.X509TaintedKey x509_tainted_keys = 3;
 }
 

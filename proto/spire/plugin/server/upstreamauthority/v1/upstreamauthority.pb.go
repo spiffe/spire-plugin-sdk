@@ -92,7 +92,8 @@ type MintX509CAResponse struct {
 	X509CaChain []*types.X509Certificate `protobuf:"bytes,1,rep,name=x509_ca_chain,json=x509CaChain,proto3" json:"x509_ca_chain,omitempty"`
 	// Required. The trusted X.509 root authorities for the upstream authority.
 	UpstreamX509Roots []*types.X509Certificate `protobuf:"bytes,2,rep,name=upstream_x509_roots,json=upstreamX509Roots,proto3" json:"upstream_x509_roots,omitempty"`
-	X509TaintedKeys   []*types.X509TaintedKey  `protobuf:"bytes,3,rep,name=x509_tainted_keys,json=x509TaintedKeys,proto3" json:"x509_tainted_keys,omitempty"`
+	// X.509 authorities that are no longer secure.
+	X509TaintedKeys []*types.X509TaintedKey `protobuf:"bytes,3,rep,name=x509_tainted_keys,json=x509TaintedKeys,proto3" json:"x509_tainted_keys,omitempty"`
 }
 
 func (x *MintX509CAResponse) Reset() {
