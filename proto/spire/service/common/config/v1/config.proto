@@ -41,8 +41,20 @@ message ValidateResponse {
     // Required. True when the plugin deems the configuration usable.
     bool valid = 1;
 
-    // Required. Text message suitable for presentation to end user.
-    string text_message = 2;
+    // Required. One or more notes providing feedback to an end user.
+
+    // Examples of valid configuration notes include:
+    // - "configuration valid"
+    // - "please ensure port 23423 is open"
+    // - "check access to (whatever) from the deployment environment"
+    // etc.
+
+    // Examples of invalidate configuration notes include:
+    // - value for "plugin.port" is not a number.
+    // - missing field "plugin.user"
+    // - specified SPIFFE ID in "plugin.spiffe_id" is not within system trust domain.
+    // - etc.
+    repeated string notes = 2;
 }
 
 message CoreConfiguration {
