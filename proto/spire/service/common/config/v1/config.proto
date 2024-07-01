@@ -41,7 +41,7 @@ message ValidateResponse {
     // Required. True when the plugin deems the configuration usable.
     bool valid = 1;
 
-    // Required. One or more notes providing feedback to an end user.
+    // Optional. Zero or more notes providing feedback to an end user.
 
     // Examples of valid configuration notes include:
     // - "configuration valid"
