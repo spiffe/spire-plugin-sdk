@@ -179,7 +179,7 @@ type ValidateResponse struct {
 
 	// Required. True when the plugin deems the configuration usable.
 	Valid bool `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
-	// Examples of invalidate configuration notes include:
+	// Examples of invalid configuration notes include:
 	// - value for "plugin.port" is not a number.
 	// - missing field "plugin.user"
 	// - specified SPIFFE ID in "plugin.spiffe_id" is not within system trust domain.
