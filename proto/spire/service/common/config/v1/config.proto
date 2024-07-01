@@ -49,7 +49,7 @@ message ValidateResponse {
     // - "check access to (whatever) from the deployment environment"
     // etc.
 
-    // Examples of invalidate configuration notes include:
+    // Examples of invalid configuration notes include:
     // - value for "plugin.port" is not a number.
     // - missing field "plugin.user"
     // - specified SPIFFE ID in "plugin.spiffe_id" is not within system trust domain.
