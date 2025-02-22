@@ -39,6 +39,7 @@ plugin-protos := \
 	proto/spire/plugin/agent/keymanager/v1/keymanager.proto \
 	proto/spire/plugin/agent/nodeattestor/v1/nodeattestor.proto \
 	proto/spire/plugin/agent/svidstore/v1/svidstore.proto \
+	proto/spire/plugin/agent/trustbundlesource/v1/trustbundlesource.proto \
 	proto/spire/plugin/agent/workloadattestor/v1/workloadattestor.proto \
 	proto/spire/plugin/server/bundlepublisher/v1/bundlepublisher.proto \
 	proto/spire/plugin/server/credentialcomposer/v1/credentialcomposer.proto \

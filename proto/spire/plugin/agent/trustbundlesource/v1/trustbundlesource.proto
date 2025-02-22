@@ -1,0 +1,38 @@
+syntax = "proto3";
+package spire.plugin.agent.trustbundlesource.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/trustbundlesource/v1;svitrustbundlesourcev1";
+
+import "google/protobuf/timestamp.proto";
+import "spire/plugin/types/bundle.proto";
+    
+service TrustBundleSource {
+    // Get an up to date Trust Bundle
+    rpc GetTrustBundle(GetTrustBundleRequest) returns (GetTrustBundleResponse);
+}
+
+message GetTrustBundleRequest {
+    // The trust domain for which to retrieve the trust bundle
+    string trust_domain = 1;
+
+    // Hint for which type of action this trust bundle will be used for
+    Use use_hint = 2;
+
+    // Optional server url that is being used with the retrieved bundle
+    string server_url = 3;
+
+    // How many connection attempts to the server have been made so far
+    int32 connection_attempts = 4;
+
+    // If rebootstrapping, when was rebootstrapping started
+    google.protobuf.Timestamp rebootstrap_starttime = 5;
+}
+
+message GetTrustBundleResponse {
+    spire.plugin.types.Bundle bundle = 1;
+}
+
+enum Use {
+    UNSPECIFIED = 0;
+    BOOTSTRAP = 1;
+    REBOOTSTRAP = 2;
+}
