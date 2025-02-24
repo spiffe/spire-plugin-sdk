@@ -23,8 +23,8 @@ message GetTrustBundleRequest {
     // How many connection attempts to the server have been made so far
     int32 connection_attempts = 4;
 
-    // If rebootstrapping, when was rebootstrapping started
-    google.protobuf.Timestamp rebootstrap_starttime = 5;
+    // When was (re)bootstrapping started
+    google.protobuf.Timestamp starttime = 5;
 }
 
 message GetTrustBundleResponse {
