@@ -29,6 +29,7 @@ message GetTrustBundleRequest {
 
 message GetTrustBundleResponse {
     spire.plugin.types.Bundle bundle = 1;
+    bool insecure_bootstrap = 2;
 }
 
 enum Use {
