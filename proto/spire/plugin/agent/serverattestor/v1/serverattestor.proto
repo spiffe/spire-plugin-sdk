@@ -1,0 +1,42 @@
+syntax = "proto3";
+package spire.plugin.agent.serverattestor.v1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/serverattestor/v1;sviserverattestorv1";
+
+import "google/protobuf/timestamp.proto";
+import "spire/plugin/types/bundle.proto";
+    
+service ServerAttestor {
+    // Get an up to date Trust Bundle for the initial contact with the server
+    rpc GetTrustBundle(GetTrustBundleRequest) returns (GetTrustBundleResponse);
+}
+
+message GetTrustBundleRequest {
+    // Information the Attestor may or may not use when determining the best
+    // trust bundle to use to contact the server
+
+    // Hint for which type of action this trust bundle will be used for
+    Use use_hint = 1;
+
+    // Optional server url that is being used with the retrieved bundle
+    string server_url = 2;
+
+    // How many connection attempts to the server have been made so far
+    int32 connection_attempts = 3;
+
+    // When was (re)bootstrapping started
+    google.protobuf.Timestamp starttime = 4;
+}
+
+message GetTrustBundleResponse {
+    // The trust bundle to use to talk to the server
+    spire.plugin.types.Bundle bundle = 1;
+
+    // Use the insecure bootstrap method
+    bool insecure_bootstrap = 2;
+}
+
+enum Use {
+    UNSPECIFIED = 0;
+    BOOTSTRAP = 1;
+    REBOOTSTRAP = 2;
+}
