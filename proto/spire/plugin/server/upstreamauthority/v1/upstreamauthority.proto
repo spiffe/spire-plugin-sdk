@@ -29,6 +29,15 @@ service UpstreamAuthority {
     // encountered while tracking changes to the upstream JWT keys as SPIRE
     // Server will not reopen a closed stream until the next JWT key rotation.
     rpc PublishJWTKeyAndSubscribe(PublishJWTKeyRequest) returns (stream PublishJWTKeyResponse);
+
+    // Returns the trust bundle of the local trust domain as seen by the upstream
+    // authority. Returns the current set of X.509 roots and JWT public keys
+    // that make up the trust bundle of the trust domain. If supported by the
+    // implementation, subsequent responses on the stream contain trust bundle
+    // updates, otherwise the stream is closed after the initial response.
+    //
+    // This RPC is optional and will return NotImplemented if unsupported.
+    rpc SubscribeToLocalBundle(SubscribeToLocalBundleRequest) returns (stream SubscribeToLocalBundleResponse);
 }
 
 message MintX509CARequest {
@@ -60,4 +69,14 @@ message PublishJWTKeyRequest {
 message PublishJWTKeyResponse {
     // Required. The upstream JWT signing keys.
     repeated spire.plugin.types.JWTKey upstream_jwt_keys = 1;
+}
+
+message SubscribeToLocalBundleRequest {
+}
+
+message SubscribeToLocalBundleResponse {
+    // Required. The trusted X.509 root authorities for the upstream authority.
+    repeated spire.plugin.types.X509Certificate upstream_x509_roots = 1;
+    // Required. The upstream JWT signing keys.
+    repeated spire.plugin.types.JWTKey upstream_jwt_keys = 2;
 }
