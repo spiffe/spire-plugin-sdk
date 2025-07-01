@@ -40,6 +40,14 @@ type UpstreamAuthorityClient interface {
 	// encountered while tracking changes to the upstream JWT keys as SPIRE
 	// Server will not reopen a closed stream until the next JWT key rotation.
 	PublishJWTKeyAndSubscribe(ctx context.Context, in *PublishJWTKeyRequest, opts ...grpc.CallOption) (UpstreamAuthority_PublishJWTKeyAndSubscribeClient, error)
+	// Returns the trust bundle of the local trust domain as seen by the upstream
+	// authority. Returns the current set of X.509 roots and JWT public keys
+	// that make up the trust bundle of the trust domain. If supported by the
+	// implementation, subsequent responses on the stream contain trust bundle
+	// updates, otherwise the stream is closed after the initial response.
+	//
+	// This RPC is optional and will return NotImplemented if unsupported.
+	SubscribeToLocalBundle(ctx context.Context, in *SubscribeToLocalBundleRequest, opts ...grpc.CallOption) (UpstreamAuthority_SubscribeToLocalBundleClient, error)
 }
 
 type upstreamAuthorityClient struct {
@@ -114,6 +122,38 @@ func (x *upstreamAuthorityPublishJWTKeyAndSubscribeClient) Recv() (*PublishJWTKe
 	return m, nil
 }
 
+func (c *upstreamAuthorityClient) SubscribeToLocalBundle(ctx context.Context, in *SubscribeToLocalBundleRequest, opts ...grpc.CallOption) (UpstreamAuthority_SubscribeToLocalBundleClient, error) {
+	stream, err := c.cc.NewStream(ctx, &UpstreamAuthority_ServiceDesc.Streams[2], "/spire.plugin.server.upstreamauthority.v1.UpstreamAuthority/SubscribeToLocalBundle", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &upstreamAuthoritySubscribeToLocalBundleClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type UpstreamAuthority_SubscribeToLocalBundleClient interface {
+	Recv() (*SubscribeToLocalBundleResponse, error)
+	grpc.ClientStream
+}
+
+type upstreamAuthoritySubscribeToLocalBundleClient struct {
+	grpc.ClientStream
+}
+
+func (x *upstreamAuthoritySubscribeToLocalBundleClient) Recv() (*SubscribeToLocalBundleResponse, error) {
+	m := new(SubscribeToLocalBundleResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // UpstreamAuthorityServer is the server API for UpstreamAuthority service.
 // All implementations must embed UnimplementedUpstreamAuthorityServer
 // for forward compatibility
@@ -140,6 +180,14 @@ type UpstreamAuthorityServer interface {
 	// encountered while tracking changes to the upstream JWT keys as SPIRE
 	// Server will not reopen a closed stream until the next JWT key rotation.
 	PublishJWTKeyAndSubscribe(*PublishJWTKeyRequest, UpstreamAuthority_PublishJWTKeyAndSubscribeServer) error
+	// Returns the trust bundle of the local trust domain as seen by the upstream
+	// authority. Returns the current set of X.509 roots and JWT public keys
+	// that make up the trust bundle of the trust domain. If supported by the
+	// implementation, subsequent responses on the stream contain trust bundle
+	// updates, otherwise the stream is closed after the initial response.
+	//
+	// This RPC is optional and will return NotImplemented if unsupported.
+	SubscribeToLocalBundle(*SubscribeToLocalBundleRequest, UpstreamAuthority_SubscribeToLocalBundleServer) error
 	mustEmbedUnimplementedUpstreamAuthorityServer()
 }
 
@@ -152,6 +200,9 @@ func (UnimplementedUpstreamAuthorityServer) MintX509CAAndSubscribe(*MintX509CARe
 }
 func (UnimplementedUpstreamAuthorityServer) PublishJWTKeyAndSubscribe(*PublishJWTKeyRequest, UpstreamAuthority_PublishJWTKeyAndSubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method PublishJWTKeyAndSubscribe not implemented")
+}
+func (UnimplementedUpstreamAuthorityServer) SubscribeToLocalBundle(*SubscribeToLocalBundleRequest, UpstreamAuthority_SubscribeToLocalBundleServer) error {
+	return status.Errorf(codes.Unimplemented, "method SubscribeToLocalBundle not implemented")
 }
 func (UnimplementedUpstreamAuthorityServer) mustEmbedUnimplementedUpstreamAuthorityServer() {}
 
@@ -208,6 +259,27 @@ func (x *upstreamAuthorityPublishJWTKeyAndSubscribeServer) Send(m *PublishJWTKey
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UpstreamAuthority_SubscribeToLocalBundle_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(SubscribeToLocalBundleRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UpstreamAuthorityServer).SubscribeToLocalBundle(m, &upstreamAuthoritySubscribeToLocalBundleServer{stream})
+}
+
+type UpstreamAuthority_SubscribeToLocalBundleServer interface {
+	Send(*SubscribeToLocalBundleResponse) error
+	grpc.ServerStream
+}
+
+type upstreamAuthoritySubscribeToLocalBundleServer struct {
+	grpc.ServerStream
+}
+
+func (x *upstreamAuthoritySubscribeToLocalBundleServer) Send(m *SubscribeToLocalBundleResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // UpstreamAuthority_ServiceDesc is the grpc.ServiceDesc for UpstreamAuthority service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -224,6 +296,11 @@ var UpstreamAuthority_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "PublishJWTKeyAndSubscribe",
 			Handler:       _UpstreamAuthority_PublishJWTKeyAndSubscribe_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SubscribeToLocalBundle",
+			Handler:       _UpstreamAuthority_SubscribeToLocalBundle_Handler,
 			ServerStreams: true,
 		},
 	},
