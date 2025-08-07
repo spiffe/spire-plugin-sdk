@@ -1,6 +1,8 @@
 module github.com/spiffe/spire-plugin-sdk
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.12
 
 require (
 	github.com/go-jose/go-jose/v3 v3.0.0
