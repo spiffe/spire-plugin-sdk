@@ -104,8 +104,12 @@ go_bin_dir := $(go_dir)/bin
 go_url = https://storage.googleapis.com/golang/go$(go_version).$(os1)-$(arch2).tar.gz
 go_path := PATH="$(go_bin_dir):$(PATH)"
 
-protoc_version = 3.20.1
-ifeq ($(arch2),arm64)
+protoc_version = 30.2
+ifeq ($(os1),windows)
+protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-win64.zip
+else ifeq ($(arch1),arm64)
+protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-aarch_64.zip
+else ifeq ($(arch1),aarch64)
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-aarch_64.zip
 else
 protoc_url = https://github.com/protocolbuffers/protobuf/releases/download/v$(protoc_version)/protoc-$(protoc_version)-$(os2)-$(arch1).zip
@@ -118,7 +122,7 @@ protoc_gen_go_base_dir := $(build_dir)/protoc-gen-go
 protoc_gen_go_dir := $(protoc_gen_go_base_dir)/$(protoc_gen_go_version)-go$(go_version)
 protoc_gen_go_bin := $(protoc_gen_go_dir)/protoc-gen-go
 
-protoc_gen_go_grpc_version := v1.1.0
+protoc_gen_go_grpc_version := v1.5.1
 protoc_gen_go_grpc_base_dir := $(build_dir)/protoc-gen-go-grpc
 protoc_gen_go_grpc_dir := $(protoc_gen_go_grpc_base_dir)/$(protoc_gen_go_grpc_version)-go$(go_version)
 protoc_gen_go_grpc_bin := $(protoc_gen_go_grpc_dir)/protoc-gen-go-grpc
@@ -267,6 +271,7 @@ endif
 # correct go binary.
 go-check:
 ifneq (go$(go_version), $(shell $(go_path) go version 2>/dev/null | cut -f3 -d' '))
+	@echo "go_url:" $(go_url)
 	@echo "Installing go$(go_version)..."
 	$(E)rm -rf $(dir $(go_dir))
 	$(E)mkdir -p $(go_dir)
@@ -290,10 +295,9 @@ $(protoc_gen_go_bin): | go-check
 
 $(protoc_gen_go_grpc_bin): | go-check
 	@echo "Installing protoc-gen-go-grpc $(protoc_gen_go_grpc_version)..."
-	$(E)rm -rf $(protoc_gen_go_grpc_base_dir)
-	$(E)mkdir -p $(protoc_gen_go_grpc_dir)
-	$(E)echo "module tools" > $(protoc_gen_go_grpc_dir)/go.mod
-	$(E)cd $(protoc_gen_go_grpc_dir) && GOBIN=$(protoc_gen_go_grpc_dir) $(go_path) go get google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(protoc_gen_go_grpc_version)
+	@rm -rf $(protoc_gen_go_grpc_base_dir)
+	@mkdir -p $(protoc_gen_go_grpc_dir)
+	@GOBIN=$(protoc_gen_go_grpc_dir) $(go_path) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(protoc_gen_go_grpc_version)
 
 $(protoc_gen_go_spire_bin): $(wildcard ./cmd/protoc-gen-go-spire/*) | go-check
 	@echo "Installing protoc-gen-go-spire..."
