@@ -1,0 +1,18 @@
+syntax = "proto3";
+package spire.plugin.types;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types";
+
+message WITKey {
+    // The PKIX encoded public key.
+    bytes public_key = 1;
+
+    // The key identifier.
+    string key_id = 2;
+
+    // When the key expires (seconds since Unix epoch). If zero, the key does
+    // not expire.
+    int64 expires_at = 3;
+
+    // Indicates if the key has been tainted. A tainted key is not safe to be used anymore.
+    bool tainted = 4;
+}
