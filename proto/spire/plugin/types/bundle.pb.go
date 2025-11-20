@@ -34,6 +34,8 @@ type Bundle struct {
 	RefreshHint int64 `protobuf:"varint,4,opt,name=refresh_hint,json=refreshHint,proto3" json:"refresh_hint,omitempty"`
 	// The sequence number of the bundle.
 	SequenceNumber uint64 `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	// WIT authorities for authenticating WIT-SVIDs.
+	WitAuthorities []*WITKey `protobuf:"bytes,6,rep,name=wit_authorities,json=witAuthorities,proto3" json:"wit_authorities,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -103,17 +105,25 @@ func (x *Bundle) GetSequenceNumber() uint64 {
 	return 0
 }
 
+func (x *Bundle) GetWitAuthorities() []*WITKey {
+	if x != nil {
+		return x.WitAuthorities
+	}
+	return nil
+}
+
 var File_spire_plugin_types_bundle_proto protoreflect.FileDescriptor
 
 const file_spire_plugin_types_bundle_proto_rawDesc = "" +
 	"\n" +
-	"\x1fspire/plugin/types/bundle.proto\x12\x12spire.plugin.types\x1a\x1fspire/plugin/types/jwtkey.proto\x1a(spire/plugin/types/x509certificate.proto\"\x8c\x02\n" +
+	"\x1fspire/plugin/types/bundle.proto\x12\x12spire.plugin.types\x1a\x1fspire/plugin/types/jwtkey.proto\x1a(spire/plugin/types/x509certificate.proto\x1a\x1fspire/plugin/types/witkey.proto\"\xd1\x02\n" +
 	"\x06Bundle\x12!\n" +
 	"\ftrust_domain\x18\x01 \x01(\tR\vtrustDomain\x12N\n" +
 	"\x10x509_authorities\x18\x02 \x03(\v2#.spire.plugin.types.X509CertificateR\x0fx509Authorities\x12C\n" +
 	"\x0fjwt_authorities\x18\x03 \x03(\v2\x1a.spire.plugin.types.JWTKeyR\x0ejwtAuthorities\x12!\n" +
 	"\frefresh_hint\x18\x04 \x01(\x03R\vrefreshHint\x12'\n" +
-	"\x0fsequence_number\x18\x05 \x01(\x04R\x0esequenceNumberB=Z;github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/typesb\x06proto3"
+	"\x0fsequence_number\x18\x05 \x01(\x04R\x0esequenceNumber\x12C\n" +
+	"\x0fwit_authorities\x18\x06 \x03(\v2\x1a.spire.plugin.types.WITKeyR\x0ewitAuthoritiesB=Z;github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/typesb\x06proto3"
 
 var (
 	file_spire_plugin_types_bundle_proto_rawDescOnce sync.Once
@@ -132,15 +142,17 @@ var file_spire_plugin_types_bundle_proto_goTypes = []any{
 	(*Bundle)(nil),          // 0: spire.plugin.types.Bundle
 	(*X509Certificate)(nil), // 1: spire.plugin.types.X509Certificate
 	(*JWTKey)(nil),          // 2: spire.plugin.types.JWTKey
+	(*WITKey)(nil),          // 3: spire.plugin.types.WITKey
 }
 var file_spire_plugin_types_bundle_proto_depIdxs = []int32{
 	1, // 0: spire.plugin.types.Bundle.x509_authorities:type_name -> spire.plugin.types.X509Certificate
 	2, // 1: spire.plugin.types.Bundle.jwt_authorities:type_name -> spire.plugin.types.JWTKey
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 2: spire.plugin.types.Bundle.wit_authorities:type_name -> spire.plugin.types.WITKey
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_spire_plugin_types_bundle_proto_init() }
@@ -150,6 +162,7 @@ func file_spire_plugin_types_bundle_proto_init() {
 	}
 	file_spire_plugin_types_jwtkey_proto_init()
 	file_spire_plugin_types_x509certificate_proto_init()
+	file_spire_plugin_types_witkey_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
