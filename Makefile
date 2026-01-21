@@ -102,7 +102,7 @@ go_version_full := $(shell cat .go-version)
 go_version := $(go_version_full:.0=)
 go_dir := $(build_dir)/go/$(go_version)
 go_bin_dir := $(go_dir)/bin
-go_url = https://storage.googleapis.com/golang/go$(go_version).$(os1)-$(arch2).tar.gz
+go_url = https://go.dev/dl/go$(go_version).$(os1)-$(arch2).tar.gz
 go_path := PATH="$(go_bin_dir):$(PATH)"
 
 protoc_version = 30.2
