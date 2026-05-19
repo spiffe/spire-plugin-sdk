@@ -1,6 +1,7 @@
 syntax = "proto3";
 package spire.plugin.agent.workloadattestor.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1";
+
 
 service WorkloadAttestor {
     // Attests the specified workload process. If the process is not one the
@@ -15,6 +16,9 @@ service WorkloadAttestor {
 message AttestRequest {
     // Required. The process ID of the workload to attest.
     int32 pid = 1;
+
+    // Optional. Variable of type map[string]string
+    map<string,string> metadata = 2;
 }
 
 message AttestResponse {

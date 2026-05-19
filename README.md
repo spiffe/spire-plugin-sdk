@@ -1,7 +1,7 @@
 # SPIRE Plugin SDK
 
 This repository contains the service definitions, code generated stubs, and
-infrastructure for running and testing [SPIRE](https://github.com/spiffe/spire) plugins.
+infrastructure for running and testing [SPIRE](https://github.com/accuknox/spire) plugins.
 
 ## Overview
 
@@ -82,15 +82,15 @@ This repository is tagged along with SPIRE releases with the same name, even if
 there are no changes to the APIs between SPIRE versions. This allows consumers
 to always pick a tag that matches up with their deployment. Even so, SPIRE
 maintains API compatibility between SPIRE versions. SPIRE will clearly indicate
-in the [CHANGELOG](https://github.com/spiffe/spire/blob/main/CHANGELOG) when
+in the [CHANGELOG](https://github.com/accuknox/spire/blob/main/CHANGELOG) when
 APIs are deprecated and issue warnings at runtime when they are used well in
 advance of any removal.
 
 ## Contributing
 
 This repository follows the same governance and contribution guidelines as the
-[SPIRE](https://github.com/spiffe/spire) project.
+[SPIRE](https://github.com/accuknox/spire) project.
 
 For specifics on getting started, see [CONTRIBUTING](/docs/CONTRIBUTING.md).
 
-Please open [Issues](https://github.com/spiffe/spire/issues) to request features or file bugs.
+Please open [Issues](https://github.com/accuknox/spire/issues) to request features or file bugs.

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package spire.hostservice.common.metrics.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/hostservice/common/metrics/v1;metricsv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/hostservice/common/metrics/v1;metricsv1";
 
 import "google/protobuf/empty.proto";
 

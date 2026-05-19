@@ -7,7 +7,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types"
+	"github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/types"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )

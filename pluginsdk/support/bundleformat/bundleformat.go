@@ -18,9 +18,9 @@ import (
 	"time"
 
 	"github.com/go-jose/go-jose/v3"
-	"github.com/spiffe/go-spiffe/v2/bundle/spiffebundle"
-	"github.com/spiffe/go-spiffe/v2/spiffeid"
-	"github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/types"
+	"github.com/accuknox/go-spiffe/v2/bundle/spiffebundle"
+	"github.com/accuknox/go-spiffe/v2/spiffeid"
+	"github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/types"
 )
 
 const (

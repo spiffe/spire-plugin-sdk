@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package spire.service.common.config.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1;configv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/service/common/config/v1;configv1";
 
 service Config {
     // Configure is called by SPIRE to configure the plugin with the plugin

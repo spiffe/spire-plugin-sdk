@@ -3,7 +3,7 @@ package private
 import (
 	"context"
 
-	initv1 "github.com/spiffe/spire-plugin-sdk/internal/proto/spire/service/private/init/v1"
+	initv1 "github.com/accuknox/spire-plugin-sdk/internal/proto/spire/service/private/init/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

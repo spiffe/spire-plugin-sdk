@@ -1,6 +1,6 @@
 syntax = "proto3";
 package spire.plugin.server.nodeattestor.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/nodeattestor/v1;nodeattestorv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/server/nodeattestor/v1;nodeattestorv1";
 
 service NodeAttestor {
     // Attest attests attestation payload received from the agent and

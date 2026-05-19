@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
-	"github.com/spiffe/spire-plugin-sdk/plugintest"
-	nodeattestorv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1"
-	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
-	"github.com/spiffe/spire-plugin-sdk/templates/agent/nodeattestor"
+	"github.com/accuknox/spire-plugin-sdk/pluginsdk"
+	"github.com/accuknox/spire-plugin-sdk/plugintest"
+	nodeattestorv1 "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1"
+	configv1 "github.com/accuknox/spire-plugin-sdk/proto/spire/service/common/config/v1"
+	"github.com/accuknox/spire-plugin-sdk/templates/agent/nodeattestor"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

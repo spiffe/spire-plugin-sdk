@@ -1,6 +1,6 @@
 syntax = "proto3";
 package spire.plugin.agent.keymanager.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/keymanager/v1;keymanagerv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/agent/keymanager/v1;keymanagerv1";
 
 service KeyManager {
     // Generates a new private key with the given ID. If a key already exists

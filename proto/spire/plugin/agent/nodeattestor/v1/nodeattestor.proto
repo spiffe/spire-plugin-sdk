@@ -1,6 +1,6 @@
 syntax = "proto3";
 package spire.plugin.agent.nodeattestor.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1;nodeattestorv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/agent/nodeattestor/v1;nodeattestorv1";
 
 service NodeAttestor {
     // AidAttestation facilitates attestation by returning the attestation

@@ -4,8 +4,8 @@ This document outlines the contribution guidelines for the SPIRE Plugin SDK.
 
 This project follows the contribution and governance guidelines from the SPIFFE
 project (see
-[CONTRIBUTING](https://github.com/spiffe/spiffe/blob/main/CONTRIBUTING.md)
-and [GOVERNANCE](https://github.com/spiffe/spiffe/blob/main/GOVERNANCE.md)).
+[CONTRIBUTING](https://github.com/accuknox/spiffe/blob/main/CONTRIBUTING.md)
+and [GOVERNANCE](https://github.com/accuknox/spiffe/blob/main/GOVERNANCE.md)).
 
 ## Prerequisites
 
@@ -49,7 +49,7 @@ SPIRE's main branch depends on a pseudo-version of this repository based on the
 `next` branch (see https://golang.org/ref/mod#pseudo-versions). Once changes
 have been merged into the `next` branch, the pseudo-version dependency in the
 SPIRE repository can be updated by running `go get
-github.com/spiffe/spire-plugin-sdk@next` from the SPIRE repository.
+github.com/accuknox/spire-plugin-sdk@next` from the SPIRE repository.
 
 Relying on a pseudo versions means that this repository only needs tags
 for the officially released versions, while still allowing SPIRE to work with

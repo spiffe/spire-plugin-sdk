@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	pluginsdkPackage = protogen.GoImportPath("github.com/spiffe/spire-plugin-sdk/pluginsdk")
+	pluginsdkPackage = protogen.GoImportPath("github.com/accuknox/spire-plugin-sdk/pluginsdk")
 	grpcPackage      = protogen.GoImportPath("google.golang.org/grpc")
 )
 

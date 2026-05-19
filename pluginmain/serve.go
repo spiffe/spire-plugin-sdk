@@ -1,8 +1,8 @@
 package pluginmain
 
 import (
-	"github.com/spiffe/spire-plugin-sdk/internal"
-	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
+	"github.com/accuknox/spire-plugin-sdk/internal"
+	"github.com/accuknox/spire-plugin-sdk/pluginsdk"
 )
 
 // Serve serves the plugin using the given plugin/service servers. It does

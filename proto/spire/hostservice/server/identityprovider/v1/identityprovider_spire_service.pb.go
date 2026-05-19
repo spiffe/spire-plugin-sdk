@@ -3,7 +3,7 @@
 package identityproviderv1
 
 import (
-	pluginsdk "github.com/spiffe/spire-plugin-sdk/pluginsdk"
+	pluginsdk "github.com/accuknox/spire-plugin-sdk/pluginsdk"
 	grpc "google.golang.org/grpc"
 )
 

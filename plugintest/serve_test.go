@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/go-hclog"
-	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
-	"github.com/spiffe/spire-plugin-sdk/plugintest"
-	"github.com/spiffe/spire-plugin-sdk/private/proto/test"
+	"github.com/accuknox/spire-plugin-sdk/pluginsdk"
+	"github.com/accuknox/spire-plugin-sdk/plugintest"
+	"github.com/accuknox/spire-plugin-sdk/private/proto/test"
 )
 
 func TestServe(t *testing.T) {

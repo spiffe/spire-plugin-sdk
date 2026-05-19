@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
-	"github.com/spiffe/spire-plugin-sdk/plugintest"
-	workloadattestorv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1"
-	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
-	"github.com/spiffe/spire-plugin-sdk/templates/agent/workloadattestor"
+	"github.com/accuknox/spire-plugin-sdk/pluginsdk"
+	"github.com/accuknox/spire-plugin-sdk/plugintest"
+	workloadattestorv1 "github.com/accuknox/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1"
+	configv1 "github.com/accuknox/spire-plugin-sdk/proto/spire/service/common/config/v1"
+	"github.com/accuknox/spire-plugin-sdk/templates/agent/workloadattestor"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

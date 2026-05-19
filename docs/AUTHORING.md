@@ -9,7 +9,7 @@ for authoring plugins.
 ## Templates
 Each template contains a go file that can be used as a starting point for authoring plugins. A test file is also
 provided for each template; the test file contains a test suite that can be used to verify that the plugin has been 
-loaded and is working as expected using [plugintest](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/plugintest).
+loaded and is working as expected using [plugintest](https://pkg.go.dev/github.com/accuknox/spire-plugin-sdk/plugintest).
 
 ### Agent
 
@@ -62,7 +62,7 @@ To implement this service
 - Embed the `UnimplementedConfigServer` struct:
 
 ```
-import configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
+import configv1 "github.com/accuknox/spire-plugin-sdk/proto/spire/service/common/config/v1"
 
 ...
 
@@ -193,7 +193,7 @@ advice.
 
 ## Unit Testing
 
-The [plugintest](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/plugintest) 
+The [plugintest](https://pkg.go.dev/github.com/accuknox/spire-plugin-sdk/plugintest) 
 package can be used to conveniently test plugin implementations. The test framework
 loads the plugin in the background and hosts the specified plugin/service/hostservice
 servers. It initializes clients that can be used to invoke RPCs and test functionality.
@@ -202,7 +202,7 @@ See the package docs for more information.
 
 ## Running
 
-The [pluginmain](https://pkg.go.dev/github.com/spiffe/spire-plugin-sdk/pluginmain) package
+The [pluginmain](https://pkg.go.dev/github.com/accuknox/spire-plugin-sdk/pluginmain) package
 is used to run the plugin. It takes care of setting up all the plugin facilities and
 wiring up the logger and hostservices.
 

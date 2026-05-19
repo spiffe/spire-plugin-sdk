@@ -1,6 +1,6 @@
 syntax = "proto3";
 package spire.hostservice.server.identityprovider.v1;
-option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/hostservice/server/identityprovider/v1;identityproviderv1";
+option go_package = "github.com/accuknox/spire-plugin-sdk/proto/spire/hostservice/server/identityprovider/v1;identityproviderv1";
 
 import "spire/plugin/types/bundle.proto";
 
