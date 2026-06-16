@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkloadAttestor_Attest_FullMethodName = "/spire.plugin.agent.workloadattestor.v1.WorkloadAttestor/Attest"
+	WorkloadAttestor_Attest_FullMethodName          = "/spire.plugin.agent.workloadattestor.v1.WorkloadAttestor/Attest"
+	WorkloadAttestor_AttestReference_FullMethodName = "/spire.plugin.agent.workloadattestor.v1.WorkloadAttestor/AttestReference"
 )
 
 // WorkloadAttestorClient is the client API for WorkloadAttestor service.
@@ -33,6 +34,15 @@ type WorkloadAttestorClient interface {
 	// fails to gather all selectors related to that workload, the call will
 	// fail. Otherwise the attestor will return one or more workload selectors.
 	Attest(ctx context.Context, in *AttestRequest, opts ...grpc.CallOption) (*AttestResponse, error)
+	// Attests a workload identified by an opaque reference (e.g. a process
+	// ID, a Kubernetes object reference, etc.). The reference's type URL is
+	// taken from the SPIFFE Broker API specification's WorkloadReference and
+	// delivered verbatim. A plugin that does not implement reference-based
+	// attestation at all returns Unimplemented, which lets the host fall back
+	// to Attest when the reference is a WorkloadPIDReference. A plugin that
+	// implements this RPC but receives a reference type it does not support
+	// returns InvalidArgument.
+	AttestReference(ctx context.Context, in *AttestReferenceRequest, opts ...grpc.CallOption) (*AttestReferenceResponse, error)
 }
 
 type workloadAttestorClient struct {
@@ -53,6 +63,16 @@ func (c *workloadAttestorClient) Attest(ctx context.Context, in *AttestRequest, 
 	return out, nil
 }
 
+func (c *workloadAttestorClient) AttestReference(ctx context.Context, in *AttestReferenceRequest, opts ...grpc.CallOption) (*AttestReferenceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AttestReferenceResponse)
+	err := c.cc.Invoke(ctx, WorkloadAttestor_AttestReference_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkloadAttestorServer is the server API for WorkloadAttestor service.
 // All implementations must embed UnimplementedWorkloadAttestorServer
 // for forward compatibility.
@@ -64,6 +84,15 @@ type WorkloadAttestorServer interface {
 	// fails to gather all selectors related to that workload, the call will
 	// fail. Otherwise the attestor will return one or more workload selectors.
 	Attest(context.Context, *AttestRequest) (*AttestResponse, error)
+	// Attests a workload identified by an opaque reference (e.g. a process
+	// ID, a Kubernetes object reference, etc.). The reference's type URL is
+	// taken from the SPIFFE Broker API specification's WorkloadReference and
+	// delivered verbatim. A plugin that does not implement reference-based
+	// attestation at all returns Unimplemented, which lets the host fall back
+	// to Attest when the reference is a WorkloadPIDReference. A plugin that
+	// implements this RPC but receives a reference type it does not support
+	// returns InvalidArgument.
+	AttestReference(context.Context, *AttestReferenceRequest) (*AttestReferenceResponse, error)
 	mustEmbedUnimplementedWorkloadAttestorServer()
 }
 
@@ -76,6 +105,9 @@ type UnimplementedWorkloadAttestorServer struct{}
 
 func (UnimplementedWorkloadAttestorServer) Attest(context.Context, *AttestRequest) (*AttestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Attest not implemented")
+}
+func (UnimplementedWorkloadAttestorServer) AttestReference(context.Context, *AttestReferenceRequest) (*AttestReferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AttestReference not implemented")
 }
 func (UnimplementedWorkloadAttestorServer) mustEmbedUnimplementedWorkloadAttestorServer() {}
 func (UnimplementedWorkloadAttestorServer) testEmbeddedByValue()                          {}
@@ -116,6 +148,24 @@ func _WorkloadAttestor_Attest_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkloadAttestor_AttestReference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AttestReferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkloadAttestorServer).AttestReference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkloadAttestor_AttestReference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkloadAttestorServer).AttestReference(ctx, req.(*AttestReferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkloadAttestor_ServiceDesc is the grpc.ServiceDesc for WorkloadAttestor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -126,6 +176,10 @@ var WorkloadAttestor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Attest",
 			Handler:    _WorkloadAttestor_Attest_Handler,
+		},
+		{
+			MethodName: "AttestReference",
+			Handler:    _WorkloadAttestor_AttestReference_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
