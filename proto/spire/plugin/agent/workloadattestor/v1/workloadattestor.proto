@@ -2,8 +2,6 @@ syntax = "proto3";
 package spire.plugin.agent.workloadattestor.v1;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v1";
 
-import "google/protobuf/any.proto";
-
 service WorkloadAttestor {
     // Attests the specified workload process. If the process is not one the
     // attestor is in a position to attest (e.g. k8s attestor attesting a
@@ -12,16 +10,6 @@ service WorkloadAttestor {
     // fails to gather all selectors related to that workload, the call will
     // fail. Otherwise the attestor will return one or more workload selectors.
     rpc Attest(AttestRequest) returns (AttestResponse);
-
-    // Attests a workload identified by an opaque reference (e.g. a process
-    // ID, a Kubernetes object reference, etc.). The reference's type URL is
-    // taken from the SPIFFE Broker API specification's WorkloadReference and
-    // delivered verbatim. A plugin that does not implement reference-based
-    // attestation at all returns Unimplemented, which lets the host fall back
-    // to Attest when the reference is a WorkloadPIDReference. A plugin that
-    // implements this RPC but receives a reference type it does not support
-    // returns InvalidArgument.
-    rpc AttestReference(AttestReferenceRequest) returns (AttestReferenceResponse);
 }
 
 message AttestRequest {
@@ -30,20 +18,6 @@ message AttestRequest {
 }
 
 message AttestResponse {
-    // Optional. Selector values related to the attested workload. The type
-    // of the selector is inferred from the plugin name.
-    repeated string selector_values = 1;
-}
-
-message AttestReferenceRequest {
-    // Required. Reference to the workload to be attested. The packed message
-    // is one of the WorkloadReference reference types defined by the SPIFFE
-    // Broker API specification (e.g. WorkloadPIDReference,
-    // KubernetesObjectReference) or a vendor-specific extension type.
-    google.protobuf.Any reference = 1;
-}
-
-message AttestReferenceResponse {
     // Optional. Selector values related to the attested workload. The type
     // of the selector is inferred from the plugin name.
     repeated string selector_values = 1;
