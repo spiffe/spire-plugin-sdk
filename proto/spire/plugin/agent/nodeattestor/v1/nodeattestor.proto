@@ -7,7 +7,7 @@ service NodeAttestor {
     // payload and participating in attestation challenge/response.
     //
     // The attestation flow is as follows:
-    // 1. SPIRE Agent opens up a stream to the plugin via FetchAttestationData.
+    // 1. SPIRE Agent opens up a stream to the plugin via AidAttestation.
     // 2. The plugin returns a response with the payload.
     // 3. SPIRE Agent sends the payload to SPIRE Server.
     // 4. Optionally, SPIRE Server responds with a challenge:
