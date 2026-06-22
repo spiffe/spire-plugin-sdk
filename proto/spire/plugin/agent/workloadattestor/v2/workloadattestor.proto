@@ -1,0 +1,20 @@
+syntax = "proto3";
+package spire.plugin.agent.workloadattestor.v2;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/agent/workloadattestor/v2";
+
+import "google/protobuf/any.proto";
+
+service WorkloadAttestor {
+    rpc AttestReference(AttestReferenceRequest) returns (AttestReferenceResponse);
+}
+
+message AttestReferenceRequest {
+    // Required. Reference to the workload to be attested.
+    google.protobuf.Any reference = 1;
+}
+
+message AttestReferenceResponse {
+    // Optional. Selector values related to the attested workload. The type
+    // of the selector is inferred from the plugin name.
+    repeated string selector_values = 1;
+}
