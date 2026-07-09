@@ -69,6 +69,25 @@ func (p *Plugin) Attest(ctx context.Context, req *workloadattestorv1.AttestReque
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
+// AttestReference implements the WorkloadAttestor AttestReference RPC. Attests a workload identified by an opaque
+// reference (e.g. a process ID, a Kubernetes object reference, etc.). A plugin that does not implement
+// reference-based attestation at all returns Unimplemented, which lets the host fall back to Attest when the
+// reference is a WorkloadPIDReference. A plugin that implements this RPC but receives a reference type it does not
+// support returns InvalidArgument.
+func (p *Plugin) AttestReference(ctx context.Context, req *workloadattestorv1.AttestReferenceRequest) (*workloadattestorv1.AttestReferenceResponse, error) {
+	config, err := p.getConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Implement the RPC behavior. The following line silences compiler
+	// warnings and can be removed once the configuration is referenced by the
+	// implementation.
+	config = config
+
+	return nil, status.Error(codes.Unimplemented, "not implemented")
+}
+
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
 // first loaded. In the future, it may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.
