@@ -357,7 +357,7 @@ type SubscribeToLocalBundleResponse struct {
 	UpstreamX509Roots []*types.X509Certificate `protobuf:"bytes,1,rep,name=upstream_x509_roots,json=upstreamX509Roots,proto3" json:"upstream_x509_roots,omitempty"`
 	// Required. The upstream JWT signing keys.
 	UpstreamJwtKeys []*types.JWTKey `protobuf:"bytes,2,rep,name=upstream_jwt_keys,json=upstreamJwtKeys,proto3" json:"upstream_jwt_keys,omitempty"`
-	// Required. The upstream WIT signing keys.
+	// The upstream WIT signing keys.
 	UpstreamWitKeys []*types.WITKey `protobuf:"bytes,3,rep,name=upstream_wit_keys,json=upstreamWitKeys,proto3" json:"upstream_wit_keys,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache

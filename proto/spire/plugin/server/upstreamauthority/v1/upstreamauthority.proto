@@ -104,6 +104,6 @@ message SubscribeToLocalBundleResponse {
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 1;
     // Required. The upstream JWT signing keys.
     repeated spire.plugin.types.JWTKey upstream_jwt_keys = 2;
-    // Required. The upstream WIT signing keys.
+    // The upstream WIT signing keys.
     repeated spire.plugin.types.WITKey upstream_wit_keys = 3;
 }
