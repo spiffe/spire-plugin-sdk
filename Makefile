@@ -46,6 +46,7 @@ plugin-protos := \
 	proto/spire/plugin/server/nodeattestor/v1/nodeattestor.proto \
 	proto/spire/plugin/server/notifier/v1/notifier.proto \
 	proto/spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto \
+	proto/spire/plugin/server/datastore/v1alpha1/datastore.proto \
 
 
 service-protos := \
