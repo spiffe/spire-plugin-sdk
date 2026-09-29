@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UpstreamAuthority_MintX509CAAndSubscribe_FullMethodName    = "/spire.plugin.server.upstreamauthority.v1.UpstreamAuthority/MintX509CAAndSubscribe"
 	UpstreamAuthority_PublishJWTKeyAndSubscribe_FullMethodName = "/spire.plugin.server.upstreamauthority.v1.UpstreamAuthority/PublishJWTKeyAndSubscribe"
+	UpstreamAuthority_PublishWITKeyAndSubscribe_FullMethodName = "/spire.plugin.server.upstreamauthority.v1.UpstreamAuthority/PublishWITKeyAndSubscribe"
 	UpstreamAuthority_SubscribeToLocalBundle_FullMethodName    = "/spire.plugin.server.upstreamauthority.v1.UpstreamAuthority/SubscribeToLocalBundle"
 )
 
@@ -50,11 +51,24 @@ type UpstreamAuthorityClient interface {
 	// encountered while tracking changes to the upstream JWT keys as SPIRE
 	// Server will not reopen a closed stream until the next JWT key rotation.
 	PublishJWTKeyAndSubscribe(ctx context.Context, in *PublishJWTKeyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PublishJWTKeyResponse], error)
+	// Publishes a WIT signing key upstream and responds with the upstream WIT
+	// keys. If supported by the implementation, subsequent responses on the
+	// stream contain upstream WIT key updates, otherwise the stream is closed
+	// after the initial response.
+	//
+	// This RPC is optional and will return NotImplemented if unsupported.
+	//
+	// Implementation note:
+	// The stream should be kept open in the face of transient errors
+	// encountered while tracking changes to the upstream WIT keys as SPIRE
+	// Server will not reopen a closed stream until the next WIT key rotation.
+	PublishWITKeyAndSubscribe(ctx context.Context, in *PublishWITKeyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PublishWITKeyResponse], error)
 	// Returns the trust bundle of the local trust domain as seen by the upstream
-	// authority. Returns the current set of X.509 roots and JWT public keys
-	// that make up the trust bundle of the trust domain. If supported by the
-	// implementation, subsequent responses on the stream contain trust bundle
-	// updates, otherwise the stream is closed after the initial response.
+	// authority. Returns the current set of X.509 roots, JWT public keys and
+	// WIT public keys that make up the trust bundle of the trust domain. If
+	// supported by the implementation, subsequent responses on the stream
+	// contain trust bundle updates, otherwise the stream is closed after the
+	// initial response.
 	//
 	// This RPC is optional and will return NotImplemented if unsupported.
 	SubscribeToLocalBundle(ctx context.Context, in *SubscribeToLocalBundleRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SubscribeToLocalBundleResponse], error)
@@ -106,9 +120,28 @@ func (c *upstreamAuthorityClient) PublishJWTKeyAndSubscribe(ctx context.Context,
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type UpstreamAuthority_PublishJWTKeyAndSubscribeClient = grpc.ServerStreamingClient[PublishJWTKeyResponse]
 
+func (c *upstreamAuthorityClient) PublishWITKeyAndSubscribe(ctx context.Context, in *PublishWITKeyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[PublishWITKeyResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &UpstreamAuthority_ServiceDesc.Streams[2], UpstreamAuthority_PublishWITKeyAndSubscribe_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[PublishWITKeyRequest, PublishWITKeyResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UpstreamAuthority_PublishWITKeyAndSubscribeClient = grpc.ServerStreamingClient[PublishWITKeyResponse]
+
 func (c *upstreamAuthorityClient) SubscribeToLocalBundle(ctx context.Context, in *SubscribeToLocalBundleRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SubscribeToLocalBundleResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UpstreamAuthority_ServiceDesc.Streams[2], UpstreamAuthority_SubscribeToLocalBundle_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &UpstreamAuthority_ServiceDesc.Streams[3], UpstreamAuthority_SubscribeToLocalBundle_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,11 +184,24 @@ type UpstreamAuthorityServer interface {
 	// encountered while tracking changes to the upstream JWT keys as SPIRE
 	// Server will not reopen a closed stream until the next JWT key rotation.
 	PublishJWTKeyAndSubscribe(*PublishJWTKeyRequest, grpc.ServerStreamingServer[PublishJWTKeyResponse]) error
+	// Publishes a WIT signing key upstream and responds with the upstream WIT
+	// keys. If supported by the implementation, subsequent responses on the
+	// stream contain upstream WIT key updates, otherwise the stream is closed
+	// after the initial response.
+	//
+	// This RPC is optional and will return NotImplemented if unsupported.
+	//
+	// Implementation note:
+	// The stream should be kept open in the face of transient errors
+	// encountered while tracking changes to the upstream WIT keys as SPIRE
+	// Server will not reopen a closed stream until the next WIT key rotation.
+	PublishWITKeyAndSubscribe(*PublishWITKeyRequest, grpc.ServerStreamingServer[PublishWITKeyResponse]) error
 	// Returns the trust bundle of the local trust domain as seen by the upstream
-	// authority. Returns the current set of X.509 roots and JWT public keys
-	// that make up the trust bundle of the trust domain. If supported by the
-	// implementation, subsequent responses on the stream contain trust bundle
-	// updates, otherwise the stream is closed after the initial response.
+	// authority. Returns the current set of X.509 roots, JWT public keys and
+	// WIT public keys that make up the trust bundle of the trust domain. If
+	// supported by the implementation, subsequent responses on the stream
+	// contain trust bundle updates, otherwise the stream is closed after the
+	// initial response.
 	//
 	// This RPC is optional and will return NotImplemented if unsupported.
 	SubscribeToLocalBundle(*SubscribeToLocalBundleRequest, grpc.ServerStreamingServer[SubscribeToLocalBundleResponse]) error
@@ -174,6 +220,9 @@ func (UnimplementedUpstreamAuthorityServer) MintX509CAAndSubscribe(*MintX509CARe
 }
 func (UnimplementedUpstreamAuthorityServer) PublishJWTKeyAndSubscribe(*PublishJWTKeyRequest, grpc.ServerStreamingServer[PublishJWTKeyResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method PublishJWTKeyAndSubscribe not implemented")
+}
+func (UnimplementedUpstreamAuthorityServer) PublishWITKeyAndSubscribe(*PublishWITKeyRequest, grpc.ServerStreamingServer[PublishWITKeyResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method PublishWITKeyAndSubscribe not implemented")
 }
 func (UnimplementedUpstreamAuthorityServer) SubscribeToLocalBundle(*SubscribeToLocalBundleRequest, grpc.ServerStreamingServer[SubscribeToLocalBundleResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method SubscribeToLocalBundle not implemented")
@@ -221,6 +270,17 @@ func _UpstreamAuthority_PublishJWTKeyAndSubscribe_Handler(srv interface{}, strea
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type UpstreamAuthority_PublishJWTKeyAndSubscribeServer = grpc.ServerStreamingServer[PublishJWTKeyResponse]
 
+func _UpstreamAuthority_PublishWITKeyAndSubscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PublishWITKeyRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(UpstreamAuthorityServer).PublishWITKeyAndSubscribe(m, &grpc.GenericServerStream[PublishWITKeyRequest, PublishWITKeyResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type UpstreamAuthority_PublishWITKeyAndSubscribeServer = grpc.ServerStreamingServer[PublishWITKeyResponse]
+
 func _UpstreamAuthority_SubscribeToLocalBundle_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SubscribeToLocalBundleRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -248,6 +308,11 @@ var UpstreamAuthority_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "PublishJWTKeyAndSubscribe",
 			Handler:       _UpstreamAuthority_PublishJWTKeyAndSubscribe_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "PublishWITKeyAndSubscribe",
+			Handler:       _UpstreamAuthority_PublishWITKeyAndSubscribe_Handler,
 			ServerStreams: true,
 		},
 		{
