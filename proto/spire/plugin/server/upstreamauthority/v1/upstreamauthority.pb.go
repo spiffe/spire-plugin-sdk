@@ -225,6 +225,96 @@ func (x *PublishJWTKeyResponse) GetUpstreamJwtKeys() []*types.JWTKey {
 	return nil
 }
 
+type PublishWITKeyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The WIT signing key to publish upstream.
+	WitKey        *types.WITKey `protobuf:"bytes,1,opt,name=wit_key,json=witKey,proto3" json:"wit_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PublishWITKeyRequest) Reset() {
+	*x = PublishWITKeyRequest{}
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishWITKeyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishWITKeyRequest) ProtoMessage() {}
+
+func (x *PublishWITKeyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishWITKeyRequest.ProtoReflect.Descriptor instead.
+func (*PublishWITKeyRequest) Descriptor() ([]byte, []int) {
+	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PublishWITKeyRequest) GetWitKey() *types.WITKey {
+	if x != nil {
+		return x.WitKey
+	}
+	return nil
+}
+
+type PublishWITKeyResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The upstream WIT signing keys.
+	UpstreamWitKeys []*types.WITKey `protobuf:"bytes,1,rep,name=upstream_wit_keys,json=upstreamWitKeys,proto3" json:"upstream_wit_keys,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *PublishWITKeyResponse) Reset() {
+	*x = PublishWITKeyResponse{}
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PublishWITKeyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PublishWITKeyResponse) ProtoMessage() {}
+
+func (x *PublishWITKeyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PublishWITKeyResponse.ProtoReflect.Descriptor instead.
+func (*PublishWITKeyResponse) Descriptor() ([]byte, []int) {
+	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *PublishWITKeyResponse) GetUpstreamWitKeys() []*types.WITKey {
+	if x != nil {
+		return x.UpstreamWitKeys
+	}
+	return nil
+}
+
 type SubscribeToLocalBundleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -233,7 +323,7 @@ type SubscribeToLocalBundleRequest struct {
 
 func (x *SubscribeToLocalBundleRequest) Reset() {
 	*x = SubscribeToLocalBundleRequest{}
-	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[4]
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -245,7 +335,7 @@ func (x *SubscribeToLocalBundleRequest) String() string {
 func (*SubscribeToLocalBundleRequest) ProtoMessage() {}
 
 func (x *SubscribeToLocalBundleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[4]
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -258,7 +348,7 @@ func (x *SubscribeToLocalBundleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeToLocalBundleRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeToLocalBundleRequest) Descriptor() ([]byte, []int) {
-	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{4}
+	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{6}
 }
 
 type SubscribeToLocalBundleResponse struct {
@@ -267,13 +357,15 @@ type SubscribeToLocalBundleResponse struct {
 	UpstreamX509Roots []*types.X509Certificate `protobuf:"bytes,1,rep,name=upstream_x509_roots,json=upstreamX509Roots,proto3" json:"upstream_x509_roots,omitempty"`
 	// Required. The upstream JWT signing keys.
 	UpstreamJwtKeys []*types.JWTKey `protobuf:"bytes,2,rep,name=upstream_jwt_keys,json=upstreamJwtKeys,proto3" json:"upstream_jwt_keys,omitempty"`
+	// The upstream WIT signing keys.
+	UpstreamWitKeys []*types.WITKey `protobuf:"bytes,3,rep,name=upstream_wit_keys,json=upstreamWitKeys,proto3" json:"upstream_wit_keys,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *SubscribeToLocalBundleResponse) Reset() {
 	*x = SubscribeToLocalBundleResponse{}
-	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[5]
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -285,7 +377,7 @@ func (x *SubscribeToLocalBundleResponse) String() string {
 func (*SubscribeToLocalBundleResponse) ProtoMessage() {}
 
 func (x *SubscribeToLocalBundleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[5]
+	mi := &file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +390,7 @@ func (x *SubscribeToLocalBundleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeToLocalBundleResponse.ProtoReflect.Descriptor instead.
 func (*SubscribeToLocalBundleResponse) Descriptor() ([]byte, []int) {
-	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{5}
+	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SubscribeToLocalBundleResponse) GetUpstreamX509Roots() []*types.X509Certificate {
@@ -315,11 +407,18 @@ func (x *SubscribeToLocalBundleResponse) GetUpstreamJwtKeys() []*types.JWTKey {
 	return nil
 }
 
+func (x *SubscribeToLocalBundleResponse) GetUpstreamWitKeys() []*types.WITKey {
+	if x != nil {
+		return x.UpstreamWitKeys
+	}
+	return nil
+}
+
 var File_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto protoreflect.FileDescriptor
 
 const file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDesc = "" +
 	"\n" +
-	"@spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto\x12(spire.plugin.server.upstreamauthority.v1\x1a\x1fspire/plugin/types/jwtkey.proto\x1a(spire/plugin/types/x509certificate.proto\"J\n" +
+	"@spire/plugin/server/upstreamauthority/v1/upstreamauthority.proto\x12(spire.plugin.server.upstreamauthority.v1\x1a\x1fspire/plugin/types/jwtkey.proto\x1a\x1fspire/plugin/types/witkey.proto\x1a(spire/plugin/types/x509certificate.proto\"J\n" +
 	"\x11MintX509CARequest\x12\x10\n" +
 	"\x03csr\x18\x01 \x01(\fR\x03csr\x12#\n" +
 	"\rpreferred_ttl\x18\x02 \x01(\x05R\fpreferredTtl\"\xb2\x01\n" +
@@ -329,14 +428,20 @@ const file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawD
 	"\x14PublishJWTKeyRequest\x123\n" +
 	"\ajwt_key\x18\x01 \x01(\v2\x1a.spire.plugin.types.JWTKeyR\x06jwtKey\"_\n" +
 	"\x15PublishJWTKeyResponse\x12F\n" +
-	"\x11upstream_jwt_keys\x18\x01 \x03(\v2\x1a.spire.plugin.types.JWTKeyR\x0fupstreamJwtKeys\"\x1f\n" +
-	"\x1dSubscribeToLocalBundleRequest\"\xbd\x01\n" +
+	"\x11upstream_jwt_keys\x18\x01 \x03(\v2\x1a.spire.plugin.types.JWTKeyR\x0fupstreamJwtKeys\"K\n" +
+	"\x14PublishWITKeyRequest\x123\n" +
+	"\awit_key\x18\x01 \x01(\v2\x1a.spire.plugin.types.WITKeyR\x06witKey\"_\n" +
+	"\x15PublishWITKeyResponse\x12F\n" +
+	"\x11upstream_wit_keys\x18\x01 \x03(\v2\x1a.spire.plugin.types.WITKeyR\x0fupstreamWitKeys\"\x1f\n" +
+	"\x1dSubscribeToLocalBundleRequest\"\x85\x02\n" +
 	"\x1eSubscribeToLocalBundleResponse\x12S\n" +
 	"\x13upstream_x509_roots\x18\x01 \x03(\v2#.spire.plugin.types.X509CertificateR\x11upstreamX509Roots\x12F\n" +
-	"\x11upstream_jwt_keys\x18\x02 \x03(\v2\x1a.spire.plugin.types.JWTKeyR\x0fupstreamJwtKeys2\xfc\x03\n" +
+	"\x11upstream_jwt_keys\x18\x02 \x03(\v2\x1a.spire.plugin.types.JWTKeyR\x0fupstreamJwtKeys\x12F\n" +
+	"\x11upstream_wit_keys\x18\x03 \x03(\v2\x1a.spire.plugin.types.WITKeyR\x0fupstreamWitKeys2\x9d\x05\n" +
 	"\x11UpstreamAuthority\x12\x95\x01\n" +
 	"\x16MintX509CAAndSubscribe\x12;.spire.plugin.server.upstreamauthority.v1.MintX509CARequest\x1a<.spire.plugin.server.upstreamauthority.v1.MintX509CAResponse0\x01\x12\x9e\x01\n" +
-	"\x19PublishJWTKeyAndSubscribe\x12>.spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest\x1a?.spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse0\x01\x12\xad\x01\n" +
+	"\x19PublishJWTKeyAndSubscribe\x12>.spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest\x1a?.spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse0\x01\x12\x9e\x01\n" +
+	"\x19PublishWITKeyAndSubscribe\x12>.spire.plugin.server.upstreamauthority.v1.PublishWITKeyRequest\x1a?.spire.plugin.server.upstreamauthority.v1.PublishWITKeyResponse0\x01\x12\xad\x01\n" +
 	"\x16SubscribeToLocalBundle\x12G.spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleRequest\x1aH.spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse0\x01BgZegithub.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/upstreamauthority/v1;upstreamauthorityv1b\x06proto3"
 
 var (
@@ -351,35 +456,43 @@ func file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDe
 	return file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDescData
 }
 
-var file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_goTypes = []any{
 	(*MintX509CARequest)(nil),              // 0: spire.plugin.server.upstreamauthority.v1.MintX509CARequest
 	(*MintX509CAResponse)(nil),             // 1: spire.plugin.server.upstreamauthority.v1.MintX509CAResponse
 	(*PublishJWTKeyRequest)(nil),           // 2: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest
 	(*PublishJWTKeyResponse)(nil),          // 3: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse
-	(*SubscribeToLocalBundleRequest)(nil),  // 4: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleRequest
-	(*SubscribeToLocalBundleResponse)(nil), // 5: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse
-	(*types.X509Certificate)(nil),          // 6: spire.plugin.types.X509Certificate
-	(*types.JWTKey)(nil),                   // 7: spire.plugin.types.JWTKey
+	(*PublishWITKeyRequest)(nil),           // 4: spire.plugin.server.upstreamauthority.v1.PublishWITKeyRequest
+	(*PublishWITKeyResponse)(nil),          // 5: spire.plugin.server.upstreamauthority.v1.PublishWITKeyResponse
+	(*SubscribeToLocalBundleRequest)(nil),  // 6: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleRequest
+	(*SubscribeToLocalBundleResponse)(nil), // 7: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse
+	(*types.X509Certificate)(nil),          // 8: spire.plugin.types.X509Certificate
+	(*types.JWTKey)(nil),                   // 9: spire.plugin.types.JWTKey
+	(*types.WITKey)(nil),                   // 10: spire.plugin.types.WITKey
 }
 var file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_depIdxs = []int32{
-	6, // 0: spire.plugin.server.upstreamauthority.v1.MintX509CAResponse.x509_ca_chain:type_name -> spire.plugin.types.X509Certificate
-	6, // 1: spire.plugin.server.upstreamauthority.v1.MintX509CAResponse.upstream_x509_roots:type_name -> spire.plugin.types.X509Certificate
-	7, // 2: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest.jwt_key:type_name -> spire.plugin.types.JWTKey
-	7, // 3: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse.upstream_jwt_keys:type_name -> spire.plugin.types.JWTKey
-	6, // 4: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse.upstream_x509_roots:type_name -> spire.plugin.types.X509Certificate
-	7, // 5: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse.upstream_jwt_keys:type_name -> spire.plugin.types.JWTKey
-	0, // 6: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.MintX509CAAndSubscribe:input_type -> spire.plugin.server.upstreamauthority.v1.MintX509CARequest
-	2, // 7: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishJWTKeyAndSubscribe:input_type -> spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest
-	4, // 8: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.SubscribeToLocalBundle:input_type -> spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleRequest
-	1, // 9: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.MintX509CAAndSubscribe:output_type -> spire.plugin.server.upstreamauthority.v1.MintX509CAResponse
-	3, // 10: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishJWTKeyAndSubscribe:output_type -> spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse
-	5, // 11: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.SubscribeToLocalBundle:output_type -> spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	8,  // 0: spire.plugin.server.upstreamauthority.v1.MintX509CAResponse.x509_ca_chain:type_name -> spire.plugin.types.X509Certificate
+	8,  // 1: spire.plugin.server.upstreamauthority.v1.MintX509CAResponse.upstream_x509_roots:type_name -> spire.plugin.types.X509Certificate
+	9,  // 2: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest.jwt_key:type_name -> spire.plugin.types.JWTKey
+	9,  // 3: spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse.upstream_jwt_keys:type_name -> spire.plugin.types.JWTKey
+	10, // 4: spire.plugin.server.upstreamauthority.v1.PublishWITKeyRequest.wit_key:type_name -> spire.plugin.types.WITKey
+	10, // 5: spire.plugin.server.upstreamauthority.v1.PublishWITKeyResponse.upstream_wit_keys:type_name -> spire.plugin.types.WITKey
+	8,  // 6: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse.upstream_x509_roots:type_name -> spire.plugin.types.X509Certificate
+	9,  // 7: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse.upstream_jwt_keys:type_name -> spire.plugin.types.JWTKey
+	10, // 8: spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse.upstream_wit_keys:type_name -> spire.plugin.types.WITKey
+	0,  // 9: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.MintX509CAAndSubscribe:input_type -> spire.plugin.server.upstreamauthority.v1.MintX509CARequest
+	2,  // 10: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishJWTKeyAndSubscribe:input_type -> spire.plugin.server.upstreamauthority.v1.PublishJWTKeyRequest
+	4,  // 11: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishWITKeyAndSubscribe:input_type -> spire.plugin.server.upstreamauthority.v1.PublishWITKeyRequest
+	6,  // 12: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.SubscribeToLocalBundle:input_type -> spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleRequest
+	1,  // 13: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.MintX509CAAndSubscribe:output_type -> spire.plugin.server.upstreamauthority.v1.MintX509CAResponse
+	3,  // 14: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishJWTKeyAndSubscribe:output_type -> spire.plugin.server.upstreamauthority.v1.PublishJWTKeyResponse
+	5,  // 15: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.PublishWITKeyAndSubscribe:output_type -> spire.plugin.server.upstreamauthority.v1.PublishWITKeyResponse
+	7,  // 16: spire.plugin.server.upstreamauthority.v1.UpstreamAuthority.SubscribeToLocalBundle:output_type -> spire.plugin.server.upstreamauthority.v1.SubscribeToLocalBundleResponse
+	13, // [13:17] is the sub-list for method output_type
+	9,  // [9:13] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_init() }
@@ -393,7 +506,7 @@ func file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_init(
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDesc), len(file_spire_plugin_server_upstreamauthority_v1_upstreamauthority_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

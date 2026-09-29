@@ -93,6 +93,34 @@ func (p *Plugin) PublishJWTKeyAndSubscribe(req *upstreamauthorityv1.PublishJWTKe
 	return status.Error(codes.Unimplemented, "not implemented")
 }
 
+func (p *Plugin) PublishWITKeyAndSubscribe(req *upstreamauthorityv1.PublishWITKeyRequest, stream upstreamauthorityv1.UpstreamAuthority_PublishWITKeyAndSubscribeServer) error {
+	config, err := p.getConfig()
+	if err != nil {
+		return err
+	}
+
+	// TODO: Implement the RPC behavior. The following line silences compiler
+	// warnings and can be removed once the configuration is referenced by the
+	// implementation.
+	config = config
+
+	return status.Error(codes.Unimplemented, "not implemented")
+}
+
+func (p *Plugin) SubscribeToLocalBundle(req *upstreamauthorityv1.SubscribeToLocalBundleRequest, stream upstreamauthorityv1.UpstreamAuthority_SubscribeToLocalBundleServer) error {
+	config, err := p.getConfig()
+	if err != nil {
+		return err
+	}
+
+	// TODO: Implement the RPC behavior. The following line silences compiler
+	// warnings and can be removed once the configuration is referenced by the
+	// implementation.
+	config = config
+
+	return status.Error(codes.Unimplemented, "not implemented")
+}
+
 // Configure configures the plugin. This is invoked by SPIRE when the plugin is
 // first loaded. In the future, tt may be invoked to reconfigure the plugin.
 // As such, it should replace the previous configuration atomically.

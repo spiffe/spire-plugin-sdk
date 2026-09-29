@@ -3,6 +3,7 @@ package spire.plugin.server.upstreamauthority.v1;
 option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/upstreamauthority/v1;upstreamauthorityv1";
 
 import "spire/plugin/types/jwtkey.proto";
+import "spire/plugin/types/witkey.proto";
 import "spire/plugin/types/x509certificate.proto";
 
 service UpstreamAuthority {
@@ -30,11 +31,25 @@ service UpstreamAuthority {
     // Server will not reopen a closed stream until the next JWT key rotation.
     rpc PublishJWTKeyAndSubscribe(PublishJWTKeyRequest) returns (stream PublishJWTKeyResponse);
 
+    // Publishes a WIT signing key upstream and responds with the upstream WIT
+    // keys. If supported by the implementation, subsequent responses on the
+    // stream contain upstream WIT key updates, otherwise the stream is closed
+    // after the initial response.
+    //
+    // This RPC is optional and will return NotImplemented if unsupported.
+    //
+    // Implementation note:
+    // The stream should be kept open in the face of transient errors
+    // encountered while tracking changes to the upstream WIT keys as SPIRE
+    // Server will not reopen a closed stream until the next WIT key rotation.
+    rpc PublishWITKeyAndSubscribe(PublishWITKeyRequest) returns (stream PublishWITKeyResponse);
+
     // Returns the trust bundle of the local trust domain as seen by the upstream
-    // authority. Returns the current set of X.509 roots and JWT public keys
-    // that make up the trust bundle of the trust domain. If supported by the
-    // implementation, subsequent responses on the stream contain trust bundle
-    // updates, otherwise the stream is closed after the initial response.
+    // authority. Returns the current set of X.509 roots, JWT public keys and
+    // WIT public keys that make up the trust bundle of the trust domain. If
+    // supported by the implementation, subsequent responses on the stream
+    // contain trust bundle updates, otherwise the stream is closed after the
+    // initial response.
     //
     // This RPC is optional and will return NotImplemented if unsupported.
     rpc SubscribeToLocalBundle(SubscribeToLocalBundleRequest) returns (stream SubscribeToLocalBundleResponse);
@@ -71,6 +86,16 @@ message PublishJWTKeyResponse {
     repeated spire.plugin.types.JWTKey upstream_jwt_keys = 1;
 }
 
+message PublishWITKeyRequest {
+    // Required. The WIT signing key to publish upstream.
+    spire.plugin.types.WITKey wit_key = 1;
+}
+
+message PublishWITKeyResponse {
+    // Required. The upstream WIT signing keys.
+    repeated spire.plugin.types.WITKey upstream_wit_keys = 1;
+}
+
 message SubscribeToLocalBundleRequest {
 }
 
@@ -79,4 +104,6 @@ message SubscribeToLocalBundleResponse {
     repeated spire.plugin.types.X509Certificate upstream_x509_roots = 1;
     // Required. The upstream JWT signing keys.
     repeated spire.plugin.types.JWTKey upstream_jwt_keys = 2;
+    // The upstream WIT signing keys.
+    repeated spire.plugin.types.WITKey upstream_wit_keys = 3;
 }
