@@ -94,6 +94,17 @@ return status.Error(codes.InvalidArgument, "keymanager(foo): blah")
 
 This helps identify the source of errors.
 
+### Panics
+
+For plugins served with `pluginmain.Serve`, the SDK recovers panics in unary and
+streaming RPC handlers. The failed call returns the gRPC status `Internal` with
+the message `internal error`. The panic value, full RPC method name, and stack
+trace are logged using the plugin logger, and the process can serve subsequent
+calls. The same behavior applies when using `plugintest.ServeInBackground`.
+
+Recovery is limited to the RPC handler goroutine. Plugins must handle panics in
+any goroutines they start themselves.
+
 ## Logging
 
 SPIRE provides plugins a logger that is wired up to the SPIRE logging
