@@ -17,7 +17,7 @@ jobs:
         with:
           cache: true
           cache-dependency-path: go.sum
-          go-version-file: .go-version
+          go-version-file: go.mod
       - name: Tidy check
         run: make tidy-check
       - name: Generate check
@@ -33,7 +33,7 @@ jobs:
         with:
           cache: true
           cache-dependency-path: go.sum
-          go-version-file: .go-version
+          go-version-file: go.mod
       - name: Run unit tests
         run: make test
 
