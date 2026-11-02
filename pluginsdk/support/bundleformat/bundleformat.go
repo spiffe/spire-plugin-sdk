@@ -9,6 +9,8 @@ package bundleformat
 import (
 	"bytes"
 	"crypto"
+	"crypto/ecdsa"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -28,15 +30,23 @@ const (
 	SPIFFE
 	PEM
 	JWKS
+	// OIDCJWKS is a JWKS with the JWT authorities only, in the form served
+	// by the SPIRE OIDC Discovery Provider with set_key_use enabled, for OIDC
+	// relying parties.
+	OIDCJWKS
 )
+
+// oidcKeyUse is the "use" parameter of the keys in the OIDCJWKS format.
+const oidcKeyUse = "sig"
 
 // Formatter formats a bundle in different formats.
 type Formatter struct {
 	bundle *types.Bundle
 
-	jwksBytes   []byte
-	pemBytes    []byte
-	spiffeBytes []byte
+	jwksBytes     []byte
+	oidcJWKSBytes []byte
+	pemBytes      []byte
+	spiffeBytes   []byte
 }
 
 // Format represents the bundle formats that are supported by the Formatter.
@@ -53,6 +63,8 @@ func (bundleFormat Format) String() string {
 		return "pem"
 	case JWKS:
 		return "jwks"
+	case OIDCJWKS:
+		return "oidc_jwks"
 	default:
 		return fmt.Sprintf("UNKNOWN(%d)", int(bundleFormat))
 	}
@@ -67,6 +79,8 @@ func FromString(s string) (Format, error) {
 		return JWKS, nil
 	case "pem":
 		return PEM, nil
+	case "oidc_jwks":
+		return OIDCJWKS, nil
 	default:
 		return FormatUnset, fmt.Errorf("unknown bundle format: %q", s)
 	}
@@ -101,6 +115,16 @@ func (b *Formatter) Format(format Format) ([]byte, error) {
 		}
 		b.jwksBytes = jwksBytes
 		return jwksBytes, nil
+	case OIDCJWKS:
+		if b.oidcJWKSBytes != nil {
+			return b.oidcJWKSBytes, nil
+		}
+		oidcJWKSBytes, err := b.toOIDCJWKS()
+		if err != nil {
+			return nil, fmt.Errorf("could not convert bundle to oidc_jwks format: %w", err)
+		}
+		b.oidcJWKSBytes = oidcJWKSBytes
+		return oidcJWKSBytes, nil
 	case PEM:
 		if b.pemBytes != nil {
 			return b.pemBytes, nil
@@ -150,6 +174,53 @@ func (b *Formatter) toJWKS() ([]byte, error) {
 	}
 
 	return json.Marshal(jwks)
+}
+
+// toOIDCJWKS converts the current bundle to a JWKS for OIDC relying parties.
+// Only the JWT authorities are included, in the order of the bundle. Every key
+// has its "kid" and "use" set to "sig", and "alg" when the JWS algorithm of
+// the key is known; a key with no known algorithm is included without "alg".
+func (b *Formatter) toOIDCJWKS() ([]byte, error) {
+	jwks := jose.JSONWebKeySet{
+		Keys: []jose.JSONWebKey{},
+	}
+
+	for i, jwtKey := range b.bundle.JwtAuthorities {
+		publicKey, err := x509.ParsePKIXPublicKey(jwtKey.PublicKey)
+		if err != nil {
+			return nil, fmt.Errorf("unable to parse JWT signing key %d: %w", i, err)
+		}
+		jwks.Keys = append(jwks.Keys, jose.JSONWebKey{
+			Key:       publicKey,
+			KeyID:     jwtKey.KeyId,
+			Algorithm: string(joseAlgFromPublicKey(publicKey)),
+			Use:       oidcKeyUse,
+		})
+	}
+
+	return json.Marshal(jwks)
+}
+
+// joseAlgFromPublicKey returns the JWS algorithm used with the public key, as
+// SPIRE does to sign JWT-SVIDs, or an empty string if it is not known: RSA
+// keys of at least 2048 bits use RS256, and ECDSA keys on the P-256 and P-384
+// curves use ES256 and ES384.
+func joseAlgFromPublicKey(publicKey crypto.PublicKey) jose.SignatureAlgorithm {
+	switch publicKey := publicKey.(type) {
+	case *rsa.PublicKey:
+		if publicKey.Size() < 256 {
+			return ""
+		}
+		return jose.RS256
+	case *ecdsa.PublicKey:
+		switch publicKey.Params().BitSize {
+		case 256:
+			return jose.ES256
+		case 384:
+			return jose.ES384
+		}
+	}
+	return ""
 }
 
 // toPEM converts to PEM the current bundle.
