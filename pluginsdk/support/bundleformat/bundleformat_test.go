@@ -210,11 +210,15 @@ Q5RJ+HHlULTMYDpXzODVkuuQJeE/FGhPVZE3Rjpq2ECRiEDEG1p8b6DIg8kBmspC
 T9pdEVVNx9ZxAUYYkCd/XAe7WvfQl1VKDh1aWjR7RB+5nwlfYWiwkc/Q5ZVK+xif
 TyNAgTnpZUeUW2r6FsM=
 -----END PUBLIC KEY-----`
+		ed25519PEM = `-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA0iph4hO+kBLIsiDolSMKyI2r5pfkpZEdthyIA8xKguo=
+-----END PUBLIC KEY-----`
 
 		rsa2048JWK = `{"use":"sig","kty":"RSA","kid":"rsa2048","alg":"RS256","n":"nbr0TRmoINIvlIWOq1o2flmf7PFmG4nRh0GdotR2Eo2FW1Wxx4mQ3qPrJq8zAtro-5-qOlIRkODsMusvrS9jpjFoikbbrbqZoHHWNwWrxXiYtOpfUj-jFyv-tD2NY4cJcdU6tNLHQP4Fv22b5WMTeqwLFZuvGrLrpaBcQGxJDoakpFs0FP9OYrZcbtPV9YF71fYUiw2FAN0zXPlLBci55BtXYWIDBJt4eGCFkkVnmUQJlrbrR_0gyzrztB0Ly3lOmQguNDkEmXUik7qKjv9Y0uzBGIRhIW5htdcIZUW2vMRJHPMetlx07rHou9IGaJUBDzMYZxih7BpdeLlUglTW5w","e":"AQAB"}`
 		ec256JWK   = `{"use":"sig","kty":"EC","kid":"ec256","crv":"P-256","alg":"ES256","x":"IHOr9UXslszDD-f59Al99MFluwv_6W7xJxC9OSQgsAE","y":"O5EC-YoEqFMefaQMIK8kkIkzXen8pIIXR4kpVuuW6dY"}`
 		ec384JWK   = `{"use":"sig","kty":"EC","kid":"ec384","crv":"P-384","alg":"ES384","x":"ZQpnFVLKVJk_ftXilslYwLJeD9WD3NGMEkkK5YmJ4c7ybAknvOZmduaDTyb8VCGl","y":"3vfdQDyFx6rdZlUSedU6gouqTMvRvnJr1t9TIs5LEepPH9Xgls2Un2yKYeig1ipa"}`
 		rsa1024JWK = `{"use":"sig","kty":"RSA","kid":"rsa1024","n":"qozjTX8-HE4N9buVOBkiA5suh3Ko1hIi5360DQGlZV0xamOAxThKeWZOpWz2_0Nm8An-etuOj6GajEifklriDhrqzQDlmTOC_XWH9ZubKhjx3yAcj4T00GIB9prgik_JCwczc7A4lcc0Vl733N6MEcJR7SXuRfr7OQ84dkWYvo0","e":"AQAB"}`
+		ed25519JWK = `{"use":"sig","kty":"OKP","kid":"ed25519","crv":"Ed25519","x":"0iph4hO-kBLIsiDolSMKyI2r5pfkpZEdthyIA8xKguo"}`
 		ec521JWK   = `{"use":"sig","kty":"EC","kid":"ec521","crv":"P-521","x":"ANOZgfqDBRj0o29g2LJ0JjDAMe8lDkOUSfhx5VC0zGA6V8zg1ZLrkCXhPxRoT1WRN0Y6athAkYhAxBtafG-gyIPJ","y":"AZrKQk_aXRFVTcfWcQFGGJAnf1wHu1r30JdVSg4dWlo0e0QfuZ8JX2FosJHP0OWVSvsYn08jQIE56WVHlFtq-hbD"}`
 
 		// A self-signed X.509 authority.
@@ -267,9 +271,10 @@ dZglS5kKnYigmwDh+/U=
 					jwtKey("ec256", ec256PEM),
 					jwtKey("ec521", ec521PEM),
 					jwtKey("ec384", ec384PEM),
+					jwtKey("ed25519", ed25519PEM),
 				},
 			},
-			expectJWKS: `{"keys":[` + rsa2048JWK + `,` + rsa1024JWK + `,` + ec256JWK + `,` + ec521JWK + `,` + ec384JWK + `]}`,
+			expectJWKS: `{"keys":[` + rsa2048JWK + `,` + rsa1024JWK + `,` + ec256JWK + `,` + ec521JWK + `,` + ec384JWK + `,` + ed25519JWK + `]}`,
 		},
 		{
 			name: "X.509 authorities are not included",
