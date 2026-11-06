@@ -30,9 +30,11 @@ const (
 	SPIFFE
 	PEM
 	JWKS
-	// OIDCJWKS is a JWKS with the JWT authorities only, in the form served
-	// by the SPIRE OIDC Discovery Provider with set_key_use enabled, for OIDC
-	// relying parties.
+	// OIDCJWKS is a JWK Set for OIDC relying parties with the JWT authorities
+	// only. Every key has its "kid", "use" set to "sig", and "alg" when the
+	// JWS algorithm of the key is known: RS256 for RSA keys of at least 2048
+	// bits, ES256 for P-256 and ES384 for P-384 ECDSA keys. Other keys have
+	// no "alg".
 	OIDCJWKS
 )
 
