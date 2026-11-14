@@ -18,23 +18,33 @@ service Config {
     rpc Validate(ValidateRequest) returns (ValidateResponse);
 }
 
-message ConfigureRequest {
-    // Required. Core SPIRE configuration.
-    CoreConfiguration core_configuration = 1;
+enum ConfigFormat {
+    CONFIG_FORMAT_UNSPECIFIED = 0;
+    CONFIG_FORMAT_HCL = 1;
+    CONFIG_FORMAT_YAML = 2;
+}
 
-    // Required. HCL encoded plugin configuration.
-    string hcl_configuration = 2;
+message ConfigureRequest {
+    CoreConfiguration core_configuration = 1;
+    // Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
+    string hcl_configuration = 2 [deprecated = true];
+    // Raw plugin configuration string in the format specified by configFormat.
+    // When set, takes precedence over hclConfiguration.
+    string configuration = 3;
+    ConfigFormat config_format = 4;
 }
 
 message ConfigureResponse {
 }
 
 message ValidateRequest {
-    // Required. Core SPIRE configuration.
     CoreConfiguration core_configuration = 1;
-
-    // Required. HCL encoded plugin configuration.
-    string hcl_configuration = 2;
+    // Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
+    string hcl_configuration = 2 [deprecated = true];
+    // Raw plugin configuration string in the format specified by configFormat.
+    // When set, takes precedence over hclConfiguration.
+    string configuration = 3;
+    ConfigFormat config_format = 4;
 }
 
 message ValidateResponse {
