@@ -226,7 +226,10 @@ type ComposeAgentX509SVIDRequest struct {
 	// The SPIFFE ID of the agent.
 	SpiffeId string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
 	// PKIX encoded public key of the agent.
-	PublicKey     []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	PublicKey []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// The attested node (agent) on whose behalf the X509-SVID is minted.
+	// Unset when the X509-SVID is not minted on behalf of an agent.
+	AttestedNode  *AttestedNode `protobuf:"bytes,4,opt,name=attested_node,json=attestedNode,proto3" json:"attested_node,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -278,6 +281,13 @@ func (x *ComposeAgentX509SVIDRequest) GetSpiffeId() string {
 func (x *ComposeAgentX509SVIDRequest) GetPublicKey() []byte {
 	if x != nil {
 		return x.PublicKey
+	}
+	return nil
+}
+
+func (x *ComposeAgentX509SVIDRequest) GetAttestedNode() *AttestedNode {
+	if x != nil {
+		return x.AttestedNode
 	}
 	return nil
 }
@@ -341,7 +351,10 @@ type ComposeWorkloadX509SVIDRequest struct {
 	// The SPIFFE ID of the workload.
 	SpiffeId string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
 	// PKIX encoded public key of the workload.
-	PublicKey     []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	PublicKey []byte `protobuf:"bytes,3,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// The attested node (agent) on whose behalf the X509-SVID is minted.
+	// Unset when the X509-SVID is not minted on behalf of an agent.
+	AttestedNode  *AttestedNode `protobuf:"bytes,4,opt,name=attested_node,json=attestedNode,proto3" json:"attested_node,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -393,6 +406,13 @@ func (x *ComposeWorkloadX509SVIDRequest) GetSpiffeId() string {
 func (x *ComposeWorkloadX509SVIDRequest) GetPublicKey() []byte {
 	if x != nil {
 		return x.PublicKey
+	}
+	return nil
+}
+
+func (x *ComposeWorkloadX509SVIDRequest) GetAttestedNode() *AttestedNode {
+	if x != nil {
+		return x.AttestedNode
 	}
 	return nil
 }
@@ -454,7 +474,10 @@ type ComposeWorkloadJWTSVIDRequest struct {
 	// ComposeWorkloadJWTSVIDResponse.
 	Attributes *JWTSVIDAttributes `protobuf:"bytes,1,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	// The SPIFFE ID of the workload.
-	SpiffeId      string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
+	SpiffeId string `protobuf:"bytes,2,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
+	// The attested node (agent) on whose behalf the JWT-SVID is minted.
+	// Unset when the JWT-SVID is not minted on behalf of an agent.
+	AttestedNode  *AttestedNode `protobuf:"bytes,3,opt,name=attested_node,json=attestedNode,proto3" json:"attested_node,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -501,6 +524,13 @@ func (x *ComposeWorkloadJWTSVIDRequest) GetSpiffeId() string {
 		return x.SpiffeId
 	}
 	return ""
+}
+
+func (x *ComposeWorkloadJWTSVIDRequest) GetAttestedNode() *AttestedNode {
+	if x != nil {
+		return x.AttestedNode
+	}
+	return nil
 }
 
 type ComposeWorkloadJWTSVIDResponse struct {
@@ -983,6 +1013,114 @@ func (x *JWTSVIDAttributes) GetClaims() *structpb.Struct {
 	return nil
 }
 
+type AttestedNode struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The SPIFFE ID of the attested node.
+	SpiffeId string `protobuf:"bytes,1,opt,name=spiffe_id,json=spiffeId,proto3" json:"spiffe_id,omitempty"`
+	// The selectors of the attested node.
+	Selectors     []*Selector `protobuf:"bytes,2,rep,name=selectors,proto3" json:"selectors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttestedNode) Reset() {
+	*x = AttestedNode{}
+	mi := &file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttestedNode) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttestedNode) ProtoMessage() {}
+
+func (x *AttestedNode) ProtoReflect() protoreflect.Message {
+	mi := &file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttestedNode.ProtoReflect.Descriptor instead.
+func (*AttestedNode) Descriptor() ([]byte, []int) {
+	return file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *AttestedNode) GetSpiffeId() string {
+	if x != nil {
+		return x.SpiffeId
+	}
+	return ""
+}
+
+func (x *AttestedNode) GetSelectors() []*Selector {
+	if x != nil {
+		return x.Selectors
+	}
+	return nil
+}
+
+type Selector struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of the selector (e.g. "k8s_psat").
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// The value of the selector.
+	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Selector) Reset() {
+	*x = Selector{}
+	mi := &file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Selector) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Selector) ProtoMessage() {}
+
+func (x *Selector) ProtoReflect() protoreflect.Message {
+	mi := &file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Selector.ProtoReflect.Descriptor instead.
+func (*Selector) Descriptor() ([]byte, []int) {
+	return file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *Selector) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Selector) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
 var File_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto protoreflect.FileDescriptor
 
 const file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDesc = "" +
@@ -1003,34 +1141,37 @@ const file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_ra
 	"\x1dComposeServerX509SVIDResponse\x12]\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2=.spire.plugin.server.credentialcomposer.v1.X509SVIDAttributesR\n" +
-	"attributes\"\xb8\x01\n" +
+	"attributes\"\x96\x02\n" +
 	"\x1bComposeAgentX509SVIDRequest\x12]\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2=.spire.plugin.server.credentialcomposer.v1.X509SVIDAttributesR\n" +
 	"attributes\x12\x1b\n" +
 	"\tspiffe_id\x18\x02 \x01(\tR\bspiffeId\x12\x1d\n" +
 	"\n" +
-	"public_key\x18\x03 \x01(\fR\tpublicKey\"}\n" +
+	"public_key\x18\x03 \x01(\fR\tpublicKey\x12\\\n" +
+	"\rattested_node\x18\x04 \x01(\v27.spire.plugin.server.credentialcomposer.v1.AttestedNodeR\fattestedNode\"}\n" +
 	"\x1cComposeAgentX509SVIDResponse\x12]\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2=.spire.plugin.server.credentialcomposer.v1.X509SVIDAttributesR\n" +
-	"attributes\"\xbb\x01\n" +
+	"attributes\"\x99\x02\n" +
 	"\x1eComposeWorkloadX509SVIDRequest\x12]\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2=.spire.plugin.server.credentialcomposer.v1.X509SVIDAttributesR\n" +
 	"attributes\x12\x1b\n" +
 	"\tspiffe_id\x18\x02 \x01(\tR\bspiffeId\x12\x1d\n" +
 	"\n" +
-	"public_key\x18\x03 \x01(\fR\tpublicKey\"\x80\x01\n" +
+	"public_key\x18\x03 \x01(\fR\tpublicKey\x12\\\n" +
+	"\rattested_node\x18\x04 \x01(\v27.spire.plugin.server.credentialcomposer.v1.AttestedNodeR\fattestedNode\"\x80\x01\n" +
 	"\x1fComposeWorkloadX509SVIDResponse\x12]\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2=.spire.plugin.server.credentialcomposer.v1.X509SVIDAttributesR\n" +
-	"attributes\"\x9a\x01\n" +
+	"attributes\"\xf8\x01\n" +
 	"\x1dComposeWorkloadJWTSVIDRequest\x12\\\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2<.spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributesR\n" +
 	"attributes\x12\x1b\n" +
-	"\tspiffe_id\x18\x02 \x01(\tR\bspiffeId\"~\n" +
+	"\tspiffe_id\x18\x02 \x01(\tR\bspiffeId\x12\\\n" +
+	"\rattested_node\x18\x03 \x01(\v27.spire.plugin.server.credentialcomposer.v1.AttestedNodeR\fattestedNode\"~\n" +
 	"\x1eComposeWorkloadJWTSVIDResponse\x12\\\n" +
 	"\n" +
 	"attributes\x18\x01 \x01(\v2<.spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributesR\n" +
@@ -1066,7 +1207,13 @@ const file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_ra
 	"\x03oid\x18\x01 \x01(\tR\x03oid\x12!\n" +
 	"\fstring_value\x18\x02 \x01(\tR\vstringValue\"D\n" +
 	"\x11JWTSVIDAttributes\x12/\n" +
-	"\x06claims\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x06claims2\xf5\x06\n" +
+	"\x06claims\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x06claims\"~\n" +
+	"\fAttestedNode\x12\x1b\n" +
+	"\tspiffe_id\x18\x01 \x01(\tR\bspiffeId\x12Q\n" +
+	"\tselectors\x18\x02 \x03(\v23.spire.plugin.server.credentialcomposer.v1.SelectorR\tselectors\"4\n" +
+	"\bSelector\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value2\xf5\x06\n" +
 	"\x12CredentialComposer\x12\xa4\x01\n" +
 	"\x13ComposeServerX509CA\x12E.spire.plugin.server.credentialcomposer.v1.ComposeServerX509CARequest\x1aF.spire.plugin.server.credentialcomposer.v1.ComposeServerX509CAResponse\x12\xaa\x01\n" +
 	"\x15ComposeServerX509SVID\x12G.spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDRequest\x1aH.spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDResponse\x12\xa7\x01\n" +
@@ -1086,7 +1233,7 @@ func file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_raw
 	return file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDescData
 }
 
-var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_goTypes = []any{
 	(*ComposeServerX509CARequest)(nil),      // 0: spire.plugin.server.credentialcomposer.v1.ComposeServerX509CARequest
 	(*ComposeServerX509CAResponse)(nil),     // 1: spire.plugin.server.credentialcomposer.v1.ComposeServerX509CAResponse
@@ -1104,7 +1251,9 @@ var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_goTy
 	(*DistinguishedName)(nil),               // 13: spire.plugin.server.credentialcomposer.v1.DistinguishedName
 	(*AttributeTypeAndValue)(nil),           // 14: spire.plugin.server.credentialcomposer.v1.AttributeTypeAndValue
 	(*JWTSVIDAttributes)(nil),               // 15: spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes
-	(*structpb.Struct)(nil),                 // 16: google.protobuf.Struct
+	(*AttestedNode)(nil),                    // 16: spire.plugin.server.credentialcomposer.v1.AttestedNode
+	(*Selector)(nil),                        // 17: spire.plugin.server.credentialcomposer.v1.Selector
+	(*structpb.Struct)(nil),                 // 18: google.protobuf.Struct
 }
 var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_depIdxs = []int32{
 	10, // 0: spire.plugin.server.credentialcomposer.v1.ComposeServerX509CARequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509CAAttributes
@@ -1112,32 +1261,36 @@ var file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_depI
 	11, // 2: spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
 	11, // 3: spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
 	11, // 4: spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
-	11, // 5: spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
-	11, // 6: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
-	11, // 7: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
-	15, // 8: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes
-	15, // 9: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes
-	13, // 10: spire.plugin.server.credentialcomposer.v1.X509CAAttributes.subject:type_name -> spire.plugin.server.credentialcomposer.v1.DistinguishedName
-	12, // 11: spire.plugin.server.credentialcomposer.v1.X509CAAttributes.extra_extensions:type_name -> spire.plugin.server.credentialcomposer.v1.X509Extension
-	13, // 12: spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes.subject:type_name -> spire.plugin.server.credentialcomposer.v1.DistinguishedName
-	12, // 13: spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes.extra_extensions:type_name -> spire.plugin.server.credentialcomposer.v1.X509Extension
-	14, // 14: spire.plugin.server.credentialcomposer.v1.DistinguishedName.extra_names:type_name -> spire.plugin.server.credentialcomposer.v1.AttributeTypeAndValue
-	16, // 15: spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes.claims:type_name -> google.protobuf.Struct
-	0,  // 16: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509CA:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509CARequest
-	2,  // 17: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDRequest
-	4,  // 18: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeAgentX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDRequest
-	6,  // 19: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDRequest
-	8,  // 20: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadJWTSVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDRequest
-	1,  // 21: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509CA:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509CAResponse
-	3,  // 22: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDResponse
-	5,  // 23: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeAgentX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDResponse
-	7,  // 24: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDResponse
-	9,  // 25: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadJWTSVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDResponse
-	21, // [21:26] is the sub-list for method output_type
-	16, // [16:21] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	16, // 5: spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDRequest.attested_node:type_name -> spire.plugin.server.credentialcomposer.v1.AttestedNode
+	11, // 6: spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
+	11, // 7: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
+	16, // 8: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDRequest.attested_node:type_name -> spire.plugin.server.credentialcomposer.v1.AttestedNode
+	11, // 9: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes
+	15, // 10: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDRequest.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes
+	16, // 11: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDRequest.attested_node:type_name -> spire.plugin.server.credentialcomposer.v1.AttestedNode
+	15, // 12: spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDResponse.attributes:type_name -> spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes
+	13, // 13: spire.plugin.server.credentialcomposer.v1.X509CAAttributes.subject:type_name -> spire.plugin.server.credentialcomposer.v1.DistinguishedName
+	12, // 14: spire.plugin.server.credentialcomposer.v1.X509CAAttributes.extra_extensions:type_name -> spire.plugin.server.credentialcomposer.v1.X509Extension
+	13, // 15: spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes.subject:type_name -> spire.plugin.server.credentialcomposer.v1.DistinguishedName
+	12, // 16: spire.plugin.server.credentialcomposer.v1.X509SVIDAttributes.extra_extensions:type_name -> spire.plugin.server.credentialcomposer.v1.X509Extension
+	14, // 17: spire.plugin.server.credentialcomposer.v1.DistinguishedName.extra_names:type_name -> spire.plugin.server.credentialcomposer.v1.AttributeTypeAndValue
+	18, // 18: spire.plugin.server.credentialcomposer.v1.JWTSVIDAttributes.claims:type_name -> google.protobuf.Struct
+	17, // 19: spire.plugin.server.credentialcomposer.v1.AttestedNode.selectors:type_name -> spire.plugin.server.credentialcomposer.v1.Selector
+	0,  // 20: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509CA:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509CARequest
+	2,  // 21: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDRequest
+	4,  // 22: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeAgentX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDRequest
+	6,  // 23: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadX509SVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDRequest
+	8,  // 24: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadJWTSVID:input_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDRequest
+	1,  // 25: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509CA:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509CAResponse
+	3,  // 26: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeServerX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeServerX509SVIDResponse
+	5,  // 27: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeAgentX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeAgentX509SVIDResponse
+	7,  // 28: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadX509SVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadX509SVIDResponse
+	9,  // 29: spire.plugin.server.credentialcomposer.v1.CredentialComposer.ComposeWorkloadJWTSVID:output_type -> spire.plugin.server.credentialcomposer.v1.ComposeWorkloadJWTSVIDResponse
+	25, // [25:30] is the sub-list for method output_type
+	20, // [20:25] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_init() }
@@ -1151,7 +1304,7 @@ func file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_ini
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDesc), len(file_spire_plugin_server_credentialcomposer_v1_credentialcomposer_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
