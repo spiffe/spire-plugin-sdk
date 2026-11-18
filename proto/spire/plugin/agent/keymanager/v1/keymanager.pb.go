@@ -29,6 +29,11 @@ const (
 	KeyType_EC_P384              KeyType = 2
 	KeyType_RSA_2048             KeyType = 3
 	KeyType_RSA_4096             KeyType = 4
+	// All ML-DSA algorithms are pure ML-DSA, not HashML-DSA,
+	// with an empty context.
+	KeyType_ML_DSA_44 KeyType = 5
+	KeyType_ML_DSA_65 KeyType = 6
+	KeyType_ML_DSA_87 KeyType = 7
 )
 
 // Enum value maps for KeyType.
@@ -39,6 +44,9 @@ var (
 		2: "EC_P384",
 		3: "RSA_2048",
 		4: "RSA_4096",
+		5: "ML_DSA_44",
+		6: "ML_DSA_65",
+		7: "ML_DSA_87",
 	}
 	KeyType_value = map[string]int32{
 		"UNSPECIFIED_KEY_TYPE": 0,
@@ -46,6 +54,9 @@ var (
 		"EC_P384":              2,
 		"RSA_2048":             3,
 		"RSA_4096":             4,
+		"ML_DSA_44":            5,
+		"ML_DSA_65":            6,
+		"ML_DSA_87":            7,
 	}
 )
 
@@ -516,7 +527,8 @@ type SignDataRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The ID of the key to use to sign the data.
 	KeyId string `protobuf:"bytes,1,opt,name=key_id,json=keyId,proto3" json:"key_id,omitempty"`
-	// Required. The data to sign.
+	// Required. The data to sign. For ML-DSA keys this is the full message,
+	// not a digest, and hash_algorithm must be UNSPECIFIED_HASH_ALGORITHM.
 	Data []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	// Required. The signature options. The PSS options are only valid
 	// for RSA keys.
@@ -762,13 +774,16 @@ const file_spire_plugin_agent_keymanager_v1_keymanager_proto_rawDesc = "" +
 	"\vsigner_opts\"Y\n" +
 	"\x10SignDataResponse\x12\x1c\n" +
 	"\tsignature\x18\x01 \x01(\fR\tsignature\x12'\n" +
-	"\x0fkey_fingerprint\x18\x02 \x01(\tR\x0ekeyFingerprint*Y\n" +
+	"\x0fkey_fingerprint\x18\x02 \x01(\tR\x0ekeyFingerprint*\x86\x01\n" +
 	"\aKeyType\x12\x18\n" +
 	"\x14UNSPECIFIED_KEY_TYPE\x10\x00\x12\v\n" +
 	"\aEC_P256\x10\x01\x12\v\n" +
 	"\aEC_P384\x10\x02\x12\f\n" +
 	"\bRSA_2048\x10\x03\x12\f\n" +
-	"\bRSA_4096\x10\x04*\xb7\x01\n" +
+	"\bRSA_4096\x10\x04\x12\r\n" +
+	"\tML_DSA_44\x10\x05\x12\r\n" +
+	"\tML_DSA_65\x10\x06\x12\r\n" +
+	"\tML_DSA_87\x10\a*\xb7\x01\n" +
 	"\rHashAlgorithm\x12\x1e\n" +
 	"\x1aUNSPECIFIED_HASH_ALGORITHM\x10\x00\x12\n" +
 	"\n" +
