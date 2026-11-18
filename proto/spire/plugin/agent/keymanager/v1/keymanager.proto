@@ -127,6 +127,8 @@ enum KeyType {
     EC_P384 = 2;
     RSA_2048 = 3;
     RSA_4096 = 4;
+    // All ML-DSA algorithms are pure ML-DSA, not HashML-DSA,
+    // with an empty context.
     ML_DSA_44 = 5;
     ML_DSA_65 = 6;
     ML_DSA_87 = 7;

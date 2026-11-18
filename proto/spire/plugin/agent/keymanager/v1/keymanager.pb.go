@@ -29,9 +29,11 @@ const (
 	KeyType_EC_P384              KeyType = 2
 	KeyType_RSA_2048             KeyType = 3
 	KeyType_RSA_4096             KeyType = 4
-	KeyType_ML_DSA_44            KeyType = 5
-	KeyType_ML_DSA_65            KeyType = 6
-	KeyType_ML_DSA_87            KeyType = 7
+	// All ML-DSA algorithms are pure ML-DSA, not HashML-DSA,
+	// with an empty context.
+	KeyType_ML_DSA_44 KeyType = 5
+	KeyType_ML_DSA_65 KeyType = 6
+	KeyType_ML_DSA_87 KeyType = 7
 )
 
 // Enum value maps for KeyType.
