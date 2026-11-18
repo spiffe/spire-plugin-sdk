@@ -101,7 +101,8 @@ message SignDataRequest {
     // Required. The ID of the key to use to sign the data.
     string key_id = 1;
 
-    // Required. The data to sign.
+    // Required. The data to sign. For ML-DSA keys this is the full message,
+    // not a digest, and hash_algorithm must be UNSPECIFIED_HASH_ALGORITHM.
     bytes data = 2;
 
     // Required. The signature options. The PSS options are only valid
@@ -126,6 +127,9 @@ enum KeyType {
     EC_P384 = 2;
     RSA_2048 = 3;
     RSA_4096 = 4;
+    ML_DSA_44 = 5;
+    ML_DSA_65 = 6;
+    ML_DSA_87 = 7;
 }
 
 enum HashAlgorithm {
