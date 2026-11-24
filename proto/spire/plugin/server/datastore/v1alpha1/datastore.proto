@@ -1,0 +1,1290 @@
+syntax = "proto3";
+package spire.plugin.server.datastore.v1alpha1;
+option go_package = "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/datastore/v1alpha1;datastorev1alpha1";
+
+// DataConsistency specifies whether the datastore can return potentially stale data (from a read-only replica or non-quorum)
+// or if it must return the most up-to-date data (from a quorum of nodes or a leader).
+enum DataConsistency {
+    // The datastore must return the most up-to-date data (from a quorum of nodes or a leader).
+    DATA_CONSISTENCY_REQUIRE_CURRENT = 0;
+
+    // The datastore can return potentially stale data (from a read-only replica or non-quorum).
+    DATA_CONSISTENCY_TOLERATE_STALE = 1;
+}
+
+// DeleteMode specifies the behavior of a delete operation when the resource being deleted has dependent resources.
+enum DeleteMode {
+    // The delete operation will fail if the resource being deleted has dependent resources.
+    DELETE_MODE_RESTRICT = 0;
+
+    // The delete operation will delete the resource and all dependent resources.
+    DELETE_MODE_DELETE = 1;
+
+    // The delete operation will delete the resource and dissociate all dependent resources.
+    DELETE_MODE_DISSOCIATE = 2;
+}
+
+// MatchBehavior specifies how a set of filters should be applied to a set of resources. Used for selectors and federated trust domains.
+enum MatchBehavior {
+    // The resource must match all of the filters precisely (set equality).
+    MATCH_BEHAVIOR_MATCH_EXACT = 0;
+
+    // The resource must match some of the conditions in the filter
+    // but may not have additional elements not in the filter.
+    MATCH_BEHAVIOR_MATCH_SUBSET = 1;
+
+    // The resource must match all of the conditions in the filter
+    // but may have additional elements not in the filter.
+    MATCH_BEHAVIOR_MATCH_SUPERSET = 2;
+
+    // The resource must match at least one of the conditions in the filter.
+    MATCH_BEHAVIOR_MATCH_ANY = 3;
+}
+
+// BundleEndpointType specifies the type of endpoint used to fetch a bundle from a federated trust domain.
+enum BundleEndpointType {
+    BUNDLE_ENDPOINT_TYPE_SPIFFE = 0;
+    BUNDLE_ENDPOINT_TYPE_WEB = 1;
+}
+
+message Empty {}
+
+// A type which contains attestation data for specific platform.
+message AttestationData {
+    // Type of attestation to perform.
+    string type = 1;
+    // The attestation data.
+    bytes data = 2;
+}
+
+// A selector describes the conditions under which a registration
+// entry is matched.
+message Selector {
+    // A selector type represents the type of attestation used in attesting
+    // the entity (Eg: AWS, K8).
+    string type = 1;
+    // The value to be attested.
+    string value = 2;
+}
+
+// Selectors is a list of Selector. It is used to represent the selectors 
+// associated with an attested node or registration entry.
+message Selectors {
+    // A list of Selector.
+    repeated Selector entries = 1;
+}
+
+// AttestedNode represents a node that has been successfully attested by the SPIRE server.
+// It contains information about the node's agent identity, selectors produced during attestation,
+// and other metadata related to the node's attestation status.
+message AttestedNode {
+    // Node SPIFFE ID
+    string spiffe_id = 1;
+
+    // Attestation data type
+    string attestation_data_type = 2;
+
+    // Node certificate serial number
+    string cert_serial_number = 3;
+
+    // Node certificate not_after (seconds since unix epoch)
+    int64 cert_not_after = 4;
+
+    // Node certificate serial number
+    string new_cert_serial_number = 5;
+
+    // Node certificate not_after (seconds since unix epoch)
+    int64 new_cert_not_after = 6;
+
+    // Node selectors
+    repeated Selector selectors = 7;
+
+    // CanReattest field (can the attestation safely be deleted and recreated automatically)
+    bool can_reattest = 8;
+
+    // AgentVersion is the version of the SPIRE agent
+    string agent_version = 9;
+
+    // CreatedAt (seconds since unix epoch)
+    int64 created_at = 10;
+
+    // UpdatedAt (seconds since unix epoch)
+    int64 updated_at = 11;
+}
+
+// This is a curated record that the Server uses to set up and
+// manage the various registered nodes and workloads that are controlled by it.
+message RegistrationEntry {
+    // A list of selectors that describe attributes that must be produced by attestation
+    // to match this registration entry.
+    repeated Selector selectors = 1;
+
+    // The parent ID of the registration entry. This is the SPIFFE ID of the parent node 
+    // that is allowed to create this registration entry.
+    string parent_id = 2;
+
+    // The SPIFFE ID is a structured string used to identify a resource or
+    // caller. It is defined as a URI comprising a “trust domain” and an
+    // associated path.
+    string spiffe_id = 3;
+
+    // The time to live for X.509 SVIDs generated from this entry, in seconds.
+    int32 x509_svid_ttl = 4;
+    
+    // Trust domains with which this registration entry federates.
+    repeated string federates_with = 5;
+
+    // Entry ID. Typically a guid, but can be any string that uniquely identifies the entry.
+    string entry_id = 6;
+    
+    // Whether the workload is an admin workload. Admin workloads
+    // can use their SVID's to authenticate with the Server APIs, for
+    // example.
+    bool admin = 7;
+
+    // To enable signing CA CSR in upstream spire server
+    bool downstream = 8;
+
+    // Expiration of this entry, in seconds from epoch
+    int64 entryExpiry = 9;
+
+    // DNS entries
+    repeated string dns_names = 10;
+
+    // Revision number is bumped every time the entry is updated
+    int64 revision_number = 11;
+
+    // Determines if the issued SVID must be stored through an SVIDStore plugin
+    bool store_svid = 12;
+
+    // The time to live for JWT SVIDs generated from this entry, in seconds.
+    int32 jwt_svid_ttl = 13;
+
+    // An operator-specified string used to provide guidance on how this
+    // identity should be used by a workload when more than one SVID is returned.
+    string hint = 14;
+
+    // Time of creation, in seconds from epoch
+    int64 created_at = 15;
+
+    // Time of last update, in seconds from epoch
+    int64 updated_at = 16;
+
+    // Additional attributes may contain a number of optional fields controlling
+    // the various aspects of the agent's behavior with respect to a given 
+    // registration entry.
+    RegistrationEntry_AdditionalAttributes additional_attributes = 17;
+}
+
+// Additional attributes may contain a number of optional fields controlling
+// the various aspects of the agent's behavior with respect to a given 
+// registration entry.
+message RegistrationEntry_AdditionalAttributes {
+    // If true, the SPIRE Server will not prefetch X.509 SVIDs for this entry.
+    bool disable_x509_svid_prefetch = 1;
+
+    // If true, the SPIRE Server will include a jti claim in JWT SVIDs for this entry.
+    bool jwt_svid_include_jti = 2;
+}
+
+// The RegistrationEntryMask is used to update only selected fields of the RegistrationEntry
+message RegistrationEntryMask {
+    // If true, the selectors of the registration entry will be updated.
+    bool selectors = 1;
+
+    // If true, the parent_id of the registration entry will be updated.
+    bool parent_id = 2;
+
+    // If true, the spiffe_id of the registration entry will be updated.
+    bool spiffe_id = 3;
+
+    // If true, the x509_svid_ttl of the registration entry will be updated.
+    bool x509_svid_ttl = 4;
+
+    // If true, federated trust domains for the registration entry will be updated.
+    bool federates_with = 5;
+
+    // If true, the entry_id of the registration entry will be updated.
+    bool entry_id = 6;
+
+    // If true, the admin field of the registration entry will be updated.
+    bool admin = 7;
+
+    // If true, the downstream field of the registration entry will be updated.
+    bool downstream = 8;
+
+    // If true, the entryExpiry of the registration entry will be updated.
+    bool entry_expiry = 9;
+
+    // If true, the dns_names of the registration entry will be updated.
+    bool dns_names = 10;
+
+    // If true, the store_svid of the registration entry will be updated.
+    bool store_svid = 11;
+
+    // If true, the jwt_svid_ttl of the registration entry will be updated.
+    bool jwt_svid_ttl = 12;
+
+    // If true, the hint of the registration entry will be updated.
+    bool hint = 13;
+}
+
+
+// RegistrationEntries is a list of RegistrationEntry retrieved from the datastore.
+message RegistrationEntries {
+    repeated RegistrationEntry entries = 1;
+}
+
+// Certificate represents a ASN.1/DER encoded X509 certificate
+message Certificate {
+    // ASN.1/DER encoded certificate data
+    bytes der_bytes = 1;
+
+    // whether the certificate is tainted
+    bool tainted_key = 2;
+}
+
+// PublicKey represents a PKIX encoded public key
+message PublicKey {
+    // PKIX encoded key data
+    bytes pkix_bytes = 1;
+
+    // key identifier
+    string kid = 2;
+
+    // not after (seconds since unix epoch, 0 means "never expires")
+    int64 not_after = 3;
+
+    // whether the key is tainted
+    bool tainted_key = 4;
+}
+
+// Bundle represents a set of X.509 root CAs and JWT signing keys for a trust domain.
+message Bundle {
+    // The trust domain of the bundle. 
+    string trust_domain_id = 1;
+
+    // The bundle data. 
+    bytes data = 2;
+
+    // The time at which the bundle was created. 
+    int64 created_at = 3;
+
+    // The time at which the bundle was last updated.
+    int64 updated_at = 4;
+}
+
+// BundleMask is used to update only selected fields of the Bundle
+message BundleMask {
+    // If true, the root CAs of the bundle will be updated.
+    bool root_cas = 1;
+
+    // If true, the JWT signing keys of the bundle will be updated.
+    bool jwt_signing_keys = 2;
+
+    // If true, the refresh hint of the bundle will be updated.
+    bool refresh_hint = 3;
+
+    // If true, the sequence number of the bundle will be updated.
+    bool sequence_number = 4;
+
+    // If true, the x509 tainted keys of the bundle will be updated.
+    bool x509_tainted_keys = 5;
+
+    // If true, the jwt tainted keys of the bundle will be updated.
+    bool wit_signing_keys = 6;
+}
+
+// AttestedNodeMask is used to update only selected fields of the AttestedNode
+message AttestedNodeMask{
+    // If true, the attestation data type of the attested node will be updated.
+    bool attestation_data_type = 1;
+
+    // If true, the certificate serial number associated with the attested node will be updated.
+    bool cert_serial_number = 2;
+
+    // If true, the certificate expiry associated with the attested node will be updated.
+    bool cert_not_after = 3;
+
+    // If true, the new certificate serial number for the attested node will be updated.
+    bool new_cert_serial_number = 4;
+
+    // If true, the new certificate expiry for the attested node will be updated.
+    bool new_cert_not_after = 5;
+
+    // If true, the can_reattest field for the attested node will be updated.
+    bool can_reattest = 6;
+
+    // If true, the agent version for the attested node will be updated.
+    bool agent_version = 7;
+}
+
+// AppendBundleRequest is used to append a new bundle for a trust domain to the datastore.
+message AppendBundleRequest {
+    // Required. The bundle to append.
+    Bundle bundle = 1;
+}
+
+// AppendBundleResponse is the response returned after appending a new bundle.
+message AppendBundleResponse {
+     // Required. The bundle that was appended.
+     Bundle bundle = 1;
+}
+
+// CreateBundleRequest is used to create a new bundle in the datastore.
+message CreateBundleRequest {
+    // Required. The bundle to create.
+    Bundle bundle = 1;
+}
+
+// CreateBundleResponse is the response returned after creating a new bundle.
+message CreateBundleResponse {
+    // Required. The bundle that was created.
+    Bundle bundle = 1;
+}
+
+// CountBundlesRequest is used to count the number of bundles in the datastore.
+message CountBundlesRequest {}
+
+// CountBundlesResponse is the response returned after counting the number of bundles in the datastore.
+message CountBundlesResponse {
+    // Count is the number of bundles in the datastore.
+    int32 count = 1;
+}
+
+// DeleteBundleRequest is used to delete a bundle for a trust domain from the datastore.
+message DeleteBundleRequest {
+    // Required. The trust domain of the bundle to delete.
+    string trust_domain = 1;
+
+    // Optional. Defaults to DELETE_MODE_RESTRICT, which will prevent deletion 
+    DeleteMode mode = 2;
+}
+
+// DeleteBundleResponse is the response returned after deleting a bundle.
+message DeleteBundleResponse {}
+
+// FetchBundleRequest is used to fetch a bundle for a trust domain from the datastore.
+message FetchBundleRequest {
+    // Required. The trust domain of the bundle to fetch.
+    string trust_domain = 1;
+}
+
+// FetchBundleResponse is the response returned after fetching a bundle for a trust domain.
+message FetchBundleResponse {
+    // Required. The bundle retrieved.
+    Bundle bundle = 1;
+}
+
+// Pagination is used to paginate through a list of results.
+message Pagination {
+    // The number of items to return in a single page. If not specified, the
+    // service may choose a default.
+    int32 page_size = 1;
+
+    // A token identifying a page of results the server should return. This is
+    // typically the value of next_page_token returned from the previous call.
+    string page_token = 2;
+}
+
+// ListBundlesRequest is the request used to list bundles in the datastore.
+message ListBundlesRequest {
+    // Optional. Pagination information for the request.
+    Pagination pagination = 1;
+}
+
+// ListBundlesResponse is the response returned after listing bundles in the datastore.
+message ListBundlesResponse {
+    // Required. The bundles to return.
+    repeated Bundle bundles = 1;
+
+    // Optional. Pagination information for the response.
+    Pagination pagination = 2;
+}
+
+// PruneBundleRequest is used to prune a bundle for a trust domain from the datastore.
+message PruneBundleRequest {
+    // Required. The trust domain of the bundle to prune.
+    string trust_domain = 1;
+
+    // Required. The timestamp before which the bundle should be pruned.
+    int64 expires_before = 2;
+}
+
+// PruneBundleResponse is the response returned after pruning a bundle.
+message PruneBundleResponse {
+    // Indicates whether the bundle was changed as a result of the prune operation.
+    bool changed = 1;
+}
+
+// SetBundleRequest is used to set a bundle in the datastore.
+message SetBundleRequest {
+    // Required. The bundle to set.
+    Bundle bundle = 1;
+}
+
+// SetBundleResponse is the response returned after setting a bundle in the datastore.
+message SetBundleResponse {
+    // Required. The bundle that was set.
+    Bundle bundle = 1;
+}
+
+// UpdateBundleRequest is used to update a bundle in the datastore.
+message UpdateBundleRequest {
+    // Required. The bundle to update.
+    Bundle bundle = 1;
+
+    // Required. The mask specifying which fields of the bundle to update.
+    BundleMask mask = 2;
+}
+
+// UpdateBundleResponse is the response returned after updating a bundle in the datastore.
+message UpdateBundleResponse {
+    // Required. The bundle that was updated.
+    Bundle bundle = 1;
+}
+
+// TaintX509CARequest is used to mark an X509 CA as tainted in the datastore.
+message TaintX509CARequest {
+    // Required. The trust domain of the X509 CA to taint.
+    string trust_domain = 1;
+
+    // Required. The key ID of the X509 CA to taint.
+    string key_id = 2;
+}
+
+// TaintX509CAResponse is the response returned after marking an X509 CA as tainted.
+message TaintX509CAResponse {}
+
+// RevokeX509CARequest is used to revoke an X509 CA in the datastore.
+message RevokeX509CARequest {
+    // Required. The trust domain of the X509 CA to revoke.
+    string trust_domain = 1;
+
+    // Required. The key ID of the X509 CA to revoke.
+    string key_id = 2;
+}
+
+// RevokeX509CAResponse is the response returned after revoking an X509 CA.
+message RevokeX509CAResponse {}
+
+// TaintJWTKeyRequest is used to mark a JWT key as tainted in the datastore.
+message TaintJWTKeyRequest {
+    // Required. The trust domain of the JWT key to taint.
+    string trust_domain = 1;
+
+    // Required. The authority ID of the JWT key to taint.
+    string authority_id = 2;
+}
+
+// TaintJWTKeyResponse is the response returned after marking a JWT key as tainted.
+message TaintJWTKeyResponse {
+    // Required. The JWT key that was tainted.
+    PublicKey key = 1;
+}
+
+// RevokeJWTKeyRequest is used to revoke a JWT key in the datastore.
+message RevokeJWTKeyRequest {
+    // Required. The trust domain of the JWT key to revoke.
+    string trust_domain = 1;
+
+    // Required. The authority ID of the JWT key to revoke.
+    string authority_id = 2;
+}
+
+// RevokeJWTKeyResponse is the response returned after revoking a JWT key.
+message RevokeJWTKeyResponse {
+    // Required. The JWT key that was revoked.
+    PublicKey key = 1;
+}
+
+// CountRegistrationEntriesRequest is used to count registration entries in the datastore.
+message CountRegistrationEntriesRequest {
+    // DataConsistency specifies the level of consistency to use when counting registration entries.
+    DataConsistency data_consistency = 1;
+
+    // Optional. Filter registration entries by their parent ID.
+    string by_parent_id = 2;
+
+    // Optional. Filter registration entries by their SPIFFE ID.
+    string by_spiffe_id = 3;
+
+    // Optional. Filter registration entries by their hint.
+    string by_hint = 4;
+
+    // Optional. Filter registration entries by whether they are downstream.
+    bool filter_by_downstream = 5;
+
+    // Optional. The value to filter downstream registration entries by.
+    bool downstream_value = 6;
+
+    // Optional. Filter registration entries by their selectors.
+    BySelectors by_selectors = 7;
+
+    // Optional. Filter registration entries by their federates_with relationship.
+    ByFederatesWith by_federates_with = 8;
+}
+
+// CountRegistrationEntriesResponse is the response returned after counting registration entries in the datastore.
+message CountRegistrationEntriesResponse {
+    // Required. The number of registration entries that match the specified filters.
+    int32 count = 1;
+}
+
+// BySelectors is used to filter registration entries by their selectors.
+message BySelectors {
+    MatchBehavior match_behavior = 1;
+    repeated Selector selectors = 2;
+}
+
+// ByFederatesWith is used to filter registration entries by the trust domains they federate with.
+message ByFederatesWith {
+    MatchBehavior match_behavior = 1;
+    repeated string federates_with = 2;
+}
+
+// CreateRegistrationEntryRequest is used to create a new registration entry in the datastore.
+message CreateRegistrationEntryRequest {
+    // Required. The registration entry to create.
+    RegistrationEntry entry = 1;
+}
+
+// CreateRegistrationEntryResponse is the response returned after creating a new registration entry in the datastore.
+message CreateRegistrationEntryResponse {
+    // The registration entry that was created.
+    RegistrationEntry entry = 1;
+}
+
+// CreateOrReturnRegistrationEntryRequest is used to create a new registration entry or return an existing one if it already exists.
+message CreateOrReturnRegistrationEntryRequest {
+    // Required. The registration entry to create or return.
+    RegistrationEntry entry = 1;
+}
+
+// CreateOrReturnRegistrationEntryResponse is the response returned after attempting to create a new registration entry or returning an existing one.
+message CreateOrReturnRegistrationEntryResponse {
+    // The registration entry that was created or returned.
+    RegistrationEntry entry = 1;
+
+    // Indicates whether the registration entry was newly created.
+    bool created = 2;
+}
+
+// DeleteRegistrationEntryRequest is used to delete a registration entry from the datastore.
+message DeleteRegistrationEntryRequest {
+    // Required. The ID of the registration entry to delete.
+    string entry_id = 1;
+}
+
+// DeleteRegistrationEntryResponse is the response returned after deleting a registration entry from the datastore.
+message DeleteRegistrationEntryResponse {
+    // The registration entry that was deleted.
+    RegistrationEntry entry = 1;
+}
+
+// FetchRegistrationEntryRequest is used to fetch a registration entry by its ID.
+message FetchRegistrationEntryRequest {
+    // Required. The ID of the registration entry to fetch.
+    string entry_id = 1;
+}
+
+// FetchRegistrationEntryResponse is the response returned after fetching a registration entry by its ID.
+message FetchRegistrationEntryResponse {
+    // The registration entry that was fetched.
+    RegistrationEntry entry = 1;
+}
+
+// FetchRegistrationEntriesRequest is used to fetch multiple registration entries by their IDs.
+message FetchRegistrationEntriesRequest {
+    // Required. The IDs of the registration entries to fetch.
+    repeated string entry_ids = 1;
+}
+
+// FetchRegistrationEntriesResponse is the response returned after fetching multiple registration entries by their IDs.
+message FetchRegistrationEntriesResponse {
+    // The registration entries that were fetched.
+    repeated RegistrationEntry entries = 1;
+}
+
+// ListRegistrationEntriesRequest is used to list registration entries with various filtering and pagination options.
+message ListRegistrationEntriesRequest {
+    // Pagination information for listing registration entries.
+    Pagination pagination = 1;
+
+    // The desired data consistency level for the list operation.
+    DataConsistency data_consistency = 2;
+
+    // Filter registration entries by their parent ID.
+    string by_parent_id = 3;
+
+    // Filter registration entries by their SPIFFE ID.
+    string by_spiffe_id = 4;
+
+    // Filter registration entries by their hint.
+    string by_hint = 5;
+
+    // Filter registration entries by whether they are downstream.
+    bool filter_by_downstream = 6;
+
+    // The value indicating whether the registration entries are downstream.
+    bool downstream_value = 7;
+
+    // Filter registration entries by their selectors.
+    BySelectors by_selectors = 8;
+
+    // Filter registration entries by their federates-with relationships.
+    ByFederatesWith by_federates_with = 9;
+}
+
+// ListRegistrationEntriesResponse is the response returned after listing registration entries.
+message ListRegistrationEntriesResponse {
+    // The registration entries that matched the provided filters.
+    repeated RegistrationEntry entries = 1;
+    
+    // Pagination information for the listed registration entries.
+    Pagination pagination = 2;
+}
+
+// PruneRegistrationEntriesRequest is used to prune registration entries that have expired before a certain timestamp.
+message PruneRegistrationEntriesRequest {
+    // Required. The timestamp before which registration entries should be pruned.
+    int64 expires_before = 1;
+}
+
+// PruneRegistrationEntriesResponse is the response returned after pruning registration entries.
+message PruneRegistrationEntriesResponse {}
+
+// UpdateRegistrationEntryRequest is used to update an existing registration entry.
+message UpdateRegistrationEntryRequest {
+    // The registration entry to be updated.
+    RegistrationEntry entry = 1;
+
+    // The mask specifying which fields of the registration entry should be updated.
+    RegistrationEntryMask mask = 2;
+}
+// UpdateRegistrationEntryResponse is the response returned after updating a registration entry.
+message UpdateRegistrationEntryResponse {
+    // The updated registration entry.
+    RegistrationEntry entry = 1;
+}
+
+// ListRegistrationEntryEventsRequest is used to list registration entry events that match the parameters.
+message ListRegistrationEntryEventsRequest {
+    // The event ID after which to fetch registration entry events. Only events with an ID greater than this value will be returned.
+    uint64 greater_than_event_id = 1;
+
+    // The event ID before which to fetch registration entry events. Only events with an ID less than this value will be returned.
+    uint64 less_than_event_id = 2;
+
+    // The data consistency level to be used when fetching registration entry events.
+    DataConsistency data_consistency = 3;
+}
+
+// RegistrationEntryEvent represents an event related to a registration entry.
+message RegistrationEntryEvent {
+    // The unique ID of the registration entry event.
+    uint64 event_id = 1;
+
+    // The ID of the registration entry associated with this event.
+    string entry_id = 2;
+
+    // The timestamp when the event was created.
+    uint64 created_at = 3;
+
+    // The timestamp when the event was last updated.
+    uint64 updated_at = 4;
+}
+
+// ListRegistrationEntryEventsResponse is the response returned after listing registration entry events.
+message ListRegistrationEntryEventsResponse {
+    // The list of registration entry events that match the request parameters.
+    repeated RegistrationEntryEvent events = 1;
+}
+
+// PruneRegistrationEntryEventsRequest is used to prune registration entry events that occurred before a certain timestamp.
+message PruneRegistrationEntryEventsRequest {
+    // The timestamp before which registration entry events should be pruned.
+    int64 expires_before = 1;
+}
+
+// PruneRegistrationEntryEventsResponse is the response returned after pruning registration entry events.
+message PruneRegistrationEntryEventsResponse {}
+
+// FetchRegistrationEntryEventRequest is used to fetch a specific registration entry event by its ID.
+message FetchRegistrationEntryEventRequest {
+    uint64 event_id = 1;
+}
+
+// FetchRegistrationEntryEventResponse is the response returned after fetching a specific registration entry event.
+message FetchRegistrationEntryEventResponse {
+    RegistrationEntryEvent event = 1;
+}
+
+// CreateRegistrationEntryEventRequest is used to create a new registration entry event.
+message CreateRegistrationEntryEventRequest {
+    RegistrationEntryEvent event = 1;
+}
+
+// CreateRegistrationEntryEventResponse is the response returned after creating a new registration entry event.
+message CreateRegistrationEntryEventResponse {}
+
+// DeleteRegistrationEntryEventRequest is used to delete a specific registration entry event by its ID.
+message DeleteRegistrationEntryEventRequest {
+    uint64 event_id = 1;
+}
+
+// DeleteRegistrationEntryEventResponse is the response returned after deleting a specific registration entry event.
+message DeleteRegistrationEntryEventResponse {}
+
+// CountAttestedNodesRequest is used to count attested nodes based on various filters.
+message CountAttestedNodesRequest {
+    // Filters for selecting attested nodes based on their selectors.
+    BySelectors by_selectors = 1;
+
+    // Whether to fetch the selectors associated with the attested nodes.
+    bool fetch_selectors = 2;
+
+    // Filters for selecting attested nodes that will expire before a certain timestamp.
+    int64 by_expires_before = 3;
+
+    // Filters for selecting attested nodes based on their attestation type.
+    string by_attestation_type = 4;
+
+    // Filters for selecting attested nodes based on whether they can reattest.
+    bool by_can_reattest = 5;
+
+    // The value indicating whether the attested node can reattest.
+    bool can_reattest_value = 6;
+
+    // Filters for selecting attested nodes based on whether they are banned.
+    bool by_banned = 7;
+
+    // The value indicating whether the attested node is banned.
+    bool banned_value = 8;
+}
+
+// CountAttestedNodesResponse is the response returned after counting attested nodes.
+message CountAttestedNodesResponse {
+    // The total number of attested nodes that match the request parameters.
+    int32 count = 1;
+}
+
+// CreateAttestedNodeRequest is used to create a new attested node.
+message CreateAttestedNodeRequest {
+    // The attested node to be created.
+    AttestedNode node = 1;
+}
+
+// CreateAttestedNodeResponse is the response returned after creating a new attested node.
+message CreateAttestedNodeResponse {
+    // The attested node that was created.
+    AttestedNode node = 1;
+}
+
+// DeleteAttestedNodeRequest is used to delete a specific attested node by its SPIFFE ID.
+message DeleteAttestedNodeRequest {
+    // The SPIFFE ID of the attested node to be deleted.
+    string spiffe_id = 1;
+}
+
+// DeleteAttestedNodeResponse is the response returned after deleting a specific attested node.
+message DeleteAttestedNodeResponse {
+    // The attested node that was deleted.
+    AttestedNode node = 1;
+}
+
+// FetchAttestedNodeRequest is used to fetch a specific attested node by its SPIFFE ID.
+message FetchAttestedNodeRequest {
+    // The SPIFFE ID of the attested node to be fetched.
+    string spiffe_id = 1;
+}
+
+// FetchAttestedNodeResponse is the response returned after fetching a specific attested node.
+message FetchAttestedNodeResponse {
+    // The attested node that was fetched.
+    AttestedNode node = 1;
+}
+
+// ListAttestedNodesRequest is used to list attested nodes based on various filters.
+message ListAttestedNodesRequest {
+    // Pagination information for listing attested nodes.
+    Pagination pagination = 1;
+
+    // Filters for selecting attested nodes based on their selectors.
+    BySelectors by_selectors = 2;
+
+    // Whether to fetch the selectors associated with the attested nodes.
+    bool fetch_selectors = 3;
+
+    // Filters for selecting attested nodes based on their expiration time.
+    int64 by_expires_before = 4;
+
+    // Filters for selecting attested nodes based on their attestation type.
+    string by_attestation_type = 5;
+
+    // Filters for selecting attested nodes based on their ability to reattest.
+    bool by_can_reattest = 6;
+
+    // The value indicating whether the attested node can reattest.
+    bool can_reattest_value = 7;
+
+    // Filters for selecting attested nodes based on their banned status.
+    bool by_banned = 8;
+
+    // The value indicating whether the attested node is banned.
+    bool banned_value = 9;
+
+    // Filters for selecting attested nodes based on their validity at a specific timestamp.
+    int64 by_valid_at = 10;
+
+    // Filters for selecting attested nodes based on their SPIFFE IDs.
+    repeated string by_spiffe_ids = 11;
+}
+
+// ListAttestedNodesResponse is the response returned after listing attested nodes.
+message ListAttestedNodesResponse {
+    // The list of attested nodes that match the request parameters.
+    repeated AttestedNode nodes = 1;
+
+    // Pagination information for the list of attested nodes.
+    Pagination pagination = 2;
+}
+
+// UpdateAttestedNodeRequest is used to update a specific attested node.
+message UpdateAttestedNodeRequest {
+    // The attested node to be updated.
+    AttestedNode node = 1;
+
+    // The mask specifying which fields of the attested node should be updated.
+    AttestedNodeMask mask = 2;
+}
+
+// UpdateAttestedNodeResponse is the response returned after updating a specific attested node.
+message UpdateAttestedNodeResponse {
+    // The attested node that was updated.
+    AttestedNode node = 1;
+}
+
+// PruneAttestedExpiredNodesRequest is used to prune attested nodes that have expired.
+message PruneAttestedExpiredNodesRequest {
+    // The timestamp before which attested nodes are considered expired and should be pruned.
+    int64 expires_before = 1;
+
+    // Whether to include non-reattestable attested nodes in the pruning process.
+    bool include_non_reattestable = 2;
+
+    // The maximum number of attested nodes to prune in a single batch.
+    int64 batch_size = 3;
+}
+
+// PruneAttestedExpiredNodesResponse is the response returned after pruning attested nodes that have expired.
+message PruneAttestedExpiredNodesResponse {}
+
+// ListAttestedNodeEventsRequest is used to list attested node events based on various filters.
+message ListAttestedNodeEventsRequest {
+    // The event ID after which to list attested node events.
+    int64 greater_than_event_id = 1;
+
+    // The event ID before which to list attested node events.
+    int64 less_than_event_id = 2;
+
+    // The data consistency level to use when listing attested node events.
+    DataConsistency data_consistency = 3;
+}
+
+// AttestedNodeEvent represents an event related to an attested node.
+message AttestedNodeEvent {
+    // The unique ID of the event.
+    uint64 event_id = 1;
+
+    // The SPIFFE ID of the attested node associated with the event.
+    string spiffe_id = 2;
+
+    // The timestamp when the event was created.
+    int64 created_at = 3;
+
+    // The timestamp when the event was last updated.
+    int64 updated_at = 4;
+}
+
+// ListAttestedNodeEventsResponse is the response returned after listing attested node events.
+message ListAttestedNodeEventsResponse {
+    // The list of attested node events that match the specified filters.
+    repeated AttestedNodeEvent events = 1;
+}
+
+// PruneAttestedNodeEventsRequest is used to prune attested node events that are older than a specified timestamp.
+message PruneAttestedNodeEventsRequest {
+    // The timestamp before which attested node events should be pruned.
+    int64 older_than = 1;
+}
+
+// PruneAttestedNodeEventsResponse is the response returned after pruning attested node events.
+message PruneAttestedNodeEventsResponse {}
+
+// FetchAttestedNodeEventRequest is used to fetch a specific attested node event by its event ID.
+message FetchAttestedNodeEventRequest {
+    // The unique ID of the attested node event to fetch.
+    uint64 event_id = 1;
+}
+
+// FetchAttestedNodeEventResponse is the response returned after fetching a specific attested node event.
+message FetchAttestedNodeEventResponse {
+    // The attested node event that was fetched.
+    AttestedNodeEvent event = 1;
+}
+
+// CreateAttestedNodeEventRequest is used to create a new attested node event.
+message CreateAttestedNodeEventRequest {
+    // The attested node event to create.
+    AttestedNodeEvent event = 1;
+}
+
+// CreateAttestedNodeEventResponse is the response returned after creating a new attested node event.
+message CreateAttestedNodeEventResponse {}
+
+// DeleteAttestedNodeEventRequest is used to delete a specific attested node event by its event ID.
+message DeleteAttestedNodeEventRequest {
+    // The unique ID of the attested node event to delete.
+    uint64 event_id = 1;
+}
+
+// DeleteAttestedNodeEventResponse is the response returned after deleting a specific attested node event.
+message DeleteAttestedNodeEventResponse {}
+
+// GetNodeSelectorsRequest is used to fetch the selectors for a specific node.
+message GetNodeSelectorsRequest {
+    // The SPIFFE ID of the node whose selectors are being fetched.
+    string spiffe_id = 1;
+
+    // The data consistency requirement for fetching the node selectors.
+    DataConsistency data_consistency = 2;
+}
+
+// GetNodeSelectorsResponse is the response returned after fetching the selectors for a specific node.
+message GetNodeSelectorsResponse {
+    // Selectors associated with the node.
+    repeated Selector selectors = 1;
+}
+
+// ListNodeSelectorsRequest is used to list the selectors for all nodes at a specific point in time.
+message ListNodeSelectorsRequest {
+    // The point in time at which to list the node selectors.
+    int64 valid_at = 1;
+
+    // The data consistency requirement for listing the node selectors.
+    DataConsistency data_consistency = 2;
+}
+
+// ListNodeSelectorsResponse is the response returned after listing the selectors for all nodes.
+message ListNodeSelectorsResponse {
+    // The list of node selector entries.
+    repeated NodeSelectorEntry selectors = 1;
+}
+
+// NodeSelectorEntry represents the selectors associated with a specific node.
+message NodeSelectorEntry {
+    // The SPIFFE ID of the node.
+    string spiffe_id = 1;
+
+    // The selectors associated with the node.
+    repeated Selector selectors = 2;
+}
+
+// SetNodeSelectorsRequest is used to set the selectors for a specific node.
+message SetNodeSelectorsRequest {
+    // The SPIFFE ID of the node whose selectors are being set.
+    string spiffe_id = 1;
+
+    // The selectors to associate with the node.
+    repeated Selector selectors = 2;
+}
+
+// SetNodeSelectorsResponse is the response returned after setting the selectors for a specific node.
+message SetNodeSelectorsResponse {
+    // The selectors that were set for the node.
+    repeated Selector selectors = 1;
+}
+
+// CreateJoinTokenRequest is used to create a new join token.
+message CreateJoinTokenRequest {
+    // The token value to create.
+    string token = 1;
+
+    // The expiration time of the join token.
+    int64 expires_at = 2;
+}
+
+// CreateJoinTokenResponse is the response returned after creating a new join token.
+message CreateJoinTokenResponse {
+    // The join token that was created.
+    string token = 1;
+
+    // The expiration time of the join token.
+    int64 expires_at = 2;
+}
+
+// DeleteJoinTokenRequest is used to delete a specific join token.
+message DeleteJoinTokenRequest {
+    // The value of the join token to delete.
+    string token = 1;
+}
+
+// DeleteJoinTokenResponse is the response returned after deleting a specific join token.
+message DeleteJoinTokenResponse {}
+
+// FetchJoinTokenRequest is used to fetch a specific join token.
+message FetchJoinTokenRequest {
+    // The value of the join token to fetch.
+    string token = 1;
+}
+
+// FetchJoinTokenResponse is the response returned after fetching a specific join token.
+message FetchJoinTokenResponse {
+    // The join token that was fetched.
+    string token = 1;
+
+    // The expiration time of the join token.
+    int64 expires_at = 2;
+}
+
+// PruneJoinTokensRequest is used to prune join tokens that have expired before a specific time.
+message PruneJoinTokensRequest {
+    // The time before which join tokens should be pruned.
+    int64 expires_before = 1;
+}
+
+// PruneJoinTokensResponse is the response returned after pruning join tokens.
+message PruneJoinTokensResponse {}
+
+// FederationRelationship represents a federation relationship with another trust domain.
+message FederationRelationship {
+    // The trust domain ID of the federation relationship.
+    string trust_domain_id = 1;
+
+    // The type of the bundle endpoint.
+    BundleEndpointType bundle_endpoint_type = 2;
+
+    // The URL of the bundle endpoint.
+    string bundle_endpoint_url = 3;
+
+    // The SPIFFE ID of the bundle endpoint.
+    string bundle_endpoint_spiffe_id = 4;
+
+    // The refresh interval for the federation relationship.
+    int64 refresh_interval = 5;
+
+    // Whether the trust domain bundle endpoint authentication is enabled.
+    bool trust_domain_bundle_endpoint_auth = 6;
+
+    // The trust domain bundle associated with the federation relationship.
+    Bundle trust_domain_bundle = 7;
+
+    // The creation time of the federation relationship.
+    int64 created_at = 8;
+
+    // The last update time of the federation relationship.
+    int64 updated_at = 9;
+}
+
+// CreateFederationRelationshipRequest is used to create a new federation relationship.
+message CreateFederationRelationshipRequest {
+    // The federation relationship to be created.
+    FederationRelationship relationship = 1;
+}
+
+// CreateFederationRelationshipResponse is the response returned after creating a federation relationship.
+message CreateFederationRelationshipResponse {
+    // The federation relationship that was created.
+    FederationRelationship relationship = 1;
+}
+
+// FetchFederationRelationshipRequest is used to fetch a specific federation relationship.
+message FetchFederationRelationshipRequest {
+    // The trust domain ID of the federation relationship to be fetched.
+    string trust_domain_id = 1;
+}
+
+// FetchFederationRelationshipResponse is the response returned when fetching a federation relationship.
+message FetchFederationRelationshipResponse {
+    // Federation relationship that was fetched.
+    FederationRelationship relationship = 1;
+}
+
+// ListFederationRelationshipsRequest is used to list federation relationships.
+message ListFederationRelationshipsRequest {
+    // Pagination information for listing federation relationships.
+    Pagination pagination = 1;
+}
+
+// ListFederationRelationshipsResponse is the response returned when listing federation relationships.
+message ListFederationRelationshipsResponse {
+    // The list of federation relationships.
+    repeated FederationRelationship relationships = 1;
+
+    // Pagination information for the list of federation relationships.
+    Pagination pagination = 2;
+}
+
+// DeleteFederationRelationshipRequest is used to delete a federation relationship.
+message DeleteFederationRelationshipRequest {
+    // The trust domain ID of the federation relationship to be deleted.
+    string trust_domain_id = 1;
+}
+
+// DeleteFederationRelationshipResponse is the response returned after deleting a federation relationship.
+message DeleteFederationRelationshipResponse {}
+
+// FederationRelationshipMask is used to specify which fields of a federation relationship should be updated.
+message FederationRelationshipMask {
+    // Whether the bundle endpoint URL should be updated.
+    bool bundle_endpoint_url = 1;
+
+    // Whether the bundle endpoint profile should be updated.
+    bool bundle_endpoint_profile = 2;
+
+    // Whether the trust domain bundle should be updated.
+    bool trust_domain_bundle = 3;
+}
+
+// UpdateFederationRelationshipRequest is used to update a federation relationship.
+message UpdateFederationRelationshipRequest {
+    // The federation relationship to be updated.
+    FederationRelationship relationship = 1;
+
+    // The mask specifying which fields of the federation relationship should be updated.
+    FederationRelationshipMask mask = 2;
+}
+
+// UpdateFederationRelationshipResponse is the response returned after updating a federation relationship.
+message UpdateFederationRelationshipResponse {
+    // The updated federation relationship.
+    FederationRelationship relationship = 1;
+}
+
+// CAJournal represents a Certificate Authority journal entry.
+message CAJournal {
+    // The unique ID of the CA journal entry.
+    uint64 id = 1;
+
+    // The ID of the active X.509 authority associated with this CA journal entry.
+    string active_x509_authority_id = 2;
+
+    // The serialized data of the CA journal entry.
+    bytes data = 3;
+
+    // The timestamp when the CA journal entry was created.
+    int64 created_at = 4;
+
+    // The timestamp when the CA journal entry was last updated.
+    int64 updated_at = 5;
+}
+
+// SetCAJournalRequest is used to set a CA journal.
+message SetCAJournalRequest {
+    // The CA journal to be set.
+    CAJournal journal = 1;
+}
+
+// SetCAJournalResponse is the response returned after setting a CA journal.
+message SetCAJournalResponse {
+    // The CA journal that was set.
+    CAJournal journal = 1;
+}
+
+// FetchCAJournalRequest is used to fetch a specific CA journal.
+message FetchCAJournalRequest {
+    // The ID of the active X.509 authority whose CA journal is being fetched.
+    string active_x509_authority_id = 1;
+}
+
+// FetchCAJournalResponse is the response returned after fetching a specific CA journal.
+message FetchCAJournalResponse {
+    // The CA journal that was fetched.
+    CAJournal journal = 1;
+}
+
+// PruneCAJournalsRequest is used to prune CA journals that have expired before a specific timestamp.
+message PruneCAJournalsRequest {
+    // The timestamp before which CA journals should be pruned.
+    int64 expires_before = 1;
+}
+
+// PruneCAJournalsResponse is the response returned after pruning CA journals.
+message PruneCAJournalsResponse {}
+
+// ListCAJournalsRequest is used to list all CA journals.
+message ListCAJournalsRequest {}
+
+// ListCAJournalsResponse is the response returned after listing CA journals.
+message ListCAJournalsResponse {
+    // The list of CA journals.
+    repeated CAJournal journals = 1;
+}
+
+// DataStore defines the interface for the SPIRE server's datastore plugin.
+service DataStore {
+    rpc AppendBundle(AppendBundleRequest) returns (AppendBundleResponse);
+    rpc CreateBundle(CreateBundleRequest) returns (CreateBundleResponse);
+    rpc CountBundles(CountBundlesRequest) returns (CountBundlesResponse);
+    rpc DeleteBundle(DeleteBundleRequest) returns (DeleteBundleResponse);
+    rpc FetchBundle(FetchBundleRequest) returns (FetchBundleResponse);
+    rpc ListBundles(ListBundlesRequest) returns (ListBundlesResponse);
+    rpc PruneBundle(PruneBundleRequest) returns (PruneBundleResponse);
+    rpc SetBundle(SetBundleRequest) returns (SetBundleResponse);
+    rpc UpdateBundle(UpdateBundleRequest) returns (UpdateBundleResponse);
+
+    rpc TaintX509CA(TaintX509CARequest) returns (TaintX509CAResponse);
+    rpc RevokeX509CA(RevokeX509CARequest) returns (RevokeX509CAResponse);
+    rpc TaintJWTKey(TaintJWTKeyRequest) returns (TaintJWTKeyResponse);
+    rpc RevokeJWTKey(RevokeJWTKeyRequest) returns (RevokeJWTKeyResponse);
+
+    rpc CountRegistrationEntries(CountRegistrationEntriesRequest) returns (CountRegistrationEntriesResponse);
+    rpc CreateRegistrationEntry(CreateRegistrationEntryRequest) returns (CreateRegistrationEntryResponse);
+    rpc CreateOrReturnRegistrationEntry(CreateOrReturnRegistrationEntryRequest) returns (CreateOrReturnRegistrationEntryResponse);
+    rpc DeleteRegistrationEntry(DeleteRegistrationEntryRequest) returns (DeleteRegistrationEntryResponse);
+    rpc FetchRegistrationEntries(FetchRegistrationEntriesRequest) returns (FetchRegistrationEntriesResponse);
+    rpc ListRegistrationEntries(ListRegistrationEntriesRequest) returns (ListRegistrationEntriesResponse);
+    rpc PruneRegistrationEntries(PruneRegistrationEntriesRequest) returns (PruneRegistrationEntriesResponse);
+    rpc UpdateRegistrationEntry(UpdateRegistrationEntryRequest) returns (UpdateRegistrationEntryResponse);
+
+    rpc ListRegistrationEntryEvents(ListRegistrationEntryEventsRequest) returns (ListRegistrationEntryEventsResponse);
+    rpc PruneRegistrationEntryEvents(PruneRegistrationEntryEventsRequest) returns (PruneRegistrationEntryEventsResponse);
+    rpc FetchRegistrationEntryEvent(FetchRegistrationEntryEventRequest) returns (FetchRegistrationEntryEventResponse);
+    rpc CreateRegistrationEntryEvent(CreateRegistrationEntryEventRequest) returns (CreateRegistrationEntryEventResponse);
+    rpc DeleteRegistrationEntryEvent(DeleteRegistrationEntryEventRequest) returns (DeleteRegistrationEntryEventResponse);
+
+    rpc CountAttestedNodes(CountAttestedNodesRequest) returns (CountAttestedNodesResponse);
+    rpc CreateAttestedNode(CreateAttestedNodeRequest) returns (CreateAttestedNodeResponse);
+    rpc DeleteAttestedNode(DeleteAttestedNodeRequest) returns (DeleteAttestedNodeResponse);
+    rpc FetchAttestedNode(FetchAttestedNodeRequest) returns (FetchAttestedNodeResponse);
+    rpc ListAttestedNodes(ListAttestedNodesRequest) returns (ListAttestedNodesResponse);
+    rpc UpdateAttestedNode(UpdateAttestedNodeRequest) returns (UpdateAttestedNodeResponse);
+    rpc PruneAttestedExpiredNodes(PruneAttestedExpiredNodesRequest) returns (PruneAttestedExpiredNodesResponse);
+
+    rpc ListAttestedNodeEvents(ListAttestedNodeEventsRequest) returns (ListAttestedNodeEventsResponse);
+    rpc PruneAttestedNodeEvents(PruneAttestedNodeEventsRequest) returns (PruneAttestedNodeEventsResponse);
+    rpc FetchAttestedNodeEvent(FetchAttestedNodeEventRequest) returns (FetchAttestedNodeEventResponse);
+    rpc CreateAttestedNodeEvent(CreateAttestedNodeEventRequest) returns (CreateAttestedNodeEventResponse);
+    rpc DeleteAttestedNodeEvent(DeleteAttestedNodeEventRequest) returns (DeleteAttestedNodeEventResponse);
+
+    rpc GetNodeSelectors(GetNodeSelectorsRequest) returns (GetNodeSelectorsResponse);
+    rpc ListNodeSelectors(ListNodeSelectorsRequest) returns (ListNodeSelectorsResponse);
+    rpc SetNodeSelectors(SetNodeSelectorsRequest) returns (SetNodeSelectorsResponse);
+
+    rpc CreateJoinToken(CreateJoinTokenRequest) returns (CreateJoinTokenResponse);
+    rpc DeleteJoinToken(DeleteJoinTokenRequest) returns (DeleteJoinTokenResponse);
+    rpc FetchJoinToken(FetchJoinTokenRequest) returns (FetchJoinTokenResponse);
+    rpc PruneJoinTokens(PruneJoinTokensRequest) returns (PruneJoinTokensResponse);
+
+    rpc CreateFederationRelationship(CreateFederationRelationshipRequest) returns (CreateFederationRelationshipResponse);
+    rpc FetchFederationRelationship(FetchFederationRelationshipRequest) returns (FetchFederationRelationshipResponse);
+    rpc ListFederationRelationships(ListFederationRelationshipsRequest) returns (ListFederationRelationshipsResponse);
+    rpc DeleteFederationRelationship(DeleteFederationRelationshipRequest) returns (DeleteFederationRelationshipResponse);
+    rpc UpdateFederationRelationship(UpdateFederationRelationshipRequest) returns (UpdateFederationRelationshipResponse);
+
+    rpc SetCAJournal(SetCAJournalRequest) returns (SetCAJournalResponse);
+    rpc FetchCAJournal(FetchCAJournalRequest) returns (FetchCAJournalResponse);
+    rpc PruneCAJournals(PruneCAJournalsRequest) returns (PruneCAJournalsResponse);
+    rpc ListCAJournals(ListCAJournalsRequest) returns (ListCAJournalsResponse);
+}
