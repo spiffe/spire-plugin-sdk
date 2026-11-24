@@ -18,9 +18,15 @@ func Serve(serverLogger, pluginLogger hclog.Logger, pluginServer pluginsdk.Plugi
 		Plugins: map[string]goplugin.Plugin{
 			pluginServer.Type(): newHCPlugin(serverLogger, pluginServer, serviceServers),
 		},
-		Logger:     pluginLogger,
-		GRPCServer: goplugin.DefaultGRPCServer,
-		Test:       testConfig,
+		Logger: pluginLogger,
+		GRPCServer: func(opts []grpc.ServerOption) *grpc.Server {
+			opts = append(opts,
+				grpc.ChainUnaryInterceptor(unaryPanicRecoveryInterceptor(serverLogger)),
+				grpc.ChainStreamInterceptor(streamPanicRecoveryInterceptor(serverLogger)),
+			)
+			return grpc.NewServer(opts...)
+		},
+		Test: testConfig,
 	})
 }
 
