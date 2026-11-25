@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"strings"
 
 	"github.com/hashicorp/hcl"
@@ -32,8 +33,12 @@ func Text(req Request) (string, configv1.ConfigFormat) {
 }
 
 // Decode decodes the plugin configuration of req into out, using its hcl or
-// yaml struct tags. Unknown YAML keys are rejected.
+// yaml struct tags. Unknown YAML keys and multiple YAML documents are
+// rejected.
 func Decode(req Request, out any) error {
+	if v := reflect.ValueOf(out); v.Kind() != reflect.Pointer || v.IsNil() {
+		return errors.New("result must be a non-nil pointer")
+	}
 	text, format := Text(req)
 	switch format {
 	case configv1.ConfigFormat_CONFIG_FORMAT_HCL:
@@ -41,8 +46,14 @@ func Decode(req Request, out any) error {
 	case configv1.ConfigFormat_CONFIG_FORMAT_YAML:
 		dec := yaml.NewDecoder(strings.NewReader(text))
 		dec.KnownFields(true)
-		if err := dec.Decode(out); err != nil && !errors.Is(err, io.EOF) {
+		if err := dec.Decode(out); err != nil {
+			if errors.Is(err, io.EOF) {
+				return nil
+			}
 			return err
+		}
+		if err := dec.Decode(new(yaml.Node)); !errors.Is(err, io.EOF) {
+			return errors.New("multiple YAML documents are not supported")
 		}
 		return nil
 	default:

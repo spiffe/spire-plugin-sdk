@@ -27,7 +27,7 @@ func TestText(t *testing.T) {
 		{
 			name: "HCL",
 			req: &configv1.ConfigureRequest{
-				HclConfiguration: `name = "a"`,
+				HclConfiguration: `name = "legacy"`,
 				Configuration:    `name = "a"`,
 				ConfigFormat:     configv1.ConfigFormat_CONFIG_FORMAT_HCL,
 			},
@@ -65,7 +65,11 @@ func TestDecode(t *testing.T) {
 		},
 		{
 			name: "HCL",
-			req:  &configv1.ValidateRequest{Configuration: `name = "a"`, ConfigFormat: configv1.ConfigFormat_CONFIG_FORMAT_HCL},
+			req: &configv1.ValidateRequest{
+				HclConfiguration: `name = "legacy"`,
+				Configuration:    `name = "a"`,
+				ConfigFormat:     configv1.ConfigFormat_CONFIG_FORMAT_HCL,
+			},
 			want: config{Name: "a"},
 		},
 		{
@@ -83,6 +87,11 @@ func TestDecode(t *testing.T) {
 			wantErr: "field nme not found",
 		},
 		{
+			name:    "multiple YAML documents",
+			req:     &configv1.ValidateRequest{Configuration: "name: a\n---\nnme: b\n", ConfigFormat: configv1.ConfigFormat_CONFIG_FORMAT_YAML},
+			wantErr: "multiple YAML documents are not supported",
+		},
+		{
 			name:    "unknown format",
 			req:     &configv1.ValidateRequest{ConfigFormat: 99},
 			wantErr: "unsupported configuration format 99",
@@ -97,6 +106,21 @@ func TestDecode(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestDecodeRequiresPointer(t *testing.T) {
+	for _, format := range []configv1.ConfigFormat{
+		configv1.ConfigFormat_CONFIG_FORMAT_HCL,
+		configv1.ConfigFormat_CONFIG_FORMAT_YAML,
+	} {
+		t.Run(format.String(), func(t *testing.T) {
+			req := &configv1.ConfigureRequest{Configuration: "name: a\n", ConfigFormat: format}
+			var nilConfig *config
+			for _, out := range []any{nil, config{}, nilConfig} {
+				require.EqualError(t, Decode(req, out), "result must be a non-nil pointer")
+			}
 		})
 	}
 }

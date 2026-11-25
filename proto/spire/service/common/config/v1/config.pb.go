@@ -83,6 +83,12 @@ type ConfigureRequest struct {
 	// HCL encoded plugin configuration, for plugins that predate the
 	// configuration field. Read it only when config_format is
 	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+	//
+	// SPIRE sets it to the same text as configuration when the format is
+	// CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
+	// to text that fails to decode as HCL, so that older plugins reject the
+	// configuration instead of running with an empty one. An empty YAML
+	// configuration is sent as an empty value.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
 	// Plugin configuration, in the format given by config_format. When
 	// config_format is set, an empty value is an empty configuration and not a
@@ -196,6 +202,12 @@ type ValidateRequest struct {
 	// HCL encoded plugin configuration, for plugins that predate the
 	// configuration field. Read it only when config_format is
 	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+	//
+	// SPIRE sets it to the same text as configuration when the format is
+	// CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
+	// to text that fails to decode as HCL, so that older plugins reject the
+	// configuration instead of running with an empty one. An empty YAML
+	// configuration is sent as an empty value.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
 	// Plugin configuration, in the format given by config_format. When
 	// config_format is set, an empty value is an empty configuration and not a

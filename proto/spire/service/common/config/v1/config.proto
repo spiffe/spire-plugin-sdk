@@ -37,6 +37,12 @@ message ConfigureRequest {
     // HCL encoded plugin configuration, for plugins that predate the
     // configuration field. Read it only when config_format is
     // CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+    //
+    // SPIRE sets it to the same text as configuration when the format is
+    // CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
+    // to text that fails to decode as HCL, so that older plugins reject the
+    // configuration instead of running with an empty one. An empty YAML
+    // configuration is sent as an empty value.
     string hcl_configuration = 2;
 
     // Plugin configuration, in the format given by config_format. When
@@ -59,6 +65,12 @@ message ValidateRequest {
     // HCL encoded plugin configuration, for plugins that predate the
     // configuration field. Read it only when config_format is
     // CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+    //
+    // SPIRE sets it to the same text as configuration when the format is
+    // CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
+    // to text that fails to decode as HCL, so that older plugins reject the
+    // configuration instead of running with an empty one. An empty YAML
+    // configuration is sent as an empty value.
     string hcl_configuration = 2;
 
     // Plugin configuration, in the format given by config_format. When
