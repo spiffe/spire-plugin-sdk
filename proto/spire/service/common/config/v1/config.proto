@@ -18,19 +18,34 @@ service Config {
     rpc Validate(ValidateRequest) returns (ValidateResponse);
 }
 
+// ConfigFormat is the format of the configuration field of ConfigureRequest
+// and ValidateRequest.
 enum ConfigFormat {
+    // Sent by SPIRE versions that predate the configuration field. The plugin
+    // configuration is HCL, in hcl_configuration.
     CONFIG_FORMAT_UNSPECIFIED = 0;
+    // The plugin configuration is HCL, in configuration.
     CONFIG_FORMAT_HCL = 1;
+    // The plugin configuration is YAML, in configuration.
     CONFIG_FORMAT_YAML = 2;
 }
 
 message ConfigureRequest {
+    // Required. Core SPIRE configuration.
     CoreConfiguration core_configuration = 1;
-    // Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
-    string hcl_configuration = 2 [deprecated = true];
-    // Raw plugin configuration string in the format specified by configFormat.
-    // When set, takes precedence over hclConfiguration.
+
+    // HCL encoded plugin configuration, for plugins that predate the
+    // configuration field. Read it only when config_format is
+    // CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+    string hcl_configuration = 2;
+
+    // Plugin configuration, in the format given by config_format. When
+    // config_format is set, an empty value is an empty configuration and not a
+    // reason to read hcl_configuration.
     string configuration = 3;
+
+    // Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
+    // configuration is HCL, in hcl_configuration.
     ConfigFormat config_format = 4;
 }
 
@@ -38,12 +53,21 @@ message ConfigureResponse {
 }
 
 message ValidateRequest {
+    // Required. Core SPIRE configuration.
     CoreConfiguration core_configuration = 1;
-    // Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
-    string hcl_configuration = 2 [deprecated = true];
-    // Raw plugin configuration string in the format specified by configFormat.
-    // When set, takes precedence over hclConfiguration.
+
+    // HCL encoded plugin configuration, for plugins that predate the
+    // configuration field. Read it only when config_format is
+    // CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
+    string hcl_configuration = 2;
+
+    // Plugin configuration, in the format given by config_format. When
+    // config_format is set, an empty value is an empty configuration and not a
+    // reason to read hcl_configuration.
     string configuration = 3;
+
+    // Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
+    // configuration is HCL, in hcl_configuration.
     ConfigFormat config_format = 4;
 }
 

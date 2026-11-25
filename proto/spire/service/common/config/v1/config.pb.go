@@ -21,12 +21,18 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ConfigFormat is the format of the configuration field of ConfigureRequest
+// and ValidateRequest.
 type ConfigFormat int32
 
 const (
+	// Sent by SPIRE versions that predate the configuration field. The plugin
+	// configuration is HCL, in hcl_configuration.
 	ConfigFormat_CONFIG_FORMAT_UNSPECIFIED ConfigFormat = 0
-	ConfigFormat_CONFIG_FORMAT_HCL         ConfigFormat = 1
-	ConfigFormat_CONFIG_FORMAT_YAML        ConfigFormat = 2
+	// The plugin configuration is HCL, in configuration.
+	ConfigFormat_CONFIG_FORMAT_HCL ConfigFormat = 1
+	// The plugin configuration is YAML, in configuration.
+	ConfigFormat_CONFIG_FORMAT_YAML ConfigFormat = 2
 )
 
 // Enum value maps for ConfigFormat.
@@ -71,15 +77,19 @@ func (ConfigFormat) EnumDescriptor() ([]byte, []int) {
 }
 
 type ConfigureRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	CoreConfiguration *CoreConfiguration     `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
-	//
-	// Deprecated: Marked as deprecated in spire/service/common/config/v1/config.proto.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Core SPIRE configuration.
+	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
+	// HCL encoded plugin configuration, for plugins that predate the
+	// configuration field. Read it only when config_format is
+	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
-	// Raw plugin configuration string in the format specified by configFormat.
-	// When set, takes precedence over hclConfiguration.
-	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// Plugin configuration, in the format given by config_format. When
+	// config_format is set, an empty value is an empty configuration and not a
+	// reason to read hcl_configuration.
+	Configuration string `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
+	// configuration is HCL, in hcl_configuration.
 	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -122,7 +132,6 @@ func (x *ConfigureRequest) GetCoreConfiguration() *CoreConfiguration {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in spire/service/common/config/v1/config.proto.
 func (x *ConfigureRequest) GetHclConfiguration() string {
 	if x != nil {
 		return x.HclConfiguration
@@ -181,15 +190,19 @@ func (*ConfigureResponse) Descriptor() ([]byte, []int) {
 }
 
 type ValidateRequest struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	CoreConfiguration *CoreConfiguration     `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// Deprecated: use configuration with config_format. Kept for backward compat with old plugins.
-	//
-	// Deprecated: Marked as deprecated in spire/service/common/config/v1/config.proto.
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Core SPIRE configuration.
+	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
+	// HCL encoded plugin configuration, for plugins that predate the
+	// configuration field. Read it only when config_format is
+	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
-	// Raw plugin configuration string in the format specified by configFormat.
-	// When set, takes precedence over hclConfiguration.
-	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// Plugin configuration, in the format given by config_format. When
+	// config_format is set, an empty value is an empty configuration and not a
+	// reason to read hcl_configuration.
+	Configuration string `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	// Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
+	// configuration is HCL, in hcl_configuration.
 	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -232,7 +245,6 @@ func (x *ValidateRequest) GetCoreConfiguration() *CoreConfiguration {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in spire/service/common/config/v1/config.proto.
 func (x *ValidateRequest) GetHclConfiguration() string {
 	if x != nil {
 		return x.HclConfiguration
@@ -362,16 +374,16 @@ var File_spire_service_common_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_spire_service_common_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"+spire/service/common/config/v1/config.proto\x12\x1espire.service.common.config.v1\"\x9e\x02\n" +
+	"+spire/service/common/config/v1/config.proto\x12\x1espire.service.common.config.v1\"\x9a\x02\n" +
 	"\x10ConfigureRequest\x12`\n" +
-	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12/\n" +
-	"\x11hcl_configuration\x18\x02 \x01(\tB\x02\x18\x01R\x10hclConfiguration\x12$\n" +
+	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12+\n" +
+	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\x12$\n" +
 	"\rconfiguration\x18\x03 \x01(\tR\rconfiguration\x12Q\n" +
 	"\rconfig_format\x18\x04 \x01(\x0e2,.spire.service.common.config.v1.ConfigFormatR\fconfigFormat\"\x13\n" +
-	"\x11ConfigureResponse\"\x9d\x02\n" +
+	"\x11ConfigureResponse\"\x99\x02\n" +
 	"\x0fValidateRequest\x12`\n" +
-	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12/\n" +
-	"\x11hcl_configuration\x18\x02 \x01(\tB\x02\x18\x01R\x10hclConfiguration\x12$\n" +
+	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12+\n" +
+	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\x12$\n" +
 	"\rconfiguration\x18\x03 \x01(\tR\rconfiguration\x12Q\n" +
 	"\rconfig_format\x18\x04 \x01(\x0e2,.spire.service.common.config.v1.ConfigFormatR\fconfigFormat\">\n" +
 	"\x10ValidateResponse\x12\x14\n" +

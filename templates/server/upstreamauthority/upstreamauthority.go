@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-hclog"
-	"github.com/hashicorp/hcl"
 	"github.com/spiffe/spire-plugin-sdk/pluginmain"
 	"github.com/spiffe/spire-plugin-sdk/pluginsdk"
+	"github.com/spiffe/spire-plugin-sdk/pluginsdk/support/pluginconfig"
 	upstreamauthorityv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/plugin/server/upstreamauthority/v1"
 	configv1 "github.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1"
 	"google.golang.org/grpc/codes"
@@ -27,7 +27,8 @@ var (
 )
 
 // Config defines the configuration for the plugin.
-// TODO: Add relevant configurables or remove if no configuration is required.
+// TODO: Add relevant configurables, with hcl and yaml tags, or remove if no
+// configuration is required.
 type Config struct {
 }
 
@@ -127,7 +128,7 @@ func (p *Plugin) SubscribeToLocalBundle(req *upstreamauthorityv1.SubscribeToLoca
 // TODO: Remove if no configuration is required
 func (p *Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
 	config := new(Config)
-	if err := hcl.Decode(config, req.HclConfiguration); err != nil {
+	if err := pluginconfig.Decode(req, config); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to decode configuration: %v", err)
 	}
 
