@@ -80,22 +80,15 @@ type ConfigureRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Core SPIRE configuration.
 	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// HCL encoded plugin configuration, for plugins that predate the
-	// configuration field. Read it only when config_format is
-	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
-	//
-	// SPIRE sets it to the same text as configuration when the format is
-	// CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
-	// to text that fails to decode as HCL, so that older plugins reject the
-	// configuration instead of running with an empty one. An empty YAML
-	// configuration is sent as an empty value.
+	// HCL plugin configuration, for plugins that predate config_format. Read
+	// it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+	// configuration here, and for non-empty YAML sends text that fails to
+	// decode as HCL, so older plugins fail instead of running unconfigured.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
 	// Plugin configuration, in the format given by config_format. When
 	// config_format is set, an empty value is an empty configuration and not a
 	// reason to read hcl_configuration.
-	Configuration string `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
-	// Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
-	// configuration is HCL, in hcl_configuration.
+	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
 	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -199,22 +192,15 @@ type ValidateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Core SPIRE configuration.
 	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// HCL encoded plugin configuration, for plugins that predate the
-	// configuration field. Read it only when config_format is
-	// CONFIG_FORMAT_UNSPECIFIED, and use configuration otherwise.
-	//
-	// SPIRE sets it to the same text as configuration when the format is
-	// CONFIG_FORMAT_HCL. When the format is CONFIG_FORMAT_YAML, SPIRE sets it
-	// to text that fails to decode as HCL, so that older plugins reject the
-	// configuration instead of running with an empty one. An empty YAML
-	// configuration is sent as an empty value.
+	// HCL plugin configuration, for plugins that predate config_format. Read
+	// it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+	// configuration here, and for non-empty YAML sends text that fails to
+	// decode as HCL, so older plugins fail instead of running unconfigured.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
 	// Plugin configuration, in the format given by config_format. When
 	// config_format is set, an empty value is an empty configuration and not a
 	// reason to read hcl_configuration.
-	Configuration string `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
-	// Format of the plugin configuration. CONFIG_FORMAT_UNSPECIFIED means the
-	// configuration is HCL, in hcl_configuration.
+	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
 	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
