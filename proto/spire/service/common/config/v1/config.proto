@@ -18,12 +18,33 @@ service Config {
     rpc Validate(ValidateRequest) returns (ValidateResponse);
 }
 
+// ConfigFormat is the format of the configuration field of ConfigureRequest
+// and ValidateRequest.
+enum ConfigFormat {
+    // Sent by SPIRE versions that predate the configuration field. The plugin
+    // configuration is HCL, in hcl_configuration.
+    CONFIG_FORMAT_UNSPECIFIED = 0;
+    // The plugin configuration is HCL, in configuration.
+    CONFIG_FORMAT_HCL = 1;
+    // The plugin configuration is YAML, in configuration.
+    CONFIG_FORMAT_YAML = 2;
+}
+
 message ConfigureRequest {
     // Required. Core SPIRE configuration.
     CoreConfiguration core_configuration = 1;
 
-    // Required. HCL encoded plugin configuration.
+    // HCL plugin configuration, for plugins that predate config_format. Read
+    // it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+    // configuration here, and for non-empty YAML sends text that fails to
+    // decode as HCL, so older plugins fail instead of running unconfigured.
     string hcl_configuration = 2;
+
+    // Plugin configuration, in the format given by config_format. When
+    // config_format is set, an empty value is an empty configuration and not a
+    // reason to read hcl_configuration.
+    string configuration = 3;
+    ConfigFormat config_format = 4;
 }
 
 message ConfigureResponse {
@@ -33,8 +54,17 @@ message ValidateRequest {
     // Required. Core SPIRE configuration.
     CoreConfiguration core_configuration = 1;
 
-    // Required. HCL encoded plugin configuration.
+    // HCL plugin configuration, for plugins that predate config_format. Read
+    // it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+    // configuration here, and for non-empty YAML sends text that fails to
+    // decode as HCL, so older plugins fail instead of running unconfigured.
     string hcl_configuration = 2;
+
+    // Plugin configuration, in the format given by config_format. When
+    // config_format is set, an empty value is an empty configuration and not a
+    // reason to read hcl_configuration.
+    string configuration = 3;
+    ConfigFormat config_format = 4;
 }
 
 message ValidateResponse {

@@ -21,14 +21,77 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ConfigFormat is the format of the configuration field of ConfigureRequest
+// and ValidateRequest.
+type ConfigFormat int32
+
+const (
+	// Sent by SPIRE versions that predate the configuration field. The plugin
+	// configuration is HCL, in hcl_configuration.
+	ConfigFormat_CONFIG_FORMAT_UNSPECIFIED ConfigFormat = 0
+	// The plugin configuration is HCL, in configuration.
+	ConfigFormat_CONFIG_FORMAT_HCL ConfigFormat = 1
+	// The plugin configuration is YAML, in configuration.
+	ConfigFormat_CONFIG_FORMAT_YAML ConfigFormat = 2
+)
+
+// Enum value maps for ConfigFormat.
+var (
+	ConfigFormat_name = map[int32]string{
+		0: "CONFIG_FORMAT_UNSPECIFIED",
+		1: "CONFIG_FORMAT_HCL",
+		2: "CONFIG_FORMAT_YAML",
+	}
+	ConfigFormat_value = map[string]int32{
+		"CONFIG_FORMAT_UNSPECIFIED": 0,
+		"CONFIG_FORMAT_HCL":         1,
+		"CONFIG_FORMAT_YAML":        2,
+	}
+)
+
+func (x ConfigFormat) Enum() *ConfigFormat {
+	p := new(ConfigFormat)
+	*p = x
+	return p
+}
+
+func (x ConfigFormat) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ConfigFormat) Descriptor() protoreflect.EnumDescriptor {
+	return file_spire_service_common_config_v1_config_proto_enumTypes[0].Descriptor()
+}
+
+func (ConfigFormat) Type() protoreflect.EnumType {
+	return &file_spire_service_common_config_v1_config_proto_enumTypes[0]
+}
+
+func (x ConfigFormat) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ConfigFormat.Descriptor instead.
+func (ConfigFormat) EnumDescriptor() ([]byte, []int) {
+	return file_spire_service_common_config_v1_config_proto_rawDescGZIP(), []int{0}
+}
+
 type ConfigureRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Core SPIRE configuration.
 	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// Required. HCL encoded plugin configuration.
+	// HCL plugin configuration, for plugins that predate config_format. Read
+	// it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+	// configuration here, and for non-empty YAML sends text that fails to
+	// decode as HCL, so older plugins fail instead of running unconfigured.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Plugin configuration, in the format given by config_format. When
+	// config_format is set, an empty value is an empty configuration and not a
+	// reason to read hcl_configuration.
+	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ConfigureRequest) Reset() {
@@ -75,6 +138,20 @@ func (x *ConfigureRequest) GetHclConfiguration() string {
 	return ""
 }
 
+func (x *ConfigureRequest) GetConfiguration() string {
+	if x != nil {
+		return x.Configuration
+	}
+	return ""
+}
+
+func (x *ConfigureRequest) GetConfigFormat() ConfigFormat {
+	if x != nil {
+		return x.ConfigFormat
+	}
+	return ConfigFormat_CONFIG_FORMAT_UNSPECIFIED
+}
+
 type ConfigureResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -115,10 +192,18 @@ type ValidateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Core SPIRE configuration.
 	CoreConfiguration *CoreConfiguration `protobuf:"bytes,1,opt,name=core_configuration,json=coreConfiguration,proto3" json:"core_configuration,omitempty"`
-	// Required. HCL encoded plugin configuration.
+	// HCL plugin configuration, for plugins that predate config_format. Read
+	// it only when config_format is CONFIG_FORMAT_UNSPECIFIED. SPIRE copies HCL
+	// configuration here, and for non-empty YAML sends text that fails to
+	// decode as HCL, so older plugins fail instead of running unconfigured.
 	HclConfiguration string `protobuf:"bytes,2,opt,name=hcl_configuration,json=hclConfiguration,proto3" json:"hcl_configuration,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Plugin configuration, in the format given by config_format. When
+	// config_format is set, an empty value is an empty configuration and not a
+	// reason to read hcl_configuration.
+	Configuration string       `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	ConfigFormat  ConfigFormat `protobuf:"varint,4,opt,name=config_format,json=configFormat,proto3,enum=spire.service.common.config.v1.ConfigFormat" json:"config_format,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ValidateRequest) Reset() {
@@ -163,6 +248,20 @@ func (x *ValidateRequest) GetHclConfiguration() string {
 		return x.HclConfiguration
 	}
 	return ""
+}
+
+func (x *ValidateRequest) GetConfiguration() string {
+	if x != nil {
+		return x.Configuration
+	}
+	return ""
+}
+
+func (x *ValidateRequest) GetConfigFormat() ConfigFormat {
+	if x != nil {
+		return x.ConfigFormat
+	}
+	return ConfigFormat_CONFIG_FORMAT_UNSPECIFIED
 }
 
 type ValidateResponse struct {
@@ -273,19 +372,27 @@ var File_spire_service_common_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_spire_service_common_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"+spire/service/common/config/v1/config.proto\x12\x1espire.service.common.config.v1\"\xa1\x01\n" +
+	"+spire/service/common/config/v1/config.proto\x12\x1espire.service.common.config.v1\"\x9a\x02\n" +
 	"\x10ConfigureRequest\x12`\n" +
 	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12+\n" +
-	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\"\x13\n" +
-	"\x11ConfigureResponse\"\xa0\x01\n" +
+	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\x12$\n" +
+	"\rconfiguration\x18\x03 \x01(\tR\rconfiguration\x12Q\n" +
+	"\rconfig_format\x18\x04 \x01(\x0e2,.spire.service.common.config.v1.ConfigFormatR\fconfigFormat\"\x13\n" +
+	"\x11ConfigureResponse\"\x99\x02\n" +
 	"\x0fValidateRequest\x12`\n" +
 	"\x12core_configuration\x18\x01 \x01(\v21.spire.service.common.config.v1.CoreConfigurationR\x11coreConfiguration\x12+\n" +
-	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\">\n" +
+	"\x11hcl_configuration\x18\x02 \x01(\tR\x10hclConfiguration\x12$\n" +
+	"\rconfiguration\x18\x03 \x01(\tR\rconfiguration\x12Q\n" +
+	"\rconfig_format\x18\x04 \x01(\x0e2,.spire.service.common.config.v1.ConfigFormatR\fconfigFormat\">\n" +
 	"\x10ValidateResponse\x12\x14\n" +
 	"\x05valid\x18\x01 \x01(\bR\x05valid\x12\x14\n" +
 	"\x05notes\x18\x02 \x03(\tR\x05notes\"6\n" +
 	"\x11CoreConfiguration\x12!\n" +
-	"\ftrust_domain\x18\x01 \x01(\tR\vtrustDomain2\xe9\x01\n" +
+	"\ftrust_domain\x18\x01 \x01(\tR\vtrustDomain*\\\n" +
+	"\fConfigFormat\x12\x1d\n" +
+	"\x19CONFIG_FORMAT_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11CONFIG_FORMAT_HCL\x10\x01\x12\x16\n" +
+	"\x12CONFIG_FORMAT_YAML\x10\x022\xe9\x01\n" +
 	"\x06Config\x12p\n" +
 	"\tConfigure\x120.spire.service.common.config.v1.ConfigureRequest\x1a1.spire.service.common.config.v1.ConfigureResponse\x12m\n" +
 	"\bValidate\x12/.spire.service.common.config.v1.ValidateRequest\x1a0.spire.service.common.config.v1.ValidateResponseBRZPgithub.com/spiffe/spire-plugin-sdk/proto/spire/service/common/config/v1;configv1b\x06proto3"
@@ -302,26 +409,30 @@ func file_spire_service_common_config_v1_config_proto_rawDescGZIP() []byte {
 	return file_spire_service_common_config_v1_config_proto_rawDescData
 }
 
+var file_spire_service_common_config_v1_config_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_spire_service_common_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_spire_service_common_config_v1_config_proto_goTypes = []any{
-	(*ConfigureRequest)(nil),  // 0: spire.service.common.config.v1.ConfigureRequest
-	(*ConfigureResponse)(nil), // 1: spire.service.common.config.v1.ConfigureResponse
-	(*ValidateRequest)(nil),   // 2: spire.service.common.config.v1.ValidateRequest
-	(*ValidateResponse)(nil),  // 3: spire.service.common.config.v1.ValidateResponse
-	(*CoreConfiguration)(nil), // 4: spire.service.common.config.v1.CoreConfiguration
+	(ConfigFormat)(0),         // 0: spire.service.common.config.v1.ConfigFormat
+	(*ConfigureRequest)(nil),  // 1: spire.service.common.config.v1.ConfigureRequest
+	(*ConfigureResponse)(nil), // 2: spire.service.common.config.v1.ConfigureResponse
+	(*ValidateRequest)(nil),   // 3: spire.service.common.config.v1.ValidateRequest
+	(*ValidateResponse)(nil),  // 4: spire.service.common.config.v1.ValidateResponse
+	(*CoreConfiguration)(nil), // 5: spire.service.common.config.v1.CoreConfiguration
 }
 var file_spire_service_common_config_v1_config_proto_depIdxs = []int32{
-	4, // 0: spire.service.common.config.v1.ConfigureRequest.core_configuration:type_name -> spire.service.common.config.v1.CoreConfiguration
-	4, // 1: spire.service.common.config.v1.ValidateRequest.core_configuration:type_name -> spire.service.common.config.v1.CoreConfiguration
-	0, // 2: spire.service.common.config.v1.Config.Configure:input_type -> spire.service.common.config.v1.ConfigureRequest
-	2, // 3: spire.service.common.config.v1.Config.Validate:input_type -> spire.service.common.config.v1.ValidateRequest
-	1, // 4: spire.service.common.config.v1.Config.Configure:output_type -> spire.service.common.config.v1.ConfigureResponse
-	3, // 5: spire.service.common.config.v1.Config.Validate:output_type -> spire.service.common.config.v1.ValidateResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	5, // 0: spire.service.common.config.v1.ConfigureRequest.core_configuration:type_name -> spire.service.common.config.v1.CoreConfiguration
+	0, // 1: spire.service.common.config.v1.ConfigureRequest.config_format:type_name -> spire.service.common.config.v1.ConfigFormat
+	5, // 2: spire.service.common.config.v1.ValidateRequest.core_configuration:type_name -> spire.service.common.config.v1.CoreConfiguration
+	0, // 3: spire.service.common.config.v1.ValidateRequest.config_format:type_name -> spire.service.common.config.v1.ConfigFormat
+	1, // 4: spire.service.common.config.v1.Config.Configure:input_type -> spire.service.common.config.v1.ConfigureRequest
+	3, // 5: spire.service.common.config.v1.Config.Validate:input_type -> spire.service.common.config.v1.ValidateRequest
+	2, // 6: spire.service.common.config.v1.Config.Configure:output_type -> spire.service.common.config.v1.ConfigureResponse
+	4, // 7: spire.service.common.config.v1.Config.Validate:output_type -> spire.service.common.config.v1.ValidateResponse
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_spire_service_common_config_v1_config_proto_init() }
@@ -334,13 +445,14 @@ func file_spire_service_common_config_v1_config_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_spire_service_common_config_v1_config_proto_rawDesc), len(file_spire_service_common_config_v1_config_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_spire_service_common_config_v1_config_proto_goTypes,
 		DependencyIndexes: file_spire_service_common_config_v1_config_proto_depIdxs,
+		EnumInfos:         file_spire_service_common_config_v1_config_proto_enumTypes,
 		MessageInfos:      file_spire_service_common_config_v1_config_proto_msgTypes,
 	}.Build()
 	File_spire_service_common_config_v1_config_proto = out.File
