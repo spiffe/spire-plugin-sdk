@@ -11,6 +11,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/spiffe/go-spiffe/v2 v2.5.0
 	github.com/stretchr/testify v1.10.0
+	go.yaml.in/yaml/v3 v3.0.4
 	google.golang.org/grpc v1.74.2
 	google.golang.org/protobuf v1.36.6
 )

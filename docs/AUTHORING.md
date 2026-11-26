@@ -48,12 +48,12 @@ type Plugin struct {
 
 ```
 type Config struct {
-    // ... HCL fields ...
+    // ... fields with hcl and yaml tags ...
 }
 
 func (*Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*configv1.ConfigureResponse, error) {
     config := new(Config)
-    if err := hcl.Decode(config, req.HclConfiguration); err != nil {
+    if err := pluginconfig.Decode(req, config); err != nil {
         return status.Errorf(codes.InvalidArgument, "failed to decode configuration: %v", err)
     }
 
@@ -61,6 +61,11 @@ func (*Plugin) Configure(ctx context.Context, req *configv1.ConfigureRequest) (*
     return &configv1.ConfigureResponse{}, nil
 }
 ```
+
+  SPIRE sends the configuration as HCL or YAML. `pluginconfig.Decode`, from
+  `github.com/spiffe/spire-plugin-sdk/pluginsdk/support/pluginconfig`, decodes
+  either one. Plugins that decode the configuration themselves can call
+  `pluginconfig.Text` to get the text and its format.
 
 - Advertise that the implementation implements the configuration service:
 
