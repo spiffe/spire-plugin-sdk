@@ -124,3 +124,27 @@ func TestDecodeRequiresPointer(t *testing.T) {
 		})
 	}
 }
+
+type cluster struct {
+	Name string `yaml:"name"`
+}
+
+type clustersConfig struct {
+	Clusters map[string]*cluster `yaml:"clusters"`
+	List     []*cluster          `yaml:"list"`
+	Values   map[string]any      `yaml:"values"`
+}
+
+func TestDecodeNullEntries(t *testing.T) {
+	decode := func(text string, out any) error {
+		return Decode(&configv1.ConfigureRequest{Configuration: text, ConfigFormat: configv1.ConfigFormat_CONFIG_FORMAT_YAML}, out)
+	}
+	require.EqualError(t, decode("clusters:\n  prod:\n", new(clustersConfig)),
+		"clusters.prod must not be null; use {} for an entry without options")
+	require.EqualError(t, decode("list: [~]\n", new(clustersConfig)),
+		"list[0] must not be null; use {} for an entry without options")
+
+	var c clustersConfig
+	require.NoError(t, decode("clusters:\n  prod: {}\nvalues:\n  key: null\n", &c))
+	require.Equal(t, &cluster{}, c.Clusters["prod"])
+}

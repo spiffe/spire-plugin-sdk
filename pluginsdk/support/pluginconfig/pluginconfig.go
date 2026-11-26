@@ -33,8 +33,8 @@ func Text(req Request) (string, configv1.ConfigFormat) {
 }
 
 // Decode decodes the plugin configuration of req into out, using its hcl or
-// yaml struct tags. Unknown YAML keys and multiple YAML documents are
-// rejected.
+// yaml struct tags. Unknown YAML keys, null map and list entries, and
+// multiple YAML documents are rejected.
 func Decode(req Request, out any) error {
 	if v := reflect.ValueOf(out); v.Kind() != reflect.Pointer || v.IsNil() {
 		return errors.New("result must be a non-nil pointer")
@@ -55,8 +55,69 @@ func Decode(req Request, out any) error {
 		if err := dec.Decode(new(yaml.Node)); !errors.Is(err, io.EOF) {
 			return errors.New("multiple YAML documents are not supported")
 		}
-		return nil
+		return checkNullEntries(reflect.ValueOf(out), "")
 	default:
 		return fmt.Errorf("unsupported configuration format %s", format)
 	}
+}
+
+// checkNullEntries rejects map and list entries left nil by a null value,
+// such as "prod" in "clusters: {prod: }".
+func checkNullEntries(v reflect.Value, path string) error {
+	switch v.Kind() {
+	case reflect.Pointer, reflect.Interface:
+		if !v.IsNil() {
+			return checkNullEntries(v.Elem(), path)
+		}
+	case reflect.Struct:
+		t := v.Type()
+		for i := range t.NumField() {
+			f := t.Field(i)
+			if !f.IsExported() {
+				continue
+			}
+			name, opts, _ := strings.Cut(f.Tag.Get("yaml"), ",")
+			if name == "-" {
+				continue
+			}
+			fieldPath := path
+			if opts != "inline" {
+				if name == "" {
+					name = strings.ToLower(f.Name)
+				}
+				fieldPath = joinPath(path, name)
+			}
+			if err := checkNullEntries(v.Field(i), fieldPath); err != nil {
+				return err
+			}
+		}
+	case reflect.Map:
+		iter := v.MapRange()
+		for iter.Next() {
+			if err := checkEntry(iter.Value(), joinPath(path, fmt.Sprint(iter.Key()))); err != nil {
+				return err
+			}
+		}
+	case reflect.Slice, reflect.Array:
+		for i := range v.Len() {
+			if err := checkEntry(v.Index(i), fmt.Sprintf("%s[%d]", path, i)); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func checkEntry(v reflect.Value, path string) error {
+	if v.Kind() == reflect.Pointer && v.IsNil() {
+		return fmt.Errorf("%s must not be null; use {} for an entry without options", path)
+	}
+	return checkNullEntries(v, path)
+}
+
+func joinPath(path, name string) string {
+	if path == "" {
+		return name
+	}
+	return path + "." + name
 }
